@@ -1486,14 +1486,16 @@ const PICK_TESTS = {
   sec: (r, f, c) => (!c.sec || r.sec === c.sec) ? null : "القطاع",
   trend: (r, f, c) => {
     const s = r.score;
-    if (c.trend === "any" || !Number.isFinite(s)) return null;
+    if (c.trend === "any") return null;
+    if (!Number.isFinite(s)) return "الاتجاه";
     if (c.trend === "up") return s > 15 ? null : "الاتجاه";
     if (c.trend === "strong") return s >= 45 ? null : "الاتجاه";
     if (c.trend === "down") return s < -15 ? null : "الاتجاه";
     return null;
   },
   rsi: (r, f, c) => {
-    if (c.rsi === "any" || !Number.isFinite(r.rsi)) return null;
+    if (c.rsi === "any") return null;
+    if (!Number.isFinite(r.rsi)) return "الزخم";
     if (c.rsi === "dip") return r.rsi < 45 ? null : "الزخم";
     if (c.rsi === "mid") return (r.rsi >= 45 && r.rsi <= 65) ? null : "الزخم";
     if (c.rsi === "hot") return r.rsi > 65 ? null : "الزخم";
@@ -1551,8 +1553,12 @@ async function runPicker() {
     return;
   }
 
-  // الترتيب المبدئي بالنتيجة الفنية، ثم نجلب شمعات المرشّحين وحدهم
-  passed.sort((a, b) => (b.score ?? -999) - (a.score ?? -999));
+  // عند طلب الهبوط، الرقم الأكثر سلبية هو الأقوى. الترتيب التنازلي الخام
+  // كان يقدّم -16 على -90، أي أضعف هبوط قبل أقواه.
+  const rankScore = (r) => Number.isFinite(r.score)
+    ? (c.trend === "down" ? -r.score : r.score)
+    : -Infinity;
+  passed.sort((a, b) => rankScore(b) - rankScore(a));
   const shortlist = passed.slice(0, c.rr ? 20 : 3);
   out.innerHTML = `<div class="empty">جارِ فحص ${bd(shortlist.length)} مرشّحاً…</div>`;
 
@@ -2697,6 +2703,15 @@ function planSelfTest() {
                           supAll: mk([0.0000049, 0.0000040]), resAll: mk([0.0000058, 0.0000070]) }, -1);
   ok("أصل رخيص: نسب منتهية لا NaN", tiny && Number.isFinite(tiny.rr) && Number.isFinite(tiny.targetPct)
     && tiny.rr > 0 && validatePlan(tiny).length === 0);
+
+  /* ٦) مرشّح «وش أشتري الآن؟» لا يقبل بيانات مفقودة كأنها حققت الشرط،
+     ويقدّم أقوى هبوط لا أقرب نتيجة للصفر. */
+  ok("فلتر الاتجاه يرفض النتيجة المفقودة",
+    PICK_TESTS.trend({ score: null }, null, { trend: "down" }) === "الاتجاه");
+  ok("فلتر RSI يرفض القراءة المفقودة",
+    PICK_TESTS.rsi({ rsi: null }, null, { rsi: "dip" }) === "الزخم");
+  const downRank = (score) => Number.isFinite(score) ? -score : -Infinity;
+  ok("ترتيب الهبوط يقدم -90 على -16", downRank(-90) > downRank(-16));
 
   const failed = cases.filter(c => !c.pass);
   console.log(`%cفحص نواة الخطة: ${cases.length - failed.length}/${cases.length}`,
