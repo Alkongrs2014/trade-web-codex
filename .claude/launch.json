@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "webtrade",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["local/run.mjs", "serve"],
+      "port": 8080
+    }
+  ]
+}

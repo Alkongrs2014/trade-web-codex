@@ -1,0 +1,108 @@
+name: تحديث بيانات السوق
+
+on:
+  schedule:
+    # الأوقات بتوقيت UTC. السوق الأمريكي (بالتوقيت الصيفي ET = UTC-4).
+    # الدقائق مُزاحة عن رؤوس الأرقام (3,13,…) عمداً: GitHub يُسقط الجداول
+    # المزدحمة عند الدقيقة 0 و*/10 تحت الضغط، ولم يشتغل أي تشغيل مجدول
+    # طوال أول يوم بالجدول القديم رغم أن المهمة نشطة والمستودع عام.
+    - cron: "3,13,23,33,43,53 13-21 * * 1-5"  # الجلسة الرسمية — كل 10 دقائق
+    - cron: "7,27,47 8-12,22-23 * * 1-5"      # ما قبل الافتتاح وبعده — كل 20 دقيقة
+  workflow_dispatch:                   # تشغيل يدوي من تبويب Actions
+
+concurrency:
+  group: market-data
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: فحص ذاتي للكود
+        run: |
+          node scripts/fetch-market.mjs --check
+          node scripts/fetch-news.mjs --check
+
+      - name: إحضار البيانات الحالية من فرع data
+        run: |
+          mkdir -p out && cd out
+          git init -q
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          if git fetch -q --depth 1 origin data 2>/dev/null; then
+            git reset -q --hard FETCH_HEAD
+            echo "تم إحضار البيانات السابقة"
+          else
+            echo "فرع data غير موجود بعد — سيُنشأ الآن"
+          fi
+
+      - name: جلب الأسعار والشموع
+        env:
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
+        run: node scripts/fetch-market.mjs --out ./out
+
+      - name: الأخبار
+        # دورتها دقائق لا يوم، فتُجلب مع كل تحديث سوق. فشلها لا يوقف
+        # المهمة: بوابة السلامة داخلها تُبقي ملف الأخبار السابق.
+        continue-on-error: true
+        run: node scripts/fetch-news.mjs --out ./out
+
+      - name: التحقق من سلامة الملفات قبل الحفظ
+        run: |
+          node -e '
+            const fs=require("fs");
+            const sum=JSON.parse(fs.readFileSync("out/summary.json","utf8"));
+            const mkt=JSON.parse(fs.readFileSync("out/market.json","utf8"));
+            if(!Array.isArray(sum.rows)||sum.rows.length<40)
+              throw new Error("summary.json فيه "+(sum.rows||[]).length+" صفاً فقط — مرفوض");
+            const bad=sum.rows.filter(r=>!r.s||!Number.isFinite(r.p)||r.p<=0);
+            if(bad.length) throw new Error("صفوف بأسعار غير صالحة: "+bad.map(b=>b.s).join(","));
+            if(!mkt.status) throw new Error("market.json بلا حالة سوق");
+            const files=fs.readdirSync("out/sym").length;
+            console.log("✔ "+sum.rows.length+" صفاً · "+files+" ملف سهم · حالة: "+mkt.status.ar);
+          '
+
+      - name: حفظ على فرع data
+        run: |
+          cd out
+          git checkout -q --orphan snapshot
+          git add -A
+          if git diff --cached --quiet; then
+            echo "لا تغييرات"
+          else
+            git commit -q -m "بيانات السوق $(date -u '+%Y-%m-%d %H:%M UTC')"
+            for i in 1 2 3 4; do
+              git push -f -q origin snapshot:data && break
+              echo "فشل الدفع، إعادة المحاولة بعد $((2**i)) ثانية"; sleep $((2**i))
+            done
+          fi
+
+      - name: ملخص التشغيل
+        if: always()
+        run: |
+          if [ -f out/meta.json ] && [ -f out/summary.json ]; then
+            node -e '
+              const m=require("./out/meta.json").marketRun||{};
+              const s=require("./out/summary.json");
+              let o="## تحديث السوق\n\n";
+              o+="| البند | القيمة |\n|---|---|\n";
+              o+="| الأسهم الناجحة | "+m.ok+" |\n| الفاشلة | "+m.failed+" |\n";
+              o+="| أسعار الدفعة | "+m.quotes+" |\n| الطلبات | "+m.requests+" |\n";
+              o+="| رموز قديمة | "+(m.stale||[]).join(", ")+" |\n";
+              if((m.failures||[]).length) o+="\n**إخفاقات:** "+m.failures.map(f=>f.s+" ("+f.error+")").join(" · ")+"\n";
+              o+="\n**عيّنة:** "+s.rows.slice(0,5).map(r=>r.s+" $"+(r.p||0).toFixed(2)).join(" · ")+"\n";
+              require("fs").appendFileSync(process.env.GITHUB_STEP_SUMMARY,o);
+            '
+          fi

@@ -1,0 +1,87 @@
+name: البيانات اليومية
+
+on:
+  schedule:
+    - cron: "30 6 * * 1-5"   # 9:30 صباحاً بتوقيت السعودية، قبل افتتاح السوق
+  workflow_dispatch:
+
+concurrency:
+  group: daily-data
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: فحص ذاتي للكود
+        run: node scripts/fetch-daily.mjs --check
+
+      - name: إحضار البيانات الحالية من فرع data
+        run: |
+          mkdir -p out && cd out
+          git init -q
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          if git fetch -q --depth 1 origin data 2>/dev/null; then
+            git reset -q --hard FETCH_HEAD
+          else
+            echo "فرع data غير موجود بعد"
+          fi
+
+      - name: جلب الأساسيات والترتيب والأخبار
+        run: node scripts/fetch-daily.mjs --out ./out
+        env:
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+
+      - name: التحقق من سلامة الملفات
+        run: |
+          node -e '
+            const fs=require("fs");
+            const r=JSON.parse(fs.readFileSync("out/ranking.json","utf8"));
+            if(!Array.isArray(r.top)||r.top.length!==70)
+              throw new Error("ranking.json فيه "+(r.top||[]).length+" رمزاً بدل 70");
+            const f=JSON.parse(fs.readFileSync("out/fundamentals.json","utf8"));
+            console.log("✔ ترتيب 70 رمزاً · أساسيات "+f.count+" شركة");
+          '
+
+      - name: حفظ على فرع data
+        run: |
+          cd out
+          git checkout -q --orphan snapshot
+          git add -A
+          if git diff --cached --quiet; then
+            echo "لا تغييرات"
+          else
+            git commit -q -m "بيانات يومية $(date -u '+%Y-%m-%d')"
+            for i in 1 2 3 4; do
+              git push -f -q origin snapshot:data && break
+              echo "فشل الدفع، إعادة المحاولة بعد $((2**i)) ثانية"; sleep $((2**i))
+            done
+          fi
+
+      - name: ملخص التشغيل
+        if: always()
+        run: |
+          if [ -f out/meta.json ]; then
+            node -e '
+              const m=require("./out/meta.json").dailyRun||{};
+              let o="## البيانات اليومية\n\n| البند | القيمة |\n|---|---|\n";
+              o+="| أساسيات | "+m.fundamentals+" |\n| رموز مرتّبة | "+m.ranked+" |\n";
+              o+="| أخبار السوق | "+m.marketNews+" |\n| أسهم لها أخبار | "+m.symbolNews+" |\n";
+              if((m.entered||[]).length) o+="\n**دخل الـ70:** "+m.entered.join(", ")+"\n";
+              if((m.exited||[]).length)  o+="\n**خرج من الـ70:** "+m.exited.join(", ")+"\n";
+              if((m.failed||[]).length)  o+="\n**فشل:** "+m.failed.join(", ")+"\n";
+              require("fs").appendFileSync(process.env.GITHUB_STEP_SUMMARY,o);
+            '
+          fi

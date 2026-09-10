@@ -1,0 +1,19 @@
+# سطور ويندوز إلزامية لهذه الأنواع، لا اختيارية.
+#
+# ملفات الدفعة (.bat) بنهايات LF يقرأها cmd.exe مقطّعةً فينفّذ أنصاف
+# أسطر: جرّبناه فخرجت أخطاء مثل «'/SC' is not recognized». والأسوأ أنه
+# لا يفشل بوضوح — بعض الأوامر تُنفَّذ وبعضها لا.
+#
+# وسكربتات PowerShell تحتاج CRLF وBOM معاً: بلا BOM تقرأها PowerShell 5.1
+# كـANSI فيتشوّه النص العربي وينهار التحليل.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+*.vbs text eol=crlf
+
+# بقية الملفات بنهايات لينكس — تقرأها ويندوز بلا مشكلة
+*.mjs   text eol=lf
+*.js     text eol=lf
+*.json   text eol=lf
+*.html   text eol=lf
+*.md     text eol=lf
