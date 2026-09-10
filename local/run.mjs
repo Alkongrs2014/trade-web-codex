@@ -16,6 +16,7 @@
      node local/run.mjs backtest   الأرشيف التاريخي وحده
      node local/run.mjs signals    تثبيت إشارات اليوم وتحديث المفتوحة
      node local/run.mjs events     تقويم الفدرالي (أحداث قوية قادمة)
+     node local/run.mjs learn      قراءة السجل واقتراحات التحسين (بلا شبكة)
      node local/run.mjs both       الكل بالترتيب
      node local/run.mjs serve      خادم محلي لعرض الموقع
      node local/run.mjs publish    نشر البيانات المحلية على فرع data
@@ -233,13 +234,14 @@ else {
              // الأرشيف مع الدورة اليومية: يجلب خمس سنوات لكل رمز (~500
              // طلب) فلا مكان له في دورة عشر دقائق، ونتيجته لا تتغيّر
              // بمعدّل أسرع من يوم على أي حال
-             : cmd === "daily"  ? ["fetch-daily.mjs", "fetch-events.mjs", "backtest.mjs"]
+             : cmd === "daily"  ? ["fetch-daily.mjs", "fetch-events.mjs", "backtest.mjs", "learn.mjs"]
              : cmd === "events" ? ["fetch-events.mjs"]
              : cmd === "backtest" ? ["backtest.mjs"]
+             : cmd === "learn"  ? ["learn.mjs"]
              // الخيارات دورة نصف ساعة مستقلة: كل رمز يحتاج طلباً لكل
              // استحقاق، وسلسلة العقود لا تتغيّر بمعدّل الشمعة
              : cmd === "options" ? ["fetch-options.mjs"]
-             : ["fetch-daily.mjs", "fetch-events.mjs", "fetch-market.mjs", "track-signals.mjs", "fetch-news.mjs", "fetch-options.mjs", "backtest.mjs"];
+             : ["fetch-daily.mjs", "fetch-events.mjs", "fetch-market.mjs", "track-signals.mjs", "fetch-news.mjs", "fetch-options.mjs", "backtest.mjs", "learn.mjs"];
 
   // الانسحاب أمام تشغيل جارٍ ليس فشلاً — نخرج بصفر حتى لا تُعلَّم المهمة
   // المجدولة كفاشلة كل دورة متداخلة

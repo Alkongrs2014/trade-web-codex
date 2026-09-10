@@ -133,6 +133,26 @@ export function outcome(k, i, horizons = HORIZONS) {
 }
 
 /* =====================================================================
+   قلب النتيجة إلى اتجاه الإشارة.
+
+   `outcome` تقيس المسار كما هو: صعوداً. وهو الصحيح لشرط صاعد، وخطأ تامّ
+   لشرط هابط — «توافق الفريمات ▼» تصحّ حين يهبط السعر، فقياسها صعوداً كان
+   يعطيها حافة سالبة وهي تعمل. القلب هنا لا في `outcome` كي تُقاس العيّنة
+   مرة واحدة ويُشتق منها الاتجاهان: خط أساس واحد بإشارتين، لا عيّنتان
+   مختلفتان يُقارن بينهما.
+
+   ولا يكفي قلب العائد: أقصى ربح على البيع هو **أدنى قاع** لا أعلى قمة.
+   ===================================================================== */
+export function signOutcome(o, d) {
+  if (d !== -1 || !o) return o;
+  const r = { ret: {} };
+  for (const h of Object.keys(o.ret)) r.ret[h] = Number.isFinite(o.ret[h]) ? -o.ret[h] : null;
+  r.mfe = Number.isFinite(o.mae) ? -o.mae : null;
+  r.mae = Number.isFinite(o.mfe) ? -o.mfe : null;
+  return r;
+}
+
+/* =====================================================================
    بناء لقطة تاريخية بشكل صفّ الملخّص نفسه، حتى تعمل عليها شروط الماسح
    بلا تعديل — نفس الحقول التي تراها الواجهة، بقيم ذلك اليوم.
    ===================================================================== */
@@ -236,20 +256,26 @@ async function main() {
 
   if (!bars) throw new Error("لا شمعات كافية — لن نكتب ملفاً فارغاً");
 
+  // خط الأساس نفسه بإشارتين: العيّنة واحدة والاتجاه يقلبها. مقارنة إشارة
+  // هابطة بخط أساس صاعد تُخرج حافة كاذبة مهما صحّ باقي الحساب.
   const base = summarize(baseline);
+  const baseDn = summarize(baseline.map(o => signOutcome(o, -1)));
+
   const scans = SCANS.filter(s => s.btTest).map(s => {
-    const g = summarize(hits[s.id]);
+    const d = s.dir === -1 ? -1 : 1;
+    const g = summarize(d === -1 ? hits[s.id].map(o => signOutcome(o, -1)) : hits[s.id]);
+    const b = d === -1 ? baseDn : base;
     return {
-      id: s.id, lbl: s.lbl, note: s.btNote || null, ...g,
+      id: s.id, lbl: s.lbl, dir: d, note: s.btNote || null, ...g,
       // الحافة على خط الأساس هي المعلومة، لا الرقم المطلق.
       // **على الوسيط لا المتوسط**: توزيع العوائد ملتوٍ بشدّة، وسهم واحد
       // تضاعف عشر مرات يزيح متوسط آلاف الملاحظات ولا يزيح وسيطها.
       edge: Object.fromEntries(HORIZONS.map(h => [h,
-        (Number.isFinite(g.ret[h].med) && Number.isFinite(base.ret[h].med))
-          ? r2(g.ret[h].med - base.ret[h].med) : null])),
+        (Number.isFinite(g.ret[h].med) && Number.isFinite(b.ret[h].med))
+          ? r2(g.ret[h].med - b.ret[h].med) : null])),
       edgeWin: Object.fromEntries(HORIZONS.map(h => [h,
-        (Number.isFinite(g.ret[h].win) && Number.isFinite(base.ret[h].win))
-          ? r2(g.ret[h].win - base.ret[h].win) : null]))
+        (Number.isFinite(g.ret[h].win) && Number.isFinite(b.ret[h].win))
+          ? r2(g.ret[h].win - b.ret[h].win) : null]))
     };
   }).sort((a, b) => (b.edge[20] ?? -99) - (a.edge[20] ?? -99));
 
@@ -257,7 +283,7 @@ async function main() {
 
   const out = { updated: now, symbols, bars, horizons: HORIZONS, cooldown: COOLDOWN,
                 trimmed: trimmedSyms, maxDayMove: MAX_DAY_MOVE, cryptoExcluded: true,
-                baseline: base, scans, excluded };
+                baseline: base, baselineDn: baseDn, scans, excluded };
   fs.mkdirSync(OUT, { recursive: true });
   fs.writeFileSync(path.join(OUT, "backtest.json"), JSON.stringify(out));
 
@@ -314,6 +340,42 @@ function selfCheck() {
     near(o.ret[5], 5, 1e-9, "عائد خمسة");
     near(o.mfe, 20, 1e-9, "أقصى ربح عائم");
     near(o.mae, -10, 1e-9, "أقصى تراجع عائم");
+  });
+
+  t("signOutcome يقلب النتيجة إلى اتجاه الإشارة الهابطة", () => {
+    const o = { ret: { 1: 10, 5: -4, 20: null }, mfe: 20, mae: -10 };
+    const s = signOutcome(o, -1);
+    near(s.ret[1], -10, 1e-9, "عائد يوم مقلوب");
+    near(s.ret[5], 4, 1e-9, "العائد السالب صار موجباً");
+    eq(s.ret[20], null, "الغائب يبقى غائباً لا صفراً");
+    // أقصى ربح على البيع هو أدنى قاع — لا قلب العائد وحده
+    near(s.mfe, 10, 1e-9, "أقصى ربح من القاع");
+    near(s.mae, -20, 1e-9, "أقصى تراجع من القمة");
+  });
+
+  t("signOutcome لا يمسّ الاتجاه الصاعد ولا يعيد كائناً جديداً بلا داعٍ", () => {
+    const o = { ret: { 1: 3 }, mfe: 5, mae: -1 };
+    if (signOutcome(o, 1) !== o) throw new Error("نسخة بلا حاجة");
+  });
+
+  t("حافة الشرط الهابط تُقاس على خط أساس هابط", () => {
+    // سوق صاعد: العيّنة كلها +2%. إشارة هبوطية أصابت مرة بـ-5%.
+    const mkO = (v) => ({ ret: { 1: v, 5: v, 20: v }, mfe: v > 0 ? v : 0, mae: v < 0 ? v : 0 });
+    const baseline = [mkO(2), mkO(2), mkO(2)];
+    const base = summarize(baseline);
+    const baseDn = summarize(baseline.map(o => signOutcome(o, -1)));
+    near(base.ret[20].med, 2, 1e-9, "خط الأساس الصاعد");
+    near(baseDn.ret[20].med, -2, 1e-9, "خط الأساس الهابط مقلوبه");
+    const g = summarize([mkO(-5)].map(o => signOutcome(o, -1)));
+    near(g.ret[20].med, 5, 1e-9, "الإشارة الهابطة ربحت 5%");
+    // على خط الأساس الصحيح الحافة +7؛ وعلى الخاطئ كانت ستخرج -7
+    near(g.ret[20].med - baseDn.ret[20].med, 7, 1e-9, "حافة موجبة");
+    near(g.ret[20].med - base.ret[20].med, 3, 1e-9, "لو قِيست على الصاعد لاختلفت");
+  });
+
+  t("الشرط الهابط وحده يحمل dir في scans.js", () => {
+    const dn = SCANS.filter(s => s.dir === -1).map(s => s.id);
+    eq(dn, ["alignDn"], "الشروط الهابطة");
   });
 
   t("outcome يعيد null لأفق يتجاوز البيانات", () => {
