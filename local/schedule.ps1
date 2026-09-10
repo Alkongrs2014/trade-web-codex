@@ -28,16 +28,16 @@ if (-not (Test-Path $vbs)) { throw "لم يُعثر على $vbs" }
 #   السعر يتغيّر كل لحظة · الشمعة المكتملة لا · سلسلة العقود أبطأ ·
 #   أرقام الشركة تتغيّر مرة كل ربع سنة.
 $tasks = @(
-  @{ Name='WebTrade-Quotes';  Job='quotes';  Every=2;    LimitMin=5;   Desc='أسعار فقط' }
-  @{ Name='WebTrade-Market';  Job='market';  Every=10;   LimitMin=20;  Desc='شمعات ومؤشرات وإشارات وأخبار' }
-  @{ Name='WebTrade-Options'; Job='options'; Every=30;   LimitMin=25;  Desc='عقود الخيارات والجريكس' }
+  @{ Name='TradeWebCodex-Quotes';  Job='quotes';  Every=2;    LimitMin=5;   Desc='أسعار فقط' }
+  @{ Name='TradeWebCodex-Market';  Job='market';  Every=10;   LimitMin=20;  Desc='شمعات ومؤشرات وإشارات وأخبار' }
+  @{ Name='TradeWebCodex-Options'; Job='options'; Every=30;   LimitMin=25;  Desc='عقود الخيارات والجريكس' }
   # الأرشيف يجلب خمس سنوات لخمسمئة رمز، فسقفه ساعة لا نصف
-  @{ Name='WebTrade-Daily';   Job='daily';   At='09:30'; LimitMin=60;  Desc='أساسيات وترتيب وأحداث وأرشيف' }
+  @{ Name='TradeWebCodex-Daily';   Job='daily';   At='09:30'; LimitMin=60;  Desc='أساسيات وترتيب وأحداث وأرشيف' }
 )
 
 # بلا نشر: لا حاجة لدورة الأسعار السريعة، فهي موجودة أصلاً كي يبقى
 # الموقع المنشور حديثاً. محلياً يكفي تحديث كل عشر دقائق.
-if (-not $Publish) { $tasks = $tasks | Where-Object { $_.Name -ne 'WebTrade-Quotes' } }
+if (-not $Publish) { $tasks = $tasks | Where-Object { $_.Name -ne 'TradeWebCodex-Quotes' } }
 
 Write-Host ""
 Write-Host "  جدولة المرصد$(if ($Publish) {' — مع النشر التلقائي على GitHub'})" -ForegroundColor Cyan
@@ -104,7 +104,7 @@ if ($failed.Count) {
   Write-Host ""
 }
 Write-Host "  تم. للتحقّق:" -ForegroundColor Cyan
-Write-Host "    Get-ScheduledTask -TaskName WebTrade-*"
+Write-Host "    Get-ScheduledTask -TaskName TradeWebCodex-*"
 Write-Host "  للإلغاء:"
 foreach ($t in $tasks) { Write-Host "    schtasks /Delete /TN `"$($t.Name)`" /F" }
 Write-Host ""

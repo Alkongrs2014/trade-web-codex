@@ -78,10 +78,10 @@ PREFER_YAHOO=1
 
 > الجدولة تعمل فقط والجهاز يعمل. لإلغائها:
 > ```
-> schtasks /Delete /TN "WebTrade-Quotes" /F
-> schtasks /Delete /TN "WebTrade-Market" /F
-> schtasks /Delete /TN "WebTrade-Options" /F
-> schtasks /Delete /TN "WebTrade-Daily" /F
+> schtasks /Delete /TN "TradeWebCodex-Quotes" /F
+> schtasks /Delete /TN "TradeWebCodex-Market" /F
+> schtasks /Delete /TN "TradeWebCodex-Options" /F
+> schtasks /Delete /TN "TradeWebCodex-Daily" /F
 > ```
 
 > **لماذا `run-hidden.vbs`؟** المهام لا تنادي `node` مباشرة، بل
@@ -187,8 +187,11 @@ data\meta.json           إحصاءات آخر تشغيل — راجعه عند 
 وGitHub Pages يخدم الصفحة للعالم. أضف بعد التحديث:
 
 ```bat
-cd /d D:\Ai\ClaudeCode\trade\webtrade
-git add data && git commit -m "بيانات" && git push origin main
+cd /d D:\Ai\Gpt\trade-web-codex
+node local\run.mjs publish
 ```
+
+لا تضف `data/` إلى فرع `main`: أمر النشر يفحص البيانات ثم يدفعها إلى
+فرع `data` المستقل داخل مستودع `trade-web-codex`.
 
 عندها تحصل على الأفضلين: جلب بلا حظر، ونشر عام مجاني.

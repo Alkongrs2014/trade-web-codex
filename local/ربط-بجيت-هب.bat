@@ -16,7 +16,7 @@ if exist ".git" (
 )
 
 git init
-git remote add origin https://github.com/Alkongrs2014/Alkongrs2014.git
+git remote add origin https://github.com/Alkongrs2014/trade-web-codex.git
 echo   جارٍ جلب المستودع...
 git fetch origin main || (echo   [خطأ] تعذّر الجلب — تحقّق من الإنترنت & pause & exit /b 1)
 git reset --mixed origin/main

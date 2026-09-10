@@ -177,7 +177,8 @@ function publish() {
   try { url = git(["remote", "get-url", "origin"], ROOT); }
   catch { console.error("  ✗ لا يوجد ريموت origin — شغّل local/link-github.bat أولاً"); return 1; }
 
-  const stage = path.join(os.tmpdir(), "webtrade-publish");
+  // اسم مستقل حتى لا تتصادم مرحلة النشر مع نسخة المشروع الأصلية.
+  const stage = path.join(os.tmpdir(), "trade-web-codex-publish");
   fs.rmSync(stage, { recursive: true, force: true });
   // القفل ملف تشغيل محلي لا بيانات، ونشره يعني دفعة جديدة كل دورة
   // لمجرد تغيّر رقم العملية

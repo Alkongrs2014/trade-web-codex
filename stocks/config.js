@@ -13,7 +13,7 @@ window.CFG = {
      لتثبيت مصدر بعينه، استبدل السطر كله بنص ثابت. */
   DATA_BASE: (["localhost", "127.0.0.1", ""].includes(location.hostname))
     ? "../data"
-    : "https://raw.githubusercontent.com/Alkongrs2014/Alkongrs2014/data",
+    : "https://raw.githubusercontent.com/Alkongrs2014/trade-web-codex/data",
 
   /* اتركه فارغاً = الوضع المجاني (البيانات من الملفات، تأخير ~15 دقيقة).
      ضع هنا رابط Cloudflare Worker لتفعيل السعر اللحظي — انظر worker/README.md

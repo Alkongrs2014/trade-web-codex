@@ -1,10 +1,12 @@
-- 👋 Hi, I’m @Alkongrs2014
-- 👀 I’m interested in ...
-- 🌱 I’m currently learning ...
-- 💞️ I’m looking to collaborate on ...
-- 📫 How to reach me ...
+# Trade Web Codex
 
-<!---
-Alkongrs2014/Alkongrs2014 is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
-You can click the Preview link to take a look at your changes.
---->
+نسخة تطوير مستقلة لمرصد الأسهم الأمريكية وعقود الخيارات.
+
+- المستودع: `Alkongrs2014/trade-web-codex`
+- رابط الموقع المستهدف: <https://alkongrs2014.github.io/trade-web-codex/stocks/>
+- التشغيل المحلي: `node local/run.mjs serve`
+- الفحوص: أوامر `--check` المذكورة في `CODEX_PROJECT.md`
+
+هذه النسخة لا تنشر إلى مستودع `Alkongrs2014/Alkongrs2014` ولا تستخدم
+رابط موقعه أو فرع بياناته. تفاصيل المعمارية والتشغيل في
+`CODEX_PROJECT.md`، والمعرفة التشغيلية المتراكمة في `CLAUDE.md`.
