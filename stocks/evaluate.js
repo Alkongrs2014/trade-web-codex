@@ -184,6 +184,35 @@ function horizonsOf(tfScore) {
   });
 }
 
+/* =====================================================================
+   ٥) جودة الفرصة — ترتيبٌ تفسيري، لا احتمال نجاح.
+
+   تجمع الدرجة خمسة أشياء يراها المستخدم أصلاً: توافق الفريمات مع اتجاه
+   الخطة، قوة الاتجاه، العائد إلى المخاطرة، طزاجة البيانات، ونشاط الحجم.
+   لا تدخل في `tradePlan` ولا تغيّر توصيته؛ وظيفتها أن ترتّب خططاً صحيحة
+   وتكشف سبب تقدّم واحدة على أخرى. ويُخصم خطر إعلان الأرباح القريب صراحةً.
+   ===================================================================== */
+function opportunityQuality({ score, tfScore, dir, rr, stale = false,
+                              volRatio = null, earnDays = null }) {
+  const vals = Object.values(tfScore || {}).filter(Number.isFinite);
+  const side = dir === -1 ? -1 : 1;
+  const agree = vals.length ? vals.filter(v => (v >= 0 ? 1 : -1) === side).length / vals.length : 0;
+  const alignment = Math.round(agree * 30);
+  const strength = Math.round(Math.min(1, Math.abs(Number(score) || 0) / 80) * 25);
+  const reward = Number.isFinite(rr) && rr > 0 ? Math.round(Math.min(1, rr / 3) * 25) : 0;
+  const fresh = stale ? 0 : 10;
+  const activity = Number.isFinite(volRatio) && volRatio > 0
+    ? Math.round(Math.min(1, volRatio / 2) * 10) : 4; // غياب المتوسط لا يعني حجماً ضعيفاً
+  const eventPenalty = Number.isFinite(earnDays) && earnDays >= 0 && earnDays <= 7 ? 12 : 0;
+  const value = Math.max(0, Math.min(100, alignment + strength + reward + fresh + activity - eventPenalty));
+  const grade = value >= 80 ? "ممتازة" : value >= 65 ? "قوية" : value >= 50 ? "متوازنة" : "حذرة";
+  return {
+    value, grade, agree, eventPenalty,
+    parts: { alignment, strength, reward, fresh, activity },
+    why: `توافق ${Math.round(agree * 100)}% · اتجاه ${strength}/25 · عائد ${reward}/25 · بيانات ${fresh}/10 · نشاط ${activity}/10${eventPenalty ? ` · خصم أرباح ${eventPenalty}` : ""}`
+  };
+}
+
 /* نفس حدّ `planDirOf` في `plan.js`، مكرَّرٌ هنا لأن `evaluate.js` لا
    يعتمد على `plan.js` — والحدّ رقمٌ واحد لا منطق، وربطُ الملفين لأجله
    يجعل ترتيب تحميل السكربتات شرطاً على العمل. */
@@ -191,5 +220,6 @@ const planDirOf2 = (score) => (Number.isFinite(score) && score < -15) ? -1 : 1;
 
 if (typeof module !== "undefined" && module.exports) {
   module.exports = { freshness, tfName, scanTF, SCAN_TF, TF_BAR, FRESH_BARS,
-                     entryQuality, etaFor, spanText, horizonsOf, HORIZONS };
+                     entryQuality, etaFor, spanText, horizonsOf, HORIZONS,
+                     opportunityQuality };
 }

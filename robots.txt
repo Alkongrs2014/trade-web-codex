@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://alkongrs2014.github.io/trade-web-codex/sitemap.xml

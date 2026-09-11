@@ -74,6 +74,7 @@ node scripts/backtest.mjs      --check
 node scripts/track-signals.mjs --check
 node scripts/fetch-events.mjs  --check
 node scripts/build-universe.mjs --check
+node scripts/test-evaluate.mjs
 ```
 
 ```bash
