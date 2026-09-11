@@ -31,6 +31,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DATA = path.join(ROOT, "data");
+const EXPECTED_REPO = "Alkongrs2014/trade-web-codex";
 const PORT = Number(process.env.PORT || 8080);
 
 /* ---------- تحميل .env بلا أي تبعية خارجية ---------- */
@@ -176,6 +177,12 @@ function publish() {
   let url;
   try { url = git(["remote", "get-url", "origin"], ROOT); }
   catch { console.error("  ✗ لا يوجد ريموت origin — شغّل local/link-github.bat أولاً"); return 1; }
+  const normalizedUrl = String(url).trim().replace(/^git@github\.com:/i, "https://github.com/").replace(/\.git$/i, "");
+  if (normalizedUrl.toLowerCase() !== `https://github.com/${EXPECTED_REPO}`.toLowerCase()) {
+    console.error(`  ✗ رُفض النشر: origin لا يشير إلى ${EXPECTED_REPO}`);
+    console.error(`    القيمة الحالية: ${url}`);
+    return 1;
+  }
 
   // اسم مستقل حتى لا تتصادم مرحلة النشر مع نسخة المشروع الأصلية.
   const stage = path.join(os.tmpdir(), "trade-web-codex-publish");

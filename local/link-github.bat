@@ -9,12 +9,19 @@ echo   فيصير المشروع واحداً في مكانين لا مشروع�
 echo.
 git --version >nul 2>&1 || (echo   [خطأ] Git غير مثبّت — حمّله من git-scm.com & pause & exit /b 1)
 
-if exist ".git" (
-  echo   المجلد مربوط أصلاً. جارٍ التحديث فقط...
-  git pull --rebase origin main
-  goto :done
+if not exist ".git" goto :newrepo
+set "ORIGIN_URL="
+for /f "delims=" %%R in ('git remote get-url origin 2^>nul') do set "ORIGIN_URL=%%R"
+echo(%ORIGIN_URL%| findstr /I /C:"github.com/Alkongrs2014/trade-web-codex" >nul || (
+  echo   [خطأ] origin لا يشير إلى مستودع trade-web-codex — أُوقف التحديث للحماية.
+  pause
+  exit /b 1
 )
+echo   المجلد مربوط بالمستودع الصحيح. جارٍ التحديث فقط...
+git pull --rebase origin main
+goto :done
 
+:newrepo
 git init
 git remote add origin https://github.com/Alkongrs2014/trade-web-codex.git
 echo   جارٍ جلب المستودع...
