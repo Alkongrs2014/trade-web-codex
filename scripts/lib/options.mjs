@@ -261,3 +261,95 @@ export function rank(evaluated, band = PROB_BAND, limit = 5) {
     .sort((a, b) => b.eff - a.eff)
     .slice(0, limit);
 }
+
+/* مقاييس السلسلة كاملةً. أقصى الألم والجدران ونسبة البوت/الكول تُقاس
+   على العقود الخام، لأن فلتر السيولة يحذف الأطراف التي تتكدّس عندها
+   المراكز المفتوحة. */
+export function maxPain(calls, puts) {
+  const ks = [...new Set([...calls, ...puts].map(c => num(c.strike)).filter(k => k !== null))]
+    .sort((a, b) => a - b);
+  if (ks.length < 3) return null;
+  let best = null, low = Infinity;
+  for (const K of ks) {
+    let pay = 0;
+    for (const c of calls) {
+      const k = num(c.strike), oi = num(c.openInterest);
+      if (k !== null && oi && K > k) pay += (K - k) * oi;
+    }
+    for (const p of puts) {
+      const k = num(p.strike), oi = num(p.openInterest);
+      if (k !== null && oi && K < k) pay += (k - K) * oi;
+    }
+    if (pay < low) { low = pay; best = K; }
+  }
+  return best;
+}
+
+export function putCall(calls, puts) {
+  const sum = (arr, f) => arr.reduce((a, c) => a + (num(c[f]) || 0), 0);
+  const cv = sum(calls, "volume"), pv = sum(puts, "volume");
+  const co = sum(calls, "openInterest"), po = sum(puts, "openInterest");
+  return { cv, pv, co, po, vol: cv > 0 ? pv / cv : null, oi: co > 0 ? po / co : null };
+}
+
+export function walls(calls, puts) {
+  const top = (arr) => arr.reduce((b, c) => {
+    const k = num(c.strike), oi = num(c.openInterest);
+    if (k === null || !oi) return b;
+    return (!b || oi > b.oi) ? { k, oi } : b;
+  }, null);
+  return { call: top(calls), put: top(puts) };
+}
+
+/* الحركة المتوقعة من ستراد المال: لا نجمع كول وبوت على سترايكين
+   مختلفين، لأن الناتج عندها خنق وليس حركة متوقعة قابلة للمقارنة. */
+export function expectedMove(evalCalls, evalPuts, spot) {
+  if (!(spot > 0)) return null;
+  const puts = new Map();
+  for (const p of evalPuts) if (num(p.mid) !== null) puts.set(p.k, p);
+  let best = null;
+  for (const c of evalCalls) {
+    if (num(c.mid) === null) continue;
+    const p = puts.get(c.k);
+    if (!p) continue;
+    if (!best || Math.abs(c.k - spot) < Math.abs(best.c.k - spot)) best = { c, p };
+  }
+  if (!best) return null;
+  const abs = best.c.mid + best.p.mid;
+  return { k: best.c.k, abs: r2(abs), pct: r2(abs / spot * 100) };
+}
+
+/* توزيع الجاما كعدّ منفصل للكول والبوت. لا نسمّيه تعرض صناع السوق؛
+   تحديد إشارة تعرضهم يحتاج معرفة الطرف المقابل وهي غير متاحة. */
+export function gammaByStrike(evalCalls, evalPuts, spot, keep = 14) {
+  const at = new Map();
+  const add = (arr, side) => {
+    for (const c of arr) {
+      const g = num(c.gamma), oi = num(c.oi);
+      if (g === null || !oi) continue;
+      const row = at.get(c.k) || { k: c.k, c: 0, p: 0 };
+      row[side] += g * oi * 100;
+      at.set(c.k, row);
+    }
+  };
+  add(evalCalls, "c"); add(evalPuts, "p");
+  if (at.size < 2) return null;
+  return [...at.values()]
+    .sort((a, b) => Math.abs(a.k - spot) - Math.abs(b.k - spot))
+    .slice(0, keep)
+    .sort((a, b) => a.k - b.k)
+    .map(x => ({ k: x.k, c: Math.round(x.c), p: Math.round(x.p) }));
+}
+
+export function ivRank(hist, iv, min = 20) {
+  if (!Array.isArray(hist) || !Number.isFinite(iv)) return null;
+  const v = hist.filter(Number.isFinite);
+  if (v.length < min) return { n: v.length, rank: null, pct: null, lo: null, hi: null };
+  const lo = Math.min(...v), hi = Math.max(...v);
+  return {
+    n: v.length,
+    rank: hi > lo ? r2((iv - lo) / (hi - lo) * 100) : null,
+    pct: r2(v.filter(x => x < iv).length / v.length * 100),
+    lo: r4(lo), hi: r4(hi)
+  };
+}

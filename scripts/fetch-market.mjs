@@ -25,6 +25,9 @@ const OUT = (() => { const i = args.indexOf("--out"); return i >= 0 ? path.resol
 
 const KEEP = 260;                 // يكفي لـ EMA200 مع هامش، ويُبقي الملفات خفيفة
 const MAX_AGE = { "15m": 0, "1h": 55 * 60e3, "1d": 20 * 3600e3 };
+// اليومي يتغيّر أثناء الجلسة؛ تجميده عشرين ساعة يترك المستويات والنتيجة
+// على شمعة أمس حتى اليوم التالي. بعد الإغلاق نلتقط الإغلاق الرسمي أيضاً.
+const DAILY_LIVE_AGE = 30 * 60e3;
 // سقف رموز الطبقة الواسعة لكل تشغيل. صلاحية اليومي عشرون ساعة، ودورة
 // السوق عشر دقائق، فـ 60 رمزاً/تشغيل تكفي لتجديد 414 رمزاً في ~70 دقيقة
 // دون أن ترتفع دورة واحدة إلى مئات الطلبات فتستدعي 429.
@@ -94,10 +97,17 @@ function writeJSON(rel, obj) {
 }
 
 /* ---------- أي فريم يحتاج تحديثاً؟ ---------- */
-function stale(prev, tf, now) {
+function dailyIsLive(now, mkt) {
+  if (mkt === "crypto") return true;
+  const st = approxMarketStatus(now).state;
+  return st === "REGULAR" || st === "POST";
+}
+
+function stale(prev, tf, now, live = false) {
   const u = prev?.tf?.[tf]?.updated;
   if (!u) return true;
-  return (now - u) >= MAX_AGE[tf];
+  const age = (tf === "1d" && live) ? DAILY_LIVE_AGE : MAX_AGE[tf];
+  return (now - u) >= age;
 }
 
 /* حالة الجلسة في scripts/lib/session.mjs — تستعملها مهمة الأسعار
@@ -107,7 +117,7 @@ function stale(prev, tf, now) {
    والطبقة الواسعة اليوميَّ وحده. جلب 500 رمز × 3 فريمات كل عشر دقائق
    يستدعي 429 حتى من شبكة منزلية، واليوميُّ وحده يكفي للبحث ولمستويات
    الدعم والمقاومة و52 أسبوعاً — وهو كل ما يُطلب من رمز خارج المرصودة. */
-async function buildSymbol(meta, prevDir, now, quotes, frames = ["1d", "1h", "15m"]) {
+async function buildSymbol(meta, prevDir, now, quotes, frames = ["1d", "1h", "15m"], tier = "core") {
   const sym = meta.s;
   const prev = readJSON(path.join(prevDir, "sym", `${sym}.json`));
   // نُعيد الشمعات المحفوظة إلى شكل الكائنات فور القراءة، فما بعدها من
@@ -120,7 +130,7 @@ async function buildSymbol(meta, prevDir, now, quotes, frames = ["1d", "1h", "15
   // الترتيب مقصود: اليومي أولاً لأنه أساس الشارت والنتيجة الفنية، فحين
   // تنفد ميزانية الطلبات في تشغيل واحد تكون الفريمات الأهم قد امتلأت
   for (const tf of frames) {
-    if (!stale(prev, tf, now) && prev?.tf?.[tf]?.c?.length) {
+    if (!stale(prev, tf, now, tier === "core" && dailyIsLive(now, meta.mkt)) && prev?.tf?.[tf]?.c?.length) {
       rec.tf[tf] = prev.tf[tf];                       // ما زال حديثاً — أبقِه
       continue;
     }
@@ -297,7 +307,7 @@ async function main() {
   // هو المصدر الأول (تشغيل محلي) فلا حد يقيّدنا، فنتوازى ونختصر الوقت
   // من ~28 دقيقة إلى دقائق معدودة لكل الرموز السبعين.
   const lanes = (hasTwelveData() && !PREFER_YAHOO) ? 1 : 3;
-  const results = await pool(jobs, lanes, (j) => buildSymbol(j.m, OUT, now, quotes, j.frames));
+  const results = await pool(jobs, lanes, (j) => buildSymbol(j.m, OUT, now, quotes, j.frames, j.tier));
   const rows = [], wideRecs = [], failed = [];
   results.forEach((r, i) => {
     const j = jobs[i];
@@ -493,6 +503,23 @@ function selfCheck() {
     eq(stale({ tf: { "1d": { updated: now - 5 * H } } }, "1d", now), false, "1d حديث");
     eq(stale({ tf: { "1d": { updated: now - 25 * H } } }, "1d", now), true, "1d قديم");
     eq(stale(null, "1d", now), true, "لا بيانات سابقة");
+  });
+
+  t("الفريم اليومي يتجدّد أثناء الجلسة ويتجمّد خارجها", () => {
+    const T = (iso) => Date.parse(iso);
+    const REG = T("2026-09-11T15:00:00Z");
+    const PRE = T("2026-09-11T12:00:00Z");
+    const POST = T("2026-09-11T22:00:00Z");
+    const SAT = T("2026-09-12T10:00:00Z");
+    eq(dailyIsLive(REG), true, "الجلسة حيّة");
+    eq(dailyIsLive(POST), true, "بعد الإغلاق حيّ");
+    eq(dailyIsLive(PRE), false, "ما قبل الافتتاح");
+    eq(dailyIsLive(SAT), false, "السبت مغلق");
+    eq(dailyIsLive(SAT, "crypto"), true, "الكريبتو بلا إغلاق");
+    const twoH = { tf: { "1d": { updated: REG - 2 * H } } };
+    eq(stale(twoH, "1d", REG, dailyIsLive(REG)), true, "ساعتان في الجلسة = قديم");
+    eq(stale({ tf: { "1d": { updated: SAT - 2 * H } } }, "1d", SAT, dailyIsLive(SAT)), false, "ساعتان خارج الجلسة = حديث");
+    eq(stale(twoH, "1d", REG, false), false, "الواسعة لا تتأثر");
   });
 
   t("marketStatus يميّز الجلسات الأربع", () => {

@@ -24,6 +24,22 @@ function unpackK(arr) {
     : (arr || []);
 }
 
+/* آخر شمعة تداول سابقة لليوم الجاري. الاختيار بالتاريخ يمنع أخذ شمعة
+   أول أمس عندما جُلب اليومي قبل افتتاح الجلسة ولم تتكوّن شمعة اليوم بعد. */
+function utcDay(ms) {
+  const t = new Date(ms);
+  return t.getUTCFullYear() * 10000 + (t.getUTCMonth() + 1) * 100 + t.getUTCDate();
+}
+
+function pivotBar(d, now) {
+  if (!Array.isArray(d) || d.length < 2) return null;
+  const today = utcDay(Number.isFinite(now) ? now : Date.now());
+  for (let i = d.length - 1; i >= 0; i--) {
+    if (Number.isFinite(d[i] && d[i].t) && utcDay(d[i].t) < today) return d[i];
+  }
+  return null;
+}
+
 /* =====================================================================
    المستويات — مصدرٌ واحد يخدم العرضَ والخطة.
 
@@ -34,7 +50,7 @@ function unpackK(arr) {
    — يأتي محسوباً من `an` في ملف الرمز على الخادم، ومن `analyze` في
    المتصفح. لا يُعاد حسابه هنا كي لا تصير الأرقام ثلاث نسخ.
    ===================================================================== */
-function levelsFrom({ k4h, k1d, px, a, w52h, w52l }) {
+function levelsFrom({ k4h, k1d, px, a, w52h, w52l, now }) {
   const k = unpackK(k4h), d = unpackK(k1d);
   const base = k && k.length > 20 ? k : d;
   if (!base || !base.length) return null;
@@ -42,8 +58,8 @@ function levelsFrom({ k4h, k1d, px, a, w52h, w52l }) {
   if (!Number.isFinite(P0)) return null;
   const levels = [];
 
-  if (d && d.length > 2) {
-    const y = d[d.length - 2];
+  const y = pivotBar(d, now);
+  if (y) {
     const P = (y.h + y.l + y.c) / 3;
     levels.push({ p: 2 * P - y.l, n: "بيفوت R1" });
     levels.push({ p: P + (y.h - y.l), n: "بيفوت R2" });
@@ -175,5 +191,5 @@ function validatePlan(p) {
 }
 
 if (typeof module !== "undefined" && module.exports) {
-  module.exports = { unpackK, levelsFrom, planDirOf, planFrom, validatePlan };
+  module.exports = { unpackK, pivotBar, levelsFrom, planDirOf, planFrom, validatePlan };
 }

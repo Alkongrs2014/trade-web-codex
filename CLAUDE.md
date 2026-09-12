@@ -41,7 +41,10 @@
 ## البنية
 
 ```
-stocks/index.html      التطبيق كاملاً (5 تبويبات: الآن، الأسهم، الفرص، تحليل، الأخبار)
+stocks/index.html      التطبيق الأساسي (7 تبويبات تشمل السجل ومختبر PRO)
+stocks/pro.js          مختبر PRO — محفظة وقوة نسبية ودليل أداء ونبض العقود
+stocks/pro.css         تصميم مختبر PRO المتجاوب
+stocks/sw.js           تخزين الغلاف وآخر بيانات سليمة
 stocks/config.js       الإعدادات — يكتشف مكانه تلقائياً (localhost أم ويب)
 stocks/symbols.json    كون الرموز بثلاث طبقات (انظر «الطبقتان» أدناه)
 scripts/build-universe.mjs أداة صيانة تبني symbols.json وتتحقق من كل رمز
@@ -61,6 +64,8 @@ scripts/backtest.mjs       الأرشيف التاريخي — سجلّ كل ش�
 scripts/track-signals.mjs  السجلّ الحيّ — يثبّت ما ظهر فعلاً ويتابعه
 scripts/fetch-events.mjs   الأحداث القوية — تقويم الفدرالي الرسمي
 scripts/fetch-options.mjs  عقود الخيارات — دورة نصف ساعة مستقلة
+scripts/analytics.mjs      قوة نسبية وبيتا وارتباط وفجوات — بلا شبكة
+scripts/check-ui.mjs       فحص بنية الواجهة بلا متصفح
 local/run.mjs          المشغّل المحلي (env + جلب + خادم + نشر)
 local/*.bat            اختصارات ويندوز
 ```
@@ -81,6 +86,8 @@ node scripts/track-signals.mjs --check
 node scripts/fetch-events.mjs  --check
 node scripts/build-universe.mjs --check
 node scripts/test-evaluate.mjs
+node scripts/analytics.mjs --check
+node scripts/check-ui.mjs
 
 node local/run.mjs quotes                # أسعار فقط (~90 ثانية)
 node local/run.mjs market                # شموع ومؤشرات + أخبار

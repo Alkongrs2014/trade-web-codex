@@ -15,6 +15,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="مرصد الأسهم">
 <link rel="manifest" id="manifest">
+<link rel="stylesheet" href="pro.css">
 <title>مرصد PRO — فرص الأسهم بوضوح</title>
 <style>
 :root{
@@ -899,12 +900,32 @@ details b{color:var(--tx)}
   </p>
 </section>
 
+<section data-view="pro" id="proLab">
+  <div class="pro-stage">
+    <div><span class="pro-kicker">EXPLAINABLE MARKET INTELLIGENCE · FREE LAB</span><h1>مختبر القرار <b>PRO</b></h1>
+      <p>لا نعطيك تنبيهاً أسود الصندوق. نعرض الفرصة، دليلها التاريخي، سعر العقود، ومخاطرة محفظتك في مكان واحد.</p></div>
+    <div class="trial-ring"><b id="proTrialDay">1</b><span>من 7 أيام</span></div>
+  </div>
+  <div class="pro-proof" id="proProof"><div class="pro-skeleton"></div></div>
+  <div class="pro-grid">
+    <article class="card pro-panel pro-wide"><div class="pro-head"><div><span>قوة نسبية</span><h2>🚀 قادة السوق الحقيقيون</h2></div><small>مقارنةً بالسوق، لا بالعائد الخام</small></div><div id="proLeaders"><div class="pro-skeleton"></div></div></article>
+    <article class="card pro-panel"><div class="pro-head"><div><span>سوق الخيارات</span><h2>🫀 نبض العقود</h2></div><small>ما يُتداول وما هو مُسعّر</small></div><div id="proOptions"><div class="pro-skeleton"></div></div></article>
+    <article class="card pro-panel"><div class="pro-head"><div><span>دليل الأداء</span><h2>🧪 الحافة التاريخية</h2></div><small>مئات آلاف المشاهدات، بلا انتقاء</small></div><div id="proEdge"><div class="pro-skeleton"></div></div></article>
+    <article class="card pro-panel pro-wide"><div class="pro-head"><div><span>خاص بك</span><h2>💼 محفظة التجربة</h2></div><small>تُحفظ على جهازك فقط</small></div>
+      <form id="proPortfolioForm" class="pro-form"><input id="proSym" placeholder="الرمز مثل AAPL" autocomplete="off"><input id="proQty" type="number" min="0" step="any" placeholder="الكمية"><input id="proAvg" type="number" min="0" step="any" placeholder="متوسط الشراء"><button>إضافة مركز</button></form>
+      <div id="proPortfolio"></div>
+    </article>
+  </div>
+  <p class="disclaimer">هذه أدوات حسابية ومعلومات تعليمية وليست توصية. الأفضلية الحقيقية ليست في كثرة التنبيهات، بل في رفض الفرصة الضعيفة وشرح ما نعرفه وما لا نعرفه.</p>
+</section>
+
 </main>
 
 <nav class="tabbar" id="tabbar">
   <button data-go="now" class="on"><em>⚡</em>الآن</button>
   <button data-go="list"><em>📋</em>الأسهم</button>
   <button data-go="screen"><em>🎯</em>الفرص</button>
+  <button data-go="pro"><em>✦</em>PRO</button>
   <button data-go="analysis"><em>⚖️</em>تحليل</button>
   <button data-go="log"><em>📜</em>السجل</button>
   <button data-go="news"><em>📰</em>الأخبار</button>
@@ -944,7 +965,7 @@ const state = {
   optCache: {}, opts: null, arch: null, live: null, events: null, signals: null,
   optExp: 0, optSide: "calls",
   diag: [], trend: null, trendBusy: false, hist: null, histBusy: false, learn: null,
-  radarBusy: false, radarKey: ""
+  radarBusy: false, radarKey: "", lazy: {}
 };
 
 /* الأرقام اللاتينية داخل نص عربي تُعيد ترتيب نفسها بشكل خاطئ (bidi).
@@ -1966,7 +1987,15 @@ function renderOptions() {
     <small style="color:var(--mut)">يعني أن أغلب تداول اليوم مراكز جديدة لا إغلاق قديمة.
     لا يقول من اشترى ولا لماذا ولا إن كان محقاً.</small></div>` : "";
 
-  $("#optBest").innerHTML = flowHTML + best(o.bestCalls?.[0], "call") + best(o.bestPuts?.[0], "put");
+  const sx = o.exp[state.optExp] || o.exp[0];
+  const structureHTML = sx && (sx.mp || sx.em || sx.pc || sx.wl) ? `<div class="grid2" style="margin-top:8px">
+    <div class="stat"><div class="k">الحركة المتوقعة حتى الاستحقاق</div><div class="v num">${sx.em ? `±${money(sx.em.abs)} · ${bd(fmt(sx.em.pct,1))}%` : "—"}</div></div>
+    <div class="stat"><div class="k">أقصى الألم <small style="display:block">تمركز لا تنبؤ</small></div><div class="v num">${money(sx.mp)}</div></div>
+    <div class="stat"><div class="k">بوت / كول بالحجم</div><div class="v num">${sx.pc && Number.isFinite(sx.pc.v) ? bd(fmt(sx.pc.v,2)) : "—"}</div></div>
+    <div class="stat"><div class="k">جدار كول / بوت</div><div class="v num">${sx.wl ? `${money(sx.wl.c?.k)} / ${money(sx.wl.p?.k)}` : "—"}</div></div>
+  </div>` : "";
+
+  $("#optBest").innerHTML = structureHTML + flowHTML + best(o.bestCalls?.[0], "call") + best(o.bestPuts?.[0], "put");
 
   const ex = $("#optExp");
   ex.innerHTML = o.exp.map((e, i) =>
@@ -3719,6 +3748,43 @@ function checkAlerts() {
 /* =======================================================================
    8) التنقّل
    ======================================================================= */
+function lazyFile(key, file, onLoad, onFail) {
+  if (state[key]) { if (onLoad) onLoad(state[key]); return Promise.resolve(state[key]); }
+  if (!state.lazy[key]) {
+    state.lazy[key] = getJSON(file).then(j => {
+      state[key] = j;
+      if (onLoad) onLoad(j);
+      return j;
+    }).catch(e => {
+      delete state.lazy[key];
+      if (onFail) onFail(e);
+      return null;
+    });
+  } else if (onLoad) {
+    state.lazy[key].then(j => { if (j) onLoad(j); });
+  }
+  return state.lazy[key];
+}
+
+function loadViewData(view) {
+  if (view === "news" || view === "detail")
+    lazyFile("news", "news.json", () => { renderNews(); if (state.sym) renderSymNews(); }, () => {
+      if (state.view === "news") $("#newsList").innerHTML = `<div class="note">تعذّر جلب الأخبار الآن.</div>`;
+    });
+  if (view === "list" || view === "analysis" || view === "screen")
+    lazyFile("wide", "wide.json", w => {
+      if (!w || !Array.isArray(w.rows)) return;
+      fillSymbolSelects();
+      if (state.view === "list") renderList();
+    });
+  if (view === "screen") {
+    lazyFile("arch", "backtest.json", () => { renderArchive(); renderScanHistory(state.scan || SCANS[0].id); });
+    lazyFile("live", "archive.json", renderArchive);
+    lazyFile("opts", "options.json", renderOptScan);
+  }
+  if (view === "log") lazyFile("learn", "learn.json", renderLearn);
+}
+
 function go(view) {
   state.view = view;
   $$("section[data-view]").forEach(s => s.classList.toggle("on", s.dataset.view === view));
@@ -3735,6 +3801,7 @@ function go(view) {
   // السجل يحمّل ملفه عند فتحه لا عند بدء التطبيق: المغلقات تتراكم بالآلاف
   // ولا تُقرأ إلا هنا
   if (view === "log") { renderLog(); loadHistory().then(() => { if (state.view === "log") renderLog(); }); }
+  loadViewData(view);
 }
 
 function fillSymbolSelects() {
@@ -3836,17 +3903,6 @@ async function refresh(force = false) {
     if (state.view === "analysis") { renderAnalysis(); renderSectorMedians(); renderCompare(); }
     renderPulse(); loadDailyRadar(true);
   }).catch(() => {});
-  getJSON("news.json").then(n => { state.news = n; renderNews(); if (state.sym) renderSymNews(); }).catch(() => {
-    $("#newsList").innerHTML = `<div class="note">تعذّر جلب الأخبار الآن.</div>`;
-  });
-  // الطبقة الواسعة: بقية S&P 500 بالفريم اليومي وحده. تُحمَّل بعد الرسم
-  // الأول لا قبله — بها يعمل البحث على الكون كاملاً، وبدونها يبقى التطبيق
-  // كما كان على المرصودة. لذلك فشلها صامت ولا يوقف شيئاً.
-  // الأرشيف التاريخي — يُبنى مع الدورة اليومية، وغيابه لا يعطّل الماسح
-  getJSON("backtest.json").then(j => {
-    state.arch = j;
-    if (state.view === "screen") { renderArchive(); renderScanHistory(state.scan || SCANS[0].id); }
-  }).catch(() => {});
   // تقويم الفدرالي — يومي، وغيابه يُخفي البطاقة لا يكسر الصفحة
   getJSON("events.json").then(j => { state.events = j; renderEvents(); }).catch(() => {});
   // سجلّ الإشارات نفسه — منه تعرف شاشة السهم متى ظهرت الإشارة وما بلغه
@@ -3861,27 +3917,9 @@ async function refresh(force = false) {
     if (state.view === "screen") renderScreen();
     if (state.view === "log") renderLog();
   }).catch(() => {});
-  // طبقة التحليل — غيابها يُخفي بطاقتها ولا يكسر السجل
-  getJSON("learn.json").then(j => {
-    state.learn = j;
-    if (state.view === "log") renderLearn();
-  }).catch(() => {});
-  // السجلّ الحيّ — يتراكم مع كل دورة سوق
-  getJSON("archive.json").then(j => {
-    state.live = j;
-    if (state.view === "screen") renderArchive();
-  }).catch(() => {});
-  // ملخّص العقود — يُملأ محلياً فقط، فغيابه سحابياً حالة طبيعية
-  getJSON("options.json").then(j => {
-    state.opts = j;
-    if (state.view === "screen") renderOptScan();
-  }).catch(() => {});
-  getJSON("wide.json").then(w => {
-    if (!w || !Array.isArray(w.rows)) return;
-    state.wide = w;
-    fillSymbolSelects();
-    if (state.view === "list") renderList();
-  }).catch(() => {});
+  // الأخبار، الكون الواسع، الاختبارات، الخيارات والتعلّم تُجلب عند فتح
+  // تبويبها فقط. هذا يخفض حمولة البداية خصوصاً على الجوال.
+  loadViewData(state.view);
 }
 
 function boot() {
@@ -4004,5 +4042,6 @@ function boot() {
 boot();
 
 </script>
+<script src="pro.js"></script>
 </body>
 </html>
