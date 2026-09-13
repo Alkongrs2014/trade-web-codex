@@ -1,7 +1,7 @@
 /* تخزين غلاف التطبيق والبيانات الناجحة، مع إبقاء طلب الشبكة هو المصدر
    الأول لملفات السوق. رقم النسخة يغيّر عند تغيير بنية الملفات. */
 const SHELL = "marsad-shell-v3", DATA = "marsad-data-v3";
-const CORE = ["./", "./index.html", "./config.js", "./scans.js", "./plan.js", "./evaluate.js", "./pro.css", "./pro.js"];
+const CORE = ["./", "./index.html", "./config.js", "./scans.js", "./plan.js", "./evaluate.js", "./pro.css?v=3", "./pro.js?v=3"];
 self.addEventListener("install", e => e.waitUntil(caches.open(SHELL).then(c => c.addAll(CORE)).then(() => self.skipWaiting())));
 self.addEventListener("activate", e => e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => ![SHELL,DATA].includes(k)).map(k => caches.delete(k)))).then(() => self.clients.claim())));
 const clean = req => { const u = new URL(req.url); u.searchParams.delete("t"); return new Request(u.toString(), req); };
