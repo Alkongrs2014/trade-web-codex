@@ -222,7 +222,7 @@ input:focus,select:focus{outline:none;border-color:var(--acc)}
 .btn:active{transform:scale(.98)}
 .btn.gray{background:var(--card2);border:1px solid var(--line);color:var(--tx)}
 
-/* ---------- التنبيهات والأخبار ---------- */
+/* ---------- الرسائل والأخبار ---------- */
 .warn{background:rgba(234,57,67,.1);border:1px solid rgba(234,57,67,.35);color:#ffb3b8;
   border-radius:11px;padding:11px 12px;font-size:13px;margin-top:10px}
 .ok{background:rgba(22,199,132,.09);border:1px solid rgba(22,199,132,.3);color:#8ce0c0;
@@ -243,8 +243,6 @@ input:focus,select:focus{outline:none;border-color:var(--acc)}
 .news-m .tag-official{background:rgba(255,255,255,.08);color:var(--tx);border:1px solid var(--line)}
 .news-m .tag-impact{background:rgba(239,68,68,.14);color:var(--dn)}
 .news-m .tag-important{background:rgba(245,158,11,.14);color:var(--neu)}
-.alert-item{display:flex;justify-content:space-between;align-items:center;background:var(--card2);
-  padding:10px 12px;border-radius:10px;margin-bottom:7px;font-size:13.5px}
 .del{background:none;border:0;color:var(--dn);font-size:18px;cursor:pointer;padding:0 4px}
 
 details{background:var(--card2);border-radius:10px;padding:10px 12px;margin-top:9px}
@@ -315,7 +313,7 @@ details b{color:var(--tx)}
 @media (max-width:420px){.plan-strip{grid-template-columns:repeat(2,1fr)}.pulse-hero{padding:18px}.pulse-hero h1{font-size:27px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
-<link rel="stylesheet" href="pro.css?v=3">
+<link rel="stylesheet" href="pro.css?v=4">
 </head>
 <body>
 
@@ -649,22 +647,6 @@ details b{color:var(--tx)}
     </details>
   </div>
 
-  <div class="card">
-    <h2>🔔 تنبيه سعر</h2>
-    <p class="hint">ينبّهك عند وصول هذا السهم لسعر تحدده — يعمل ما دام التطبيق مفتوحاً</p>
-    <div class="grid2">
-      <div class="fld"><label>السعر</label><input id="aPrice" type="number" inputmode="decimal"></div>
-      <div class="fld"><label>الاتجاه</label>
-        <select id="aDir"><option value="above">عند الصعود فوق</option><option value="below">عند النزول تحت</option></select>
-      </div>
-    </div>
-    <button class="btn gray" id="btnAddAlert">➕ إضافة تنبيه</button>
-    <div id="alertList" style="margin-top:12px"></div>
-    <div class="note" style="margin-top:10px">
-      التنبيه يعمل فقط والتطبيق مفتوح في المتصفح، ويُفحص عند كل تحديث للبيانات.
-      البيانات متأخرة دقائق فلا تعتمد عليه في قرارات لحظية.
-    </div>
-  </div>
 </section>
 
 <!-- ================= الفرص ================= -->
@@ -913,6 +895,8 @@ details b{color:var(--tx)}
   <div class="pro-proof" id="proProof"><div class="pro-skeleton"></div></div>
   <div class="pro-grid">
     <article class="card pro-panel pro-wide precision-panel"><div class="pro-head"><div><span>PRECISION DESK · وضع الدقة</span><h2>الفرص التي نجت من الرفض</h2></div><small>فني + مالي + سوق + خبر + دليل زمني</small></div><div id="proPrecision"><div class="pro-skeleton"></div></div></article>
+    <article class="card pro-panel"><div class="pro-head"><div><span>SINCE LAST VISIT · المتابعة</span><h2>ما الذي تغيّر؟</h2></div><small>مقارنة تلقائية على جهازك</small></div><div id="proChanges"><div class="pro-skeleton"></div></div></article>
+    <article class="card pro-panel"><div class="pro-head"><div><span>CATALYST RADAR · المحفزات</span><h2>ما القادم للسوق؟</h2></div><small>اقتصاد + أرباح خلال 45 يوماً</small></div><div id="proCatalysts"><div class="pro-skeleton"></div></div></article>
     <article class="card pro-panel pro-wide"><div class="pro-head"><div><span>RELATIVE STRENGTH · قوة نسبية</span><h2>قادة السوق الحقيقيون</h2></div><small>مقارنةً بالسوق، لا بالعائد الخام</small></div><div id="proLeaders"><div class="pro-skeleton"></div></div></article>
     <article class="card pro-panel"><div class="pro-head"><div><span>OPTIONS TAPE · سوق الخيارات</span><h2>نبض العقود</h2></div><small>ما يُتداول وما هو مُسعّر</small></div><div id="proOptions"><div class="pro-skeleton"></div></div></article>
     <article class="card pro-panel"><div class="pro-head"><div><span>VALIDATION · دليل الأداء</span><h2>الحافة التاريخية</h2></div><small>مئات آلاف المشاهدات، بلا انتقاء</small></div><div id="proEdge"><div class="pro-skeleton"></div></div></article>
@@ -1327,7 +1311,6 @@ async function pollLive() {
     if (n) {
       state.liveOn = true; state.liveAt = Date.now();
       renderTop(); renderNow(); if (state.view === "list") renderList();
-      checkAlerts();
     }
   } catch (e) {
     state.liveOn = false;   // نسقط بهدوء إلى بيانات الملفات
@@ -1595,7 +1578,7 @@ async function openSymbol(sym) {
   if (state.view !== "detail") state.from = state.view;
   if (state.sym !== sym) {
     // سعر دخول سهم سابق في شاشة سهم آخر خطأ صامت يكلّف مالاً
-    for (const id of ["#iEntry", "#iStop", "#iTarget", "#aPrice"]) { const el = $(id); if (el) el.value = ""; }
+    for (const id of ["#iEntry", "#iStop", "#iTarget"]) { const el = $(id); if (el) el.value = ""; }
     const co = $("#calcOut"); if (co) co.innerHTML = "";
   }
   state.sym = sym;
@@ -3710,53 +3693,6 @@ function calc() {
 }
 
 /* =======================================================================
-   7) التنبيهات
-   ======================================================================= */
-function renderAlerts() {
-  const list = load("alerts", []);
-  const el = $("#alertList");
-  if (!list.length) { el.innerHTML = `<div style="font-size:12.5px;color:var(--dim);text-align:center;padding:6px">لا توجد تنبيهات</div>`; return; }
-  el.innerHTML = list.map((a, i) => `<div class="alert-item">
-    <span><span class="tick">${esc(a.s)}</span> ${a.dir === "above" ? "▲ فوق" : "▼ تحت"}
-      <b class="num">${money(a.p)}</b></span>
-    <button class="del" data-del="${i}" aria-label="حذف">✕</button></div>`).join("");
-  $$("[data-del]").forEach(b => b.onclick = () => {
-    const l = load("alerts", []); l.splice(+b.dataset.del, 1); save("alerts", l); renderAlerts();
-  });
-}
-function beep() {
-  try {
-    const C = new (window.AudioContext || window.webkitAudioContext)();
-    [0, 0.22, 0.44].forEach(d => {
-      const o = C.createOscillator(), g = C.createGain();
-      o.connect(g); g.connect(C.destination); o.frequency.value = 880; o.type = "sine";
-      g.gain.setValueAtTime(0.0001, C.currentTime + d);
-      g.gain.exponentialRampToValueAtTime(0.28, C.currentTime + d + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, C.currentTime + d + 0.18);
-      o.start(C.currentTime + d); o.stop(C.currentTime + d + 0.2);
-    });
-  } catch (e) {}
-}
-function checkAlerts() {
-  const list = load("alerts", []);
-  if (!list.length || !state.summary) return;
-  const keep = [], fired = [];
-  list.forEach(a => {
-    const row = symRow(a.s);
-    if (!row || !isFinite(row.p)) { keep.push(a); return; }
-    const hit = a.dir === "above" ? row.p >= a.p : row.p <= a.p;
-    if (hit) fired.push({ a, px: row.p }); else keep.push(a);
-  });
-  if (!fired.length) return;
-  save("alerts", keep); renderAlerts(); beep();
-  const msg = fired.map(f =>
-    `${f.a.s} ${f.a.dir === "above" ? "صعد فوق" : "نزل تحت"} ${money(f.a.p)} — السعر الآن ${money(f.px)}`).join("\n");
-  if ("Notification" in window && Notification.permission === "granted")
-    new Notification("🔔 تنبيه سعر", { body: msg });
-  else alert("🔔 " + msg);
-}
-
-/* =======================================================================
    8) التنقّل
    ======================================================================= */
 function lazyFile(key, file, onLoad, onFail) {
@@ -3817,7 +3753,7 @@ function go(view) {
 
 function fillSymbolSelects() {
   if (!state.summary) return;
-  // قوائم المقارنة والتنبيهات تبقى على المرصودة: المقارنة تقرأ الأساسيات
+  // قوائم المقارنة تبقى على المرصودة: المقارنة تقرأ الأساسيات
   // وهي لا تُجلب إلا لها، فإدراج 414 رمزاً بلا أساسيات يملأ القائمة بخيارات
   // تعطي "—" في كل صف.
   const rows = state.summary.rows.slice().sort((a, b) => a.s.localeCompare(b.s));
@@ -3899,7 +3835,6 @@ async function refresh(force = false) {
     state.symCache = {}; state.optCache = {};  // أعِد تحميل ملفات الأسهم والعقود بعد التحديث
     save("cache", { sum, mkt, t: Date.now() });
     renderAll();
-    checkAlerts();
     if (state.sym) { try { await getSymbol(state.sym); renderDetail(); } catch (e) {} }
   } catch (e) {
     $("#stamp").textContent = "تعذّر التحديث — " + e.message;
@@ -4024,18 +3959,6 @@ function boot() {
   $("#cmpA").onchange = renderCompare;
   $("#cmpB").onchange = renderCompare;
 
-  $("#btnAddAlert").onclick = () => {
-    const s = state.sym, p = +$("#aPrice").value;
-    if (!s) return alert("افتح سهماً أولاً");
-    if (!(p > 0)) return alert("أدخل سعراً صحيحاً");
-    const l = load("alerts", []);
-    l.push({ s, p, dir: $("#aDir").value });
-    save("alerts", l);
-    $("#aPrice").value = ""; renderAlerts();
-    if ("Notification" in window && Notification.permission === "default") Notification.requestPermission();
-  };
-
-  renderAlerts();
   window.addEventListener("resize", () => { clearTimeout(window._rz); window._rz = setTimeout(drawChart, 150); });
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden && Date.now() - state.lastOk > 60000) refresh(true);
@@ -4053,6 +3976,6 @@ function boot() {
 boot();
 
 </script>
-<script src="pro.js?v=3"></script>
+<script src="pro.js?v=4"></script>
 </body>
 </html>

@@ -2,7 +2,7 @@
 /* مختبر القرار: يجمع ملفات مستقلة عند فتحه، فلا يجعل ميزاته الثقيلة شرطاً
    لظهور الصفحة الأساسية. */
 (() => {
-  const PKEY = "pro_portfolio_v1", TKEY = "pro_trial_started";
+  const PKEY = "pro_portfolio_v1", TKEY = "pro_trial_started", IKEY = "pro_intel_snapshot_v1";
   let loading = null;
   const q = s => document.querySelector(s);
   const latin = n => Number(n || 0).toLocaleString("en-US", { maximumFractionDigits: 2 });
@@ -60,6 +60,36 @@
       <span class="precision-plan"><i>دخول <b>${money(o.plan?.entry)}</b></i><i>وقف <b>${money(o.plan?.stop)}</b></i><i>هدف <b>${money(o.plan?.target)}</b></i></span>
       <span class="precision-evidence">${o.evidence?.holdout ? "اختبار سنة أخيرة" : "سجل كامل"}<b>${esc(o.evidence?.lbl || "—")}</b><small>${latin(o.evidence?.n)} عينة</small></span>
     </button>`).join("")}</div><p class="rejection-note">استُبعد ${latin(x.rejected)} من ${latin(x.reviewed)} رمزاً. قلة النتائج هنا ميزة: النظام لا يملأ الشاشة بفرص متوسطة.</p>`;
+  }
+
+  function renderChanges() {
+    const el = q("#proChanges"), x = state.intel; if (!el || !x) return;
+    const items = {};
+    for (const o of x.opportunities || []) items[o.s] = { status: "pass", score: o.score, reasons: [] };
+    for (const o of x.watchlist || []) items[o.s] = { status: "watch", score: o.score, reasons: o.reasons || [] };
+    const current = { at: x.updated, items }, previous = load(IKEY, null), changes = [];
+    if (previous?.items && previous.at !== current.at) {
+      for (const [s, now] of Object.entries(items)) {
+        const old = previous.items[s];
+        if (!old) changes.push({ s, k: now.status === "pass" ? "دخل قائمة الدقة" : "دخل المراقبة", c: now.status === "pass" ? "pos" : "" });
+        else if (old.status !== now.status) changes.push({ s, k: now.status === "pass" ? "ترقّى إلى فرصة مجتازة" : "تراجع إلى المراقبة", c: now.status === "pass" ? "pos" : "neg" });
+        else if (Math.abs((now.score || 0) - (old.score || 0)) >= 3) changes.push({ s, k: `تغيّرت درجة الدليل ${latin(old.score)} ← ${latin(now.score)}`, c: now.score > old.score ? "pos" : "neg" });
+        else if ((now.reasons || []).join("|") !== (old.reasons || []).join("|")) changes.push({ s, k: `تغيّر سبب الانتظار: ${(now.reasons || ["—"])[0]}`, c: "" });
+      }
+      for (const [s, old] of Object.entries(previous.items)) if (!items[s] && old.status === "pass") changes.push({ s, k: "خرج من قائمة الدقة", c: "neg" });
+    }
+    if (!previous) el.innerHTML = '<div class="change-first"><b>بدأت المقارنة من هذه الزيارة</b><p>عند عودتك سنعرض الأسهم التي ترقّت أو تراجعت وما تغيّر في قوة دليلها—من دون تنبيه شكلي داخل صفحة مفتوحة.</p></div>';
+    else if (previous.at === current.at) el.innerHTML = '<div class="change-first"><b>لا توجد لقطة أحدث بعد</b><p>المقارنة محفوظة محلياً. ستظهر هنا التغييرات بعد دورة البيانات التالية.</p></div>';
+    else if (!changes.length) el.innerHTML = '<div class="change-first"><b>لا تغيير جوهري منذ زيارتك</b><p>لم ينتقل أي رمز بين المراقبة والاجتياز، ولم تتحرك درجة الدليل 3 نقاط فأكثر.</p></div>';
+    else el.innerHTML = `<div class="change-list">${changes.slice(0,8).map(c => `<button data-open="${esc(c.s)}"><b class="tick">${esc(c.s)}</b><span>${esc(c.k)}</span><i class="${c.c}">${c.c==='pos'?'▲':c.c==='neg'?'▼':'●'}</i></button>`).join("")}</div><p class="desk-note">مقارنة بلقطة ${new Date(previous.at).toLocaleString(AR,{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}.</p>`;
+    save(IKEY, current);
+  }
+
+  function renderCatalysts() {
+    const el = q("#proCatalysts"), list = state.intel?.catalysts || []; if (!el) return;
+    if (!list.length) { el.innerHTML = '<div class="pro-empty">لا محفز قوي مسجّل خلال 45 يوماً.</div>'; return; }
+    const now = Date.now(), when = at => { const d=Math.ceil((at-now)/864e5); return d<=0?'اليوم':d===1?'غداً':`بعد ${latin(d)} يوم`; };
+    el.innerHTML = `<div class="catalyst-list">${list.slice(0,9).map(c => { const body=`<i class="${c.w>=3?'major':''}">${c.type==='earnings'?'نتائج':'اقتصاد'}</i><span><b>${esc(c.title)}</b><small>${when(c.at)} · ${new Date(c.at).toLocaleDateString(AR,{month:'short',day:'numeric'})}${c.note?' · '+esc(c.note):''}</small></span>`; return c.s?`<button data-open="${esc(c.s)}">${body}</button>`:c.link?`<a href="${esc(c.link)}" target="_blank" rel="noopener">${body}</a>`:`<div>${body}</div>`; }).join("")}</div><p class="desk-note">المحفز لا يتنبأ بالاتجاه؛ يحدد متى قد تصبح الخطة أكثر حساسية للمفاجآت.</p>`;
   }
 
   function renderFinancialPro() {
@@ -141,8 +171,9 @@
       state.wide ? Promise.resolve(state.wide) : getJSON("wide.json").then(x => state.wide = x),
       state.intel ? Promise.resolve(state.intel) : getJSON("intelligence.json").then(x => state.intel = x),
       state.news ? Promise.resolve(state.news) : getJSON("news.json").then(x => state.news = x),
-      state.fund ? Promise.resolve(state.fund) : getJSON("fundamentals.json").then(x => state.fund = x)
-    ]).then(() => { renderProof(); renderPrecision(); renderLeaders(); renderOptionsPro(); renderEdge(); renderFinancialPro(); renderNewsPro(); renderPortfolio(); }).finally(() => loading = null);
+      state.fund ? Promise.resolve(state.fund) : getJSON("fundamentals.json").then(x => state.fund = x),
+      state.events ? Promise.resolve(state.events) : getJSON("events.json").then(x => state.events = x)
+    ]).then(() => { renderProof(); renderPrecision(); renderChanges(); renderCatalysts(); renderLeaders(); renderOptionsPro(); renderEdge(); renderFinancialPro(); renderNewsPro(); renderPortfolio(); }).finally(() => loading = null);
     return loading;
   }
 

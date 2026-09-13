@@ -42,7 +42,23 @@ function latestRisk(items, now) {
   return risk;
 }
 
-export function buildIntelligence({ summary, market, fund, analytics, backtest, news }, now = Date.now()) {
+export function buildCatalysts(rows, fundamentals, events, now = Date.now()) {
+  const out = [], names = new Map((rows || []).map(r => [r.s, r.ar || r.en || r.s]));
+  const end = now + 45 * 864e5;
+  for (const e of events?.events || []) {
+    if (!Number.isFinite(e.at) || e.at < now - 6 * 3600e3 || e.at > end) continue;
+    out.push({ type: "macro", at: e.at, w: e.w || 1, title: e.ar, note: e.note || null, link: e.link || null });
+  }
+  for (const [s, f] of Object.entries(fundamentals || {})) {
+    const at = f?.earnings?.at;
+    if (!Number.isFinite(at) || at < now || at > end || !names.has(s)) continue;
+    out.push({ type: "earnings", at, w: 3, s, title: `نتائج ${names.get(s)}`,
+      note: f.earnings.estimated ? "الموعد تقديري" : "موعد معلن", estimated: !!f.earnings.estimated });
+  }
+  return out.sort((a, b) => (a.at - b.at) || (b.w - a.w)).slice(0, 18);
+}
+
+export function buildIntelligence({ summary, market, fund, analytics, backtest, news, events }, now = Date.now()) {
   const rows = (summary?.rows || []).filter(r => !r.mkt), F = fund?.f || {};
   const fin = financialScores(rows, F), rs = new Map((analytics?.rs || []).map(x => [x.s, x]));
   const bt = new Map((backtest?.scans || []).map(x => [x.id, x]));
@@ -91,15 +107,16 @@ export function buildIntelligence({ summary, market, fund, analytics, backtest, 
     .map(([s, x]) => ({ s, ...Object.fromEntries(Object.entries(x).map(([k, v]) => [k, r2(v)])) }));
   const newsroom = [...(news?.market || [])].map(x => ({ ...x, ...headlineSignal(x.title) }))
     .sort((a, b) => (b.imp - a.imp) || ((b.t || 0) - (a.t || 0))).slice(0, 12);
+  const catalysts = buildCatalysts(rows, F, events, now);
   return { updated: now, method: "evidence-ranked-not-probability", reviewed: rows.length,
     passed: candidates.length, rejected: rows.length - candidates.length, gates,
     regime: market?.marketScore ?? null, opportunities: candidates.slice(0, 12),
-    watchlist: watchlist.slice(0, 8), financial, newsroom };
+    watchlist: watchlist.slice(0, 8), financial, newsroom, catalysts };
 }
 
 async function main() {
   const input = { summary: read("summary.json"), market: read("market.json"), fund: read("fundamentals.json"),
-    analytics: read("analytics.json"), backtest: read("backtest.json"), news: read("news.json") };
+    analytics: read("analytics.json"), backtest: read("backtest.json"), news: read("news.json"), events: read("events.json") };
   if (!input.summary?.rows?.length) throw new Error("لا ملخص سوق صالح");
   const out = buildIntelligence(input);
   fs.writeFileSync(path.join(OUT, "intelligence.json"), JSON.stringify(out));
@@ -113,6 +130,7 @@ function selfCheck() {
   t("الخبر عالي الأثر يُصنف", () => { const x = headlineSignal("Company cuts guidance after earnings miss"); if (x.imp !== 3 || x.tone !== -1) throw new Error(JSON.stringify(x)); });
   t("بوابة الدقة ترفض بلا دليل", () => { const x = precisionScore({dir:1,stale:false,strength:70,agree:1,rr:3,rsRank:80,finance:80,regime:10,newsRisk:0}); if (x.pass || !x.reject.length) throw new Error("مرّت بلا دليل"); });
   t("بوابة الدقة تمرر الدليل المكتمل", () => { const x = precisionScore({dir:1,stale:false,strength:80,agree:1,rr:4,rsRank:90,finance:85,regime:10,newsRisk:0,evidence:{edge:.7,winEdge:3,n:10000}}); if (!x.pass || x.value < 70) throw new Error(JSON.stringify(x)); });
+  t("المحفزات ترتب الأقرب وتستبعد البعيد", () => { const now=1e12, x=buildCatalysts([{s:"A",ar:"أ"}], {A:{earnings:{at:now+864e5}}}, {events:[{at:now+3600e3,ar:"حدث",w:3},{at:now+60*864e5,ar:"بعيد",w:3}]}, now); if (x.length!==2 || x[0].type!=="macro") throw new Error(JSON.stringify(x)); });
   console.log(`${pass} نجح · ${fail} فشل`); return fail ? 1 : 0;
 }
 
