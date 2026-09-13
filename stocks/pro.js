@@ -147,6 +147,7 @@
   }
 
   const tab = q('#tabbar [data-go="pro"]'); if (tab) tab.addEventListener("click", loadPro);
+  document.querySelectorAll('[data-nav="pro"]').forEach(b => b.addEventListener("click", loadPro));
   const form = q("#proPortfolioForm"); if (form) form.addEventListener("submit", addPosition);
   document.addEventListener("click", e => { const b = e.target.closest("[data-pro-remove]"); if (!b) return; const p = readPortfolio(); p.splice(+b.dataset.proRemove, 1); writePortfolio(p); });
   trial();
