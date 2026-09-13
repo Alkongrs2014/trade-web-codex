@@ -38,13 +38,13 @@ export function parseRSS(xml, source) {
   return items;
 }
 
-export async function fetchRSS(url, source, lang = "en") {
+export async function fetchRSS(url, source, lang = "en", meta = {}) {
   const r = await fetch(url, {
-    headers: { "User-Agent": "Mozilla/5.0 (compatible; StocksWatch/1.0)" },
+    headers: { "User-Agent": "MarketObservatory/1.0 (+https://github.com/Alkongrs2014/trade-web-codex)" },
     signal: AbortSignal.timeout(15000)
   });
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
-  return parseRSS(await r.text(), source).map(i => ({ ...i, lang }));
+  return parseRSS(await r.text(), source).map(i => ({ ...i, lang, ...meta }));
 }
 
 /* ---------- المصادر ----------
@@ -52,6 +52,9 @@ export async function fetchRSS(url, source, lang = "en") {
    محترفة وتغطّي وول ستريت لا الأسواق المحلية وحدها.
    إنجليزية: أقوى الغرف في تغطية الأسهم الأمريكية، وتُترجم عناوينها. */
 export const MARKET_FEEDS = [
+  ["الفدرالي الرسمي", "https://www.federalreserve.gov/feeds/press_all.xml",                              "en", { official: true }],
+  ["السياسة النقدية", "https://www.federalreserve.gov/feeds/press_monetary.xml",                         "en", { official: true }],
+  ["هيئة الأوراق SEC", "https://www.sec.gov/news/pressreleases.rss",                                    "en", { official: true }],
   ["الشرق الأوسط",  "https://aawsat.com/feed/economy",                                                    "ar"],
   ["سكاي نيوز عربية", "https://www.skynewsarabia.com/rss/business.xml",                                   "ar"],
   ["Yahoo Finance", "https://feeds.finance.yahoo.com/rss/2.0/headline?s=^GSPC&region=US&lang=en-US",      "en"],
@@ -84,6 +87,7 @@ export function rankMarket(items, symbols, want = 36) {
     .filter(w => w.length > 4 && !STOP.has(w.toLowerCase()))[0]).filter(Boolean);
 
   const score = (it) => {
+    if (it.official) return 2;                        // المصدر الأولي لا يُدفن تحت المقالات
     if (it.lang === "ar") return 3;                    // مصادر عربية منتقاة أصلاً
     const t = it.title;
     if (tickers.some(s => new RegExp(`(^|[^A-Za-z])${s}([^A-Za-z]|$)`).test(t))) return 3;
@@ -106,6 +110,20 @@ export function relevantTo(items, meta) {
   const hit = items.filter(i =>
     tick.test(i.title) || words.some(w => i.title.toLowerCase().includes(w.toLowerCase())));
   return hit.length ? hit : items;
+}
+
+/* تصنيف حتمي معلَن، لا «مشاعر AI» سوداء الصندوق. وظيفته رفع الخبر الذي
+   قد يغيّر الخطة فوق المقالات العامة، لا توقّع اتجاه السعر. */
+export function headlineSignal(text) {
+  const t = String(text || "").toLowerCase();
+  const hit = (re) => re.test(t);
+  let imp = 1, tag = "متابعة";
+  if (hit(/earnings|guidance|merger|acqui|bankrupt|chapter 11|fda|sec |lawsuit|probe|recall|offering|dividend|buyback|rate (cut|hike|decision)|fomc|inflation|\bcpi\b|payroll|tariff|أرباح|توجيه|استحواذ|اندماج|إفلاس|الفائدة|التضخم|وظائف|رسوم جمركية/)) { imp = 3; tag = "محرك للسعر"; }
+  else if (hit(/upgrade|downgrade|price target|analyst|contract|partnership|launch|خفض التصنيف|رفع التصنيف|سعر مستهدف|عقد|شراكة/)) { imp = 2; tag = "مهم"; }
+  let tone = 0;
+  if (hit(/beats?|raises? guidance|approval|approved|record revenue|buyback|upgrade|surges?|قفزة|تفوق|رفع التوجيه|موافقة|إعادة شراء|رفع التصنيف/)) tone++;
+  if (hit(/miss(es|ed)?|cuts? guidance|downgrade|probe|investigation|lawsuit|recall|bankrupt|layoffs?|offering|plunges?|خفض التوجيه|تحقيق|دعوى|استدعاء|إفلاس|تسريح|طرح أسهم|خفض التصنيف/)) tone--;
+  return { imp, tone: Math.max(-1, Math.min(1, tone)), tag };
 }
 
 /* =====================================================================

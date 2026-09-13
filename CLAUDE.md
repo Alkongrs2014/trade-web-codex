@@ -65,6 +65,8 @@ scripts/track-signals.mjs  السجلّ الحيّ — يثبّت ما ظهر ف
 scripts/fetch-events.mjs   الأحداث القوية — تقويم الفدرالي الرسمي
 scripts/fetch-options.mjs  عقود الخيارات — دورة نصف ساعة مستقلة
 scripts/analytics.mjs      قوة نسبية وبيتا وارتباط وفجوات — بلا شبكة
+scripts/intelligence.mjs   رادار الدقة — فني + مالي + دليل زمني + خبر
+scripts/lib/intelligence.mjs رتب الأساسيات وبوابات الرفض — بلا سلطة على الخطة
 scripts/check-ui.mjs       فحص بنية الواجهة بلا متصفح
 local/run.mjs          المشغّل المحلي (env + جلب + خادم + نشر)
 local/*.bat            اختصارات ويندوز
@@ -87,6 +89,7 @@ node scripts/fetch-events.mjs  --check
 node scripts/build-universe.mjs --check
 node scripts/test-evaluate.mjs
 node scripts/analytics.mjs --check
+node scripts/intelligence.mjs --check
 node scripts/check-ui.mjs
 
 node local/run.mjs quotes                # أسعار فقط (~90 ثانية)
@@ -97,6 +100,7 @@ node local/run.mjs backtest              # الأرشيف التاريخي (يو
 node local/run.mjs signals               # تثبيت إشارات اليوم (بلا شبكة)
 node local/run.mjs events                # تقويم الفدرالي (يومياً)
 node local/run.mjs learn                 # قراءة السجل واقتراحاته (بلا شبكة، مع daily)
+node local/run.mjs intelligence          # إعادة بناء رادار الدقة (بلا شبكة)
 node local/run.mjs both                  # كل شيء
 node local/run.mjs serve                 # خادم على localhost:8080
 node local/run.mjs publish               # نشر data/ على فرع data

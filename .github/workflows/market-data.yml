@@ -32,6 +32,7 @@ jobs:
         run: |
           node scripts/fetch-market.mjs --check
           node scripts/fetch-news.mjs --check
+          node scripts/intelligence.mjs --check
 
       - name: إحضار البيانات الحالية من فرع data
         run: |
@@ -58,6 +59,12 @@ jobs:
         # المهمة: بوابة السلامة داخلها تُبقي ملف الأخبار السابق.
         continue-on-error: true
         run: node scripts/fetch-news.mjs --out ./out
+
+      - name: تحديث رادار الدقة
+        # مشتق من الملفات الموجودة ولا يستهلك أي حصة. لو كانت لقطة يومية
+        # أولى بلا أرشيف بعد، يبقى الموقع يعمل وتظهر رسالة نقص الدليل.
+        continue-on-error: true
+        run: node scripts/intelligence.mjs --out ./out
 
       - name: التحقق من سلامة الملفات قبل الحفظ
         run: |

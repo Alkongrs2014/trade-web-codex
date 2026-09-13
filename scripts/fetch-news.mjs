@@ -14,7 +14,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   parseRSS, fetchRSS, MARKET_FEEDS, symbolFeed, relevantTo, rankMarket,
-  translateTitles, pruneCache, trKey, trStats
+  translateTitles, pruneCache, trKey, trStats, headlineSignal
 } from "./lib/news.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -52,9 +52,9 @@ async function main() {
   // 1) أخبار السوق من كل المصادر
   const market = [];
   let arCount = 0;
-  for (const [src, url, lang] of MARKET_FEEDS) {
+  for (const [src, url, lang, meta] of MARKET_FEEDS) {
     try {
-      const items = (await fetchRSS(url, src, lang)).slice(0, lang === "ar" ? 14 : 10);
+      const items = (await fetchRSS(url, src, lang, meta)).slice(0, lang === "ar" ? 14 : 10);
       market.push(...items);
       if (lang === "ar") arCount += items.length;
       console.log(`  ✓ ${src} (${items.length})`);
@@ -77,6 +77,9 @@ async function main() {
   const seen = new Set();
   const uniq = market.filter(n => { const k = trKey(n.title); if (seen.has(k)) return false; seen.add(k); return true; });
   const marketDedup = rankMarket(uniq, cfg.symbols, 36);
+  const annotate = (it) => Object.assign(it, headlineSignal(it.title));
+  marketDedup.forEach(annotate);
+  Object.values(perSymbol).flat().forEach(annotate);
 
   // 4) الترجمة — أخبار السوق أولاً لأنها الواجهة الأولى، ثم أخبار الأسهم
   const cache = readJSON(path.join(OUT, "i18n.json"), {}) || {};
@@ -153,6 +156,17 @@ function selfCheck() {
     const langs = new Set(MARKET_FEEDS.map(f => f[2]));
     if (!langs.has("ar") || !langs.has("en")) throw new Error("ينقص لسان");
     for (const [n, u] of MARKET_FEEDS) if (!/^https:\/\//.test(u)) throw new Error(`${n} ليس https`);
+  });
+
+  t("المصادر الرسمية مميّزة ولا تُخلط بالصحافة", () => {
+    const official = MARKET_FEEDS.filter(f => f[3]?.official);
+    if (official.length < 3) throw new Error("المصادر الرسمية ناقصة");
+  });
+
+  t("تصنيف الخبر لا يدّعي اتجاهه حين لا توجد قرينة", () => {
+    eq(headlineSignal("Federal Reserve announces rate decision").imp, 3, "أثر قوي");
+    eq(headlineSignal("Company cuts guidance after earnings miss").tone, -1, "سلبي");
+    eq(headlineSignal("Markets open on Tuesday").tone, 0, "محايد");
   });
 
   t("rankMarket يُقصي الشركات الدقيقة ويُبقي الكلّي وشركاتنا", () => {

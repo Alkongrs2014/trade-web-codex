@@ -105,6 +105,8 @@ node local/run.mjs serve       # خادم العرض
 | `stocks/evaluate.js` | **طبقة التقييم** — الطزاجة وجودة الدخول والزمن المتوقّع والآفاق. **لا تغيّر التوصية** |
 | `scripts/learn.mjs` | **طبقة التحليل** — إحصاء أداء الإشارات. **تقرأ ولا تكتب في المحرّك** |
 | `scripts/analytics.mjs` | قوة نسبية وBeta وارتباط وفجوات من الشمعات الموجودة بلا حصص API |
+| `scripts/intelligence.mjs` | مكتب دقة يرفض الفرص غير المكتملة ويجمع الفني والمالي والخبر والدليل الزمني |
+| `scripts/lib/intelligence.mjs` | رتب مالية قطاعية وبوابات رفض قابلة للاختبار |
 | `scripts/check-ui.mjs` | بوابة سلامة للواجهة والتبويبات والمعرّفات والنحو |
 | `stocks/symbols.json` | كون الرموز بثلاث طبقات (§8) |
 | `scripts/lib/indicators.mjs` | المؤشرات الفنية — **مشتركة بين الخادم والمتصفح** |
@@ -245,6 +247,7 @@ node local/run.mjs serve       # خادم العرض
 | Twelve Data | `scripts/lib/twelvedata.mjs` | شموع (الأساسي سحابياً) | **8/دقيقة و800/يوم** |
 | Yahoo | `scripts/lib/yahoo.mjs` | شموع (الأساسي محلياً) + خيارات + Stooq احتياطاً | ⛔ يرفض عناوين السحابة بـ429 · ✅ يعمل منزلياً |
 | RSS + ترجمة | `scripts/lib/news.mjs` | أخبار عربية ومترجمة + ذاكرة ترجمة | — |
+| SEC + Federal Reserve RSS | `scripts/lib/news.mjs` | مصادر أولية رسمية تُرفع فوق المقالات | ✅ بلا مفتاح |
 | federalreserve.gov | `scripts/fetch-events.mjs` | تقويم الفدرالي | ✅ بلا مفتاح ولا حصّة |
 | bls.gov | `scripts/fetch-events.mjs` | التضخّم وتقرير الوظائف | ✅ **بترويسات متصفح كاملة** — 403 بترويسة ناقصة |
 
@@ -276,6 +279,7 @@ Git إطلاقاً** — مستبعد في `.gitignore`.
 | `news.json` · `events.json` | الأخبار · التقويم الاقتصادي |
 | `backtest.json` · `signals.json` · `archive.json` | الأرشيف التاريخي · السجلّ الحيّ · أرشيف النتائج |
 | `learn.json` · `history.json` | إحصاء أداء الإشارات (`learn.mjs`) · سجل الصفقات كما رآها المستخدم |
+| `intelligence.json` | الفرص التي اجتازت بوابات الدقة، الرتب المالية، وغرفة الأخبار المصنفة |
 | `ranking.json` · `meta.json` · `i18n.json` | الترتيب · بيانات التشغيل · الترجمات |
 
 **تفاصيل تكسر الشيفرة إن جُهلت:**

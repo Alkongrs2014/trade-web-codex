@@ -42,6 +42,39 @@
     }).join("")}</div>`;
   }
 
+  function renderPrecision() {
+    const el = q("#proPrecision"), x = state.intel; if (!el) return;
+    if (!x) { el.innerHTML = '<div class="pro-empty">لم تصل طبقة الدقة بعد؛ بقية التحليل يعمل بصورة مستقلة.</div>'; return; }
+    const list = x.opportunities || [];
+    const gates = Object.entries(x.gates || {}).sort((a,b) => b[1]-a[1]).slice(0,3);
+    const summary = `<div class="precision-summary"><div><b>${latin(x.reviewed)}</b><small>فُحصت</small></div><i></i><div><b>${latin(x.passed)}</b><small>اجتازت</small></div><div><b>${latin(x.rejected)}</b><small>رُفضت</small></div><p>المقياس درجة دليل من 100، وليس احتمال نجاح.</p></div>`;
+    if (!list.length) {
+      const watch = x.watchlist || [];
+      el.innerHTML = summary + `<div class="pro-empty">لا فرصة اجتازت البوابات الآن. أكثر أسباب الرفض: ${gates.map(([k,v]) => `${esc(k)} (${latin(v)})`).join(" · ") || "لا بيانات كافية"}.</div>` +
+        (watch.length ? `<div class="watch-head"><b>الأقرب للاجتياز</b><small>مراقبة فقط — ليست فرصاً معتمدة</small></div><div class="watch-list">${watch.slice(0,5).map(o => `<button data-open="${esc(o.s)}"><span><b class="tick">${esc(o.s)}</b><small>${esc(o.ar || o.en || "")}</small></span><em>${(o.reasons || []).slice(0,2).map(esc).join(" · ")}</em><i>${latin(o.score)}</i></button>`).join("")}</div>` : "");
+      return;
+    }
+    el.innerHTML = summary + `<div class="precision-list">${list.slice(0,6).map(o => `<button class="precision-pick" data-open="${esc(o.s)}">
+      <span class="precision-score"><b>${latin(o.score)}</b><small>${esc(o.grade)}</small></span>
+      <span class="precision-id"><b class="tick">${esc(o.s)}</b><em>${esc(o.ar || o.en || "")}</em><small>${(o.proof || []).map(esc).join(" · ")}</small></span>
+      <span class="precision-plan"><i>دخول <b>${money(o.plan?.entry)}</b></i><i>وقف <b>${money(o.plan?.stop)}</b></i><i>هدف <b>${money(o.plan?.target)}</b></i></span>
+      <span class="precision-evidence">${o.evidence?.holdout ? "اختبار سنة أخيرة" : "سجل كامل"}<b>${esc(o.evidence?.lbl || "—")}</b><small>${latin(o.evidence?.n)} عينة</small></span>
+    </button>`).join("")}</div><p class="rejection-note">استُبعد ${latin(x.rejected)} من ${latin(x.reviewed)} رمزاً. قلة النتائج هنا ميزة: النظام لا يملأ الشاشة بفرص متوسطة.</p>`;
+  }
+
+  function renderFinancialPro() {
+    const el = q("#proFinancial"), list = state.intel?.financial || []; if (!el) return;
+    if (!list.length) { el.innerHTML = '<div class="pro-empty">التحليل المالي غير متاح الآن.</div>'; return; }
+    const map = bySym();
+    el.innerHTML = `<div class="financial-list">${list.slice(0,8).map((x,i) => { const r=map.get(x.s)||{}; return `<button data-open="${esc(x.s)}"><i>${i+1}</i><span><b class="tick">${esc(x.s)}</b><small>${esc(nm(r))}</small></span><em><b>${latin(x.total)}</b><small>درجة مالية</small></em><u style="--w:${Math.max(0,Math.min(100,x.total||0))}%"></u></button>`; }).join("")}</div><p class="desk-note">الجودة 35% · النمو 25% · القيمة 25% · المحللون والمطلعون 15%. كل رقم يُرتّب داخل قطاعه.</p>`;
+  }
+
+  function renderNewsPro() {
+    const el = q("#proNews"), list = state.intel?.newsroom || []; if (!el) return;
+    if (!list.length) { el.innerHTML = '<div class="pro-empty">لا خبر حديث عالي الأثر.</div>'; return; }
+    el.innerHTML = `<div class="newswire">${list.slice(0,7).map(n => `<a href="${esc(n.link)}" target="_blank" rel="noopener"><span class="wire-mark ${n.tone<0?'neg':n.tone>0?'pos':''}">${n.imp===3?'عاجل':n.imp===2?'مهم':'خبر'}</span><div><b>${esc(n.ar || n.title)}</b><small>${n.official?'مصدر رسمي · ':''}${esc(n.src || '')} · ${n.t ? esc(ago(n.t)) : 'الآن'}</small></div></a>`).join("")}</div><p class="desk-note">“عاجل” يعني أن الموضوع قادر على تحريك السعر؛ لا يعني أن اتجاهه متوقّع.</p>`;
+  }
+
   function optionMarket() {
     if (state.opts?.mkt) return state.opts.mkt;
     const a = (state.opts?.rows || []).reduce((o, x) => {
@@ -70,8 +103,8 @@
     const list = (state.arch?.scans || []).filter(x => x.ret?.[20] && Number.isFinite(x.edge?.[20]))
       .sort((a,b) => b.edge[20] - a.edge[20]).slice(0,5);
     if (!list.length) { el.innerHTML = '<div class="pro-empty">الأرشيف التاريخي غير متاح الآن.</div>'; return; }
-    el.innerHTML = list.map(x => `<div class="pro-edge-row"><strong>${esc(x.lbl)}</strong><b class="${cls(x.edge[20])}">${signed(x.edge[20])}</b><span>${latin(x.ret[20].n)} عينة</span></div>`).join("") +
-      '<p class="hint" style="margin-top:10px">الحافة = وسيط عائد الشرط ناقص وسيط السوق في نفس الاتجاه خلال 20 يومًا.</p>';
+    el.innerHTML = list.map(x => { const v=x.validation?.ret?.[20]?.n>=300?x.validation:x; return `<div class="pro-edge-row"><strong>${esc(x.lbl)}</strong><b class="${cls(v.edge[20])}">${signed(v.edge[20])}</b><span>${latin(v.ret[20].n)} عينة${v===x?'':' · سنة أخيرة'}</span></div>`; }).join("") +
+      '<p class="hint" style="margin-top:10px">الحافة = وسيط عائد الشرط ناقص وسيط السوق في نفس الاتجاه خلال 20 يومًا. تُفضّل سنة التحقق الأخيرة حين تكفي عينتها.</p>';
   }
 
   function readPortfolio() { const x = load(PKEY, []); return Array.isArray(x) ? x : []; }
@@ -105,8 +138,11 @@
       state.analytics ? Promise.resolve(state.analytics) : getJSON("analytics.json").then(x => state.analytics = x),
       state.opts ? Promise.resolve(state.opts) : getJSON("options.json").then(x => state.opts = x),
       state.arch ? Promise.resolve(state.arch) : getJSON("backtest.json").then(x => state.arch = x),
-      state.wide ? Promise.resolve(state.wide) : getJSON("wide.json").then(x => state.wide = x)
-    ]).then(() => { renderProof(); renderLeaders(); renderOptionsPro(); renderEdge(); renderPortfolio(); }).finally(() => loading = null);
+      state.wide ? Promise.resolve(state.wide) : getJSON("wide.json").then(x => state.wide = x),
+      state.intel ? Promise.resolve(state.intel) : getJSON("intelligence.json").then(x => state.intel = x),
+      state.news ? Promise.resolve(state.news) : getJSON("news.json").then(x => state.news = x),
+      state.fund ? Promise.resolve(state.fund) : getJSON("fundamentals.json").then(x => state.fund = x)
+    ]).then(() => { renderProof(); renderPrecision(); renderLeaders(); renderOptionsPro(); renderEdge(); renderFinancialPro(); renderNewsPro(); renderPortfolio(); }).finally(() => loading = null);
     return loading;
   }
 

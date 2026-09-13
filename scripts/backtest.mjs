@@ -39,6 +39,7 @@ const CHECK = args.includes("--check");
 const OUT = (() => { const i = args.indexOf("--out"); return i >= 0 ? path.resolve(args[i + 1]) : path.join(ROOT, "out"); })();
 
 const HORIZONS = [1, 5, 20];              // أيام تداول
+const VALIDATE_DAYS = 365;                 // سنة أخيرة لاختيارٍ زمني خارج العينة الأقدم
 const MAX_H = Math.max(...HORIZONS);
 const WARMUP = 260;                       // EMA200 + نافذة 52 أسبوعاً
 const COOLDOWN = 5;                       // شمعات قبل تسجيل نفس الشرط للرمز نفسه
@@ -117,7 +118,7 @@ export function rollingMean(vals, win) {
 export function outcome(k, i, horizons = HORIZONS) {
   const entry = k[i].c;
   if (!(entry > 0)) return null;
-  const res = { ret: {} };
+  const res = { ret: {}, at: Number.isFinite(k[i].t) ? k[i].t : null };
   for (const h of horizons) {
     const j = i + h;
     res.ret[h] = (j < k.length) ? (k[j].c - entry) / entry * 100 : null;
@@ -145,7 +146,7 @@ export function outcome(k, i, horizons = HORIZONS) {
    ===================================================================== */
 export function signOutcome(o, d) {
   if (d !== -1 || !o) return o;
-  const r = { ret: {} };
+  const r = { ret: {}, at: o.at };
   for (const h of Object.keys(o.ret)) r.ret[h] = Number.isFinite(o.ret[h]) ? -o.ret[h] : null;
   r.mfe = Number.isFinite(o.mae) ? -o.mae : null;
   r.mae = Number.isFinite(o.mfe) ? -o.mfe : null;
@@ -260,13 +261,27 @@ async function main() {
   // هابطة بخط أساس صاعد تُخرج حافة كاذبة مهما صحّ باقي الحساب.
   const base = summarize(baseline);
   const baseDn = summarize(baseline.map(o => signOutcome(o, -1)));
+  const validateFrom = now - VALIDATE_DAYS * 86400e3;
+  const validOnly = a => a.filter(o => Number.isFinite(o.at) && o.at >= validateFrom);
+  const validBase = summarize(validOnly(baseline));
+  const validBaseDn = summarize(validOnly(baseline.map(o => signOutcome(o, -1))));
 
   const scans = SCANS.filter(s => s.btTest).map(s => {
     const d = s.dir === -1 ? -1 : 1;
     const g = summarize(d === -1 ? hits[s.id].map(o => signOutcome(o, -1)) : hits[s.id]);
     const b = d === -1 ? baseDn : base;
+    const vg = summarize(validOnly(d === -1 ? hits[s.id].map(o => signOutcome(o, -1)) : hits[s.id]));
+    const vb = d === -1 ? validBaseDn : validBase;
+    const validation = {
+      from: validateFrom, ...vg,
+      edge: Object.fromEntries(HORIZONS.map(h => [h,
+        (Number.isFinite(vg.ret[h].med) && Number.isFinite(vb.ret[h].med)) ? r2(vg.ret[h].med - vb.ret[h].med) : null])),
+      edgeWin: Object.fromEntries(HORIZONS.map(h => [h,
+        (Number.isFinite(vg.ret[h].win) && Number.isFinite(vb.ret[h].win)) ? r2(vg.ret[h].win - vb.ret[h].win) : null]))
+    };
     return {
       id: s.id, lbl: s.lbl, dir: d, note: s.btNote || null, ...g,
+      validation,
       // الحافة على خط الأساس هي المعلومة، لا الرقم المطلق.
       // **على الوسيط لا المتوسط**: توزيع العوائد ملتوٍ بشدّة، وسهم واحد
       // تضاعف عشر مرات يزيح متوسط آلاف الملاحظات ولا يزيح وسيطها.
@@ -283,7 +298,9 @@ async function main() {
 
   const out = { updated: now, symbols, bars, horizons: HORIZONS, cooldown: COOLDOWN,
                 trimmed: trimmedSyms, maxDayMove: MAX_DAY_MOVE, cryptoExcluded: true,
-                baseline: base, baselineDn: baseDn, scans, excluded };
+                baseline: base, baselineDn: baseDn,
+                validation: { from: validateFrom, days: VALIDATE_DAYS, baseline: validBase, baselineDn: validBaseDn },
+                scans, excluded };
   fs.mkdirSync(OUT, { recursive: true });
   fs.writeFileSync(path.join(OUT, "backtest.json"), JSON.stringify(out));
 
@@ -356,6 +373,12 @@ function selfCheck() {
   t("signOutcome لا يمسّ الاتجاه الصاعد ولا يعيد كائناً جديداً بلا داعٍ", () => {
     const o = { ret: { 1: 3 }, mfe: 5, mae: -1 };
     if (signOutcome(o, 1) !== o) throw new Error("نسخة بلا حاجة");
+  });
+
+  t("التقسيم الزمني يحتفظ بوقت الإشارة في الاتجاهين", () => {
+    const k = Array.from({ length: 25 }, (_, i) => ({ t: 1000 + i, o: 100, h: 101, l: 99, c: 100 + i / 10, v: 1 }));
+    const o = outcome(k, 2), d = signOutcome(o, -1);
+    eq([o.at, d.at], [1002, 1002], "وقت اللقطة");
   });
 
   t("حافة الشرط الهابط تُقاس على خط أساس هابط", () => {

@@ -15,7 +15,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="مرصد الأسهم">
 <link rel="manifest" id="manifest">
-<link rel="stylesheet" href="pro.css">
 <title>مرصد PRO — فرص الأسهم بوضوح</title>
 <style>
 :root{
@@ -237,10 +236,13 @@ input:focus,select:focus{outline:none;border-color:var(--acc)}
 /* الأصل الإنجليزي تحت الترجمة: يسمح بالتحقق دون أن ينافس العنوان العربي */
 .news-o{color:var(--dim);font-size:11px;line-height:1.5;direction:ltr;text-align:left;margin-top:3px}
 .news-m{font-size:11px;color:var(--dim);margin-top:5px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.news-m .tag-ar,.news-m .tag-tr,.news-m .tag-en{padding:1px 6px;border-radius:999px;font-size:10px;font-weight:700}
+.news-m .tag-ar,.news-m .tag-tr,.news-m .tag-en,.news-m .tag-official,.news-m .tag-impact,.news-m .tag-important{padding:1px 6px;border-radius:999px;font-size:10px;font-weight:700}
 .news-m .tag-ar{background:rgba(22,199,132,.14);color:var(--up)}
 .news-m .tag-tr{background:rgba(59,130,246,.14);color:var(--acc)}
 .news-m .tag-en{background:rgba(139,152,169,.13);color:var(--mut)}
+.news-m .tag-official{background:rgba(255,255,255,.08);color:var(--tx);border:1px solid var(--line)}
+.news-m .tag-impact{background:rgba(239,68,68,.14);color:var(--dn)}
+.news-m .tag-important{background:rgba(245,158,11,.14);color:var(--neu)}
 .alert-item{display:flex;justify-content:space-between;align-items:center;background:var(--card2);
   padding:10px 12px;border-radius:10px;margin-bottom:7px;font-size:13.5px}
 .del{background:none;border:0;color:var(--dn);font-size:18px;cursor:pointer;padding:0 4px}
@@ -313,6 +315,7 @@ details b{color:var(--tx)}
 @media (max-width:420px){.plan-strip{grid-template-columns:repeat(2,1fr)}.pulse-hero{padding:18px}.pulse-hero h1{font-size:27px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
+<link rel="stylesheet" href="pro.css">
 </head>
 <body>
 
@@ -341,7 +344,8 @@ details b{color:var(--tx)}
     <h1>قرارات أوضح. فرص أقل ضجيجاً.</h1>
     <p class="pulse-lead" id="pulseHeadline">نقرأ الاتجاه والمخاطرة وجودة البيانات معاً، ثم نشرح لك لماذا ظهرت الفرصة.</p>
     <div class="hero-actions">
-      <button class="hero-btn primary" data-nav="screen">اكتشف أفضل الفرص</button>
+      <button class="hero-btn primary" data-nav="pro">افتح مكتب الدقة</button>
+      <button class="hero-btn" data-nav="screen">شاهد كل الفرص</button>
       <button class="hero-btn" data-nav="list">استكشف السوق</button>
     </div>
     <div class="pulse-stats">
@@ -908,10 +912,13 @@ details b{color:var(--tx)}
   </div>
   <div class="pro-proof" id="proProof"><div class="pro-skeleton"></div></div>
   <div class="pro-grid">
-    <article class="card pro-panel pro-wide"><div class="pro-head"><div><span>قوة نسبية</span><h2>🚀 قادة السوق الحقيقيون</h2></div><small>مقارنةً بالسوق، لا بالعائد الخام</small></div><div id="proLeaders"><div class="pro-skeleton"></div></div></article>
-    <article class="card pro-panel"><div class="pro-head"><div><span>سوق الخيارات</span><h2>🫀 نبض العقود</h2></div><small>ما يُتداول وما هو مُسعّر</small></div><div id="proOptions"><div class="pro-skeleton"></div></div></article>
-    <article class="card pro-panel"><div class="pro-head"><div><span>دليل الأداء</span><h2>🧪 الحافة التاريخية</h2></div><small>مئات آلاف المشاهدات، بلا انتقاء</small></div><div id="proEdge"><div class="pro-skeleton"></div></div></article>
-    <article class="card pro-panel pro-wide"><div class="pro-head"><div><span>خاص بك</span><h2>💼 محفظة التجربة</h2></div><small>تُحفظ على جهازك فقط</small></div>
+    <article class="card pro-panel pro-wide precision-panel"><div class="pro-head"><div><span>PRECISION DESK · وضع الدقة</span><h2>الفرص التي نجت من الرفض</h2></div><small>فني + مالي + سوق + خبر + دليل زمني</small></div><div id="proPrecision"><div class="pro-skeleton"></div></div></article>
+    <article class="card pro-panel pro-wide"><div class="pro-head"><div><span>RELATIVE STRENGTH · قوة نسبية</span><h2>قادة السوق الحقيقيون</h2></div><small>مقارنةً بالسوق، لا بالعائد الخام</small></div><div id="proLeaders"><div class="pro-skeleton"></div></div></article>
+    <article class="card pro-panel"><div class="pro-head"><div><span>OPTIONS TAPE · سوق الخيارات</span><h2>نبض العقود</h2></div><small>ما يُتداول وما هو مُسعّر</small></div><div id="proOptions"><div class="pro-skeleton"></div></div></article>
+    <article class="card pro-panel"><div class="pro-head"><div><span>VALIDATION · دليل الأداء</span><h2>الحافة التاريخية</h2></div><small>مئات آلاف المشاهدات، بلا انتقاء</small></div><div id="proEdge"><div class="pro-skeleton"></div></div></article>
+    <article class="card pro-panel"><div class="pro-head"><div><span>FINANCIAL DESK · مالي</span><h2>جودة الأعمال والتسعير</h2></div><small>رتب قطاعية لا مقارنة مضللة</small></div><div id="proFinancial"><div class="pro-skeleton"></div></div></article>
+    <article class="card pro-panel"><div class="pro-head"><div><span>NEWSWIRE · غرفة الأخبار</span><h2>ما قد يغيّر الخطة</h2></div><small>المصادر الرسمية أولاً</small></div><div id="proNews"><div class="pro-skeleton"></div></div></article>
+    <article class="card pro-panel pro-wide"><div class="pro-head"><div><span>YOUR BOOK · خاص بك</span><h2>محفظة التجربة</h2></div><small>تُحفظ على جهازك فقط</small></div>
       <form id="proPortfolioForm" class="pro-form"><input id="proSym" placeholder="الرمز مثل AAPL" autocomplete="off"><input id="proQty" type="number" min="0" step="any" placeholder="الكمية"><input id="proAvg" type="number" min="0" step="any" placeholder="متوسط الشراء"><button>إضافة مركز</button></form>
       <div id="proPortfolio"></div>
     </article>
@@ -962,7 +969,7 @@ const state = {
   symCache: {}, view: "now", sym: null, activeTF: "1h",
   lastOk: 0, busy: false, liveAt: 0, liveOn: false,
   favs: [], favOnly: false, hover: null, from: "list", scan: null,
-  optCache: {}, opts: null, arch: null, live: null, events: null, signals: null,
+  optCache: {}, opts: null, arch: null, intel: null, live: null, events: null, signals: null,
   optExp: 0, optSide: "calls",
   diag: [], trend: null, trendBusy: false, hist: null, histBusy: false, learn: null,
   radarBusy: false, radarKey: "", lazy: {}
@@ -3584,7 +3591,9 @@ function tone(t) {
 function newsHTML(it) {
   // التصنيف يُقرأ من الأصل الإنجليزي دائماً: كلماته هي التي ضُبطت عليها
   // التعابير، والترجمة قد تُبدّل الكلمة المفتاحية فيضيع التصنيف
-  const tn = tone(it.title);
+  const tn = Number.isFinite(it.tone)
+    ? (it.tone < 0 ? { t: "سلبي", c: "var(--dn)" } : it.tone > 0 ? { t: "إيجابي", c: "var(--up)" } : { t: "محايد", c: "var(--mut)" })
+    : tone(it.title);
   const ar = it.lang === "ar";
   const shown = ar ? it.title : (it.ar || it.title);
   const translated = !ar && !!it.ar;
@@ -3593,6 +3602,8 @@ function newsHTML(it) {
     ${translated ? `<div class="news-o">${esc(it.title)}</div>` : ""}
     <div class="news-m"><span style="color:${tn.c};font-weight:700">${tn.t}</span>
     <span>·</span><span>${esc(it.src)}</span>${it.t ? `<span>·</span><span>${ago(it.t)}</span>` : ""}
+    ${it.official ? `<span class="tag-official">مصدر رسمي</span>` : ""}
+    ${it.imp >= 3 ? `<span class="tag-impact">عالي الأثر</span>` : it.imp === 2 ? `<span class="tag-important">مهم</span>` : ""}
     ${ar ? `<span class="tag-ar">عربي</span>`
          : translated ? `<span class="tag-tr">مترجم آلياً</span>`
          : `<span class="tag-en">بالإنجليزية</span>`}</div></a>`;
