@@ -52,6 +52,7 @@ if (typeof DEAD_ATR === "undefined" && typeof require === "function") {
     globalThis.volMedian = _I.volMedian;
     globalThis.bbWidth = _I.bbWidth;
     globalThis.rankInWindow = _I.rankInWindow;
+    globalThis.confirmedCandles = _I.confirmedCandles;
     globalThis.unpackK = _P.unpackK;
     globalThis.levelsFrom = _P.levelsFrom;
     globalThis.planFrom = _P.planFrom;
@@ -193,8 +194,14 @@ function sameUtcDay(a, b) {
 function buildCtx(o) {
   var rec = o.rec || {}, row = o.row || {}, an = rec.an || {};
   var now = Number.isFinite(o.now) ? o.now : Date.now();
-  var k = {}, tfs = rec.tf || {};
-  for (var tf in tfs) { var cc = tfs[tf] && tfs[tf].c; if (cc && cc.length) k[tf] = unpackK(cc); }
+  var k = {}, raw = {}, tfs = rec.tf || {};
+  for (var tf in tfs) {
+    var cc = tfs[tf] && tfs[tf].c;
+    if (!cc || !cc.length) continue;
+    raw[tf] = unpackK(cc);
+    k[tf] = (tf === "4h" || typeof confirmedCandles !== "function") ? raw[tf]
+      : confirmedCandles(raw[tf], tf, now, rec.mkt || row.mkt || null, o.sess || null);
+  }
 
   var px = [o.px, row.p, an["5m"] && an["5m"].px, an["1d"] && an["1d"].px]
              .filter(Number.isFinite)[0];
@@ -206,10 +213,12 @@ function buildCtx(o) {
   var iTf = k["5m"] ? "5m" : (k["15m"] ? "15m" : null);
   var lv = { iTf: iTf };
   if (iTf && today) {
-    lv.vwap = sessionVwap(k[iTf], period);
+    /* VWAP ونطاق الافتتاح يصفان الجلسة الحية، فيقرآن الخام. أما إشارات
+       الاتجاه نفسها فتقرأ `k` المؤكدة أعلاه. */
+    lv.vwap = sessionVwap(raw[iTf] || k[iTf], period);
     // نافذة النطاق تتبع الفريم: ‎15د‎ على ‎5د‎ تعطي ثلاث شمعات، وعلى
     // ‎15د‎ تعطي واحدة — و«نطاق» من شمعةٍ واحدة هو الشمعة نفسها.
-    lv.or = openingRange(k[iTf], period, iTf === "5m" ? 15 : 30);
+    lv.or = openingRange(raw[iTf] || k[iTf], period, iTf === "5m" ? 15 : 30);
   }
   var base = an["4h"] || an["1d"] || null;
   lv.L = (k["1d"] && base) ? levelsFrom({
@@ -896,4 +905,3 @@ if (typeof module !== "undefined" && module.exports) {
     withLevels: withLevels, planFor: planFor
   };
 }
-

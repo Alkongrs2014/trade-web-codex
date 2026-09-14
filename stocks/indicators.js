@@ -449,10 +449,79 @@ function analyze(k) {
     series: { e20: e20, e50: e50, e200: e200 }
   };
 }
+/* =====================================================================
+   الشموع المؤكَّدة — الاتجاه لا يُحسب من شمعة ما زالت تتكوّن.
+
+   ياهو قد يعيد لفريم الساعة شمعتين في الفتحة نفسها: شمعة 19:30
+   المتداولة، ثم لقطة 19:31 بحجم صفر. كما أن شمعة 15د الجارية يتغيّر
+   إغلاقها وحجمها كل دقيقة. تمريرهما إلى EMA/MACD كان يقلب بوابةً كاملة
+   كل دقيقتين مع حركة سعر لا تُرى. نثبت شبكة الزمن، نختار أعلى حجم عند
+   التكرار، ثم نستبعد الفتحة التي لم يكتمل زمنها بعد.
+
+   اليومي الأمريكي حالة خاصة: شمعة الجلسة تنتهي عند الإغلاق لا بعد 24
+   ساعة من طابع الافتتاح. لذلك تُستبعد شمعة اليوم في PRE/REGULAR وتُقبل
+   بعد الإغلاق. الكريبتو يبقى على 24 ساعة فعلية. */
+function confirmedCandles(candles, tf, now, mkt, session) {
+  if (!Array.isArray(candles) || !candles.length) return [];
+  now = Number.isFinite(now) ? now : Date.now();
+  var dur = { "5m": 300000, "15m": 900000, "1h": 3600000, "4h": 14400000, "1d": 86400000 }[tf];
+  var clean = candles.filter(function (x) {
+    return x && Number.isFinite(x.t) && Number.isFinite(x.o) && Number.isFinite(x.h)
+      && Number.isFinite(x.l) && Number.isFinite(x.c) && x.h >= x.l;
+  }).slice().sort(function (a, b) { return a.t - b.t; });
+  if (!dur || !clean.length) return clean;
+
+  /* شبكة الفريم من أكثر إزاحة زمنية تكراراً. 13:30 و14:30 (توقيت صيفي)
+     كلاهما على إزاحة نصف الساعة لفريم الساعة، بينما 19:31 شاذة. */
+  if (tf !== "1d") {
+    var freq = {}, minute = 60000;
+    clean.forEach(function (x) {
+      var off = Math.round((((x.t % dur) + dur) % dur) / minute) * minute;
+      if (off >= dur) off = 0;
+      freq[off] = (freq[off] || 0) + 1;
+    });
+    var mode = +Object.keys(freq).sort(function (a, b) { return freq[b] - freq[a]; })[0];
+    var slots = {};
+    clean.forEach(function (x) {
+      var off = ((x.t % dur) + dur) % dur;
+      var dist = Math.min(Math.abs(off - mode), dur - Math.abs(off - mode));
+      if (dist > 15000) return;                 // طابع خارج الشبكة بأكثر من 15ث
+      var key = Math.round((x.t - mode) / dur);
+      var old = slots[key];
+      /* الحجم الحقيقي يغلب لقطة الحجم الصفري؛ وعند التعادل الأحدث أدق. */
+      if (!old || (x.v || 0) > (old.v || 0) || ((x.v || 0) === (old.v || 0) && x.t > old.t)) slots[key] = x;
+    });
+    clean = Object.values(slots).sort(function (a, b) { return a.t - b.t; });
+  }
+
+  if (tf === "1d" && mkt !== "crypto") {
+    if (session === "PRE" || session === "REGULAR") {
+      var day = function (t) {
+        try { return new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(t)); }
+        catch (_) { return new Date(t).toISOString().slice(0, 10); }
+      };
+      if (clean.length && day(clean[clean.length - 1].t) === day(now)) clean.pop();
+    }
+    return clean;
+  }
+  return clean.filter(function (x) { return x.t + dur <= now - 5000; });
+}
+
+/* تجميع 4h مثبت داخل كل يوم UTC. التجميع القديم بدأ من أول عنصر في
+   المصفوفة؛ وحين تحرّكت نافذة Yahoo ساعةً واحدة تغيّرت حدود **كل**
+   شموع 4h دفعةً واحدة. إعادة البدء مع كل يوم تجعل إضافة/حذف يوم قديم
+   عاجزة عن إعادة تشكيل التاريخ الحديث. */
 function aggregate(candles, factor) {
   const out = [];
-  for (let i = 0; i < candles.length; i += factor) {
-    const grp = candles.slice(i, i + factor);
+  const days = [];
+  let key = null, day = null;
+  (candles || []).slice().sort((a, b) => a.t - b.t).forEach(x => {
+    const k = new Date(x.t).toISOString().slice(0, 10);
+    if (k !== key) { key = k; day = []; days.push(day); }
+    day.push(x);
+  });
+  for (const bars of days) for (let i = 0; i < bars.length; i += factor) {
+    const grp = bars.slice(i, i + factor);
     if (!grp.length) continue;
     out.push({
       t: grp[0].t,
@@ -564,6 +633,5 @@ if (typeof module !== "undefined" && module.exports) {
                      obv: obv, mfi: mfi, stoch: stoch, volumeProfile: volumeProfile,
                      sessionVwap: sessionVwap, openingRange: openingRange,
                      volMedian: volMedian,
-                     analyze: analyze, aggregate: aggregate };
+                     analyze: analyze, aggregate: aggregate, confirmedCandles: confirmedCandles };
 }
-

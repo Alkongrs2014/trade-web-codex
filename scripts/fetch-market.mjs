@@ -16,7 +16,7 @@ import {
 } from "./lib/yahoo.mjs";
 import { fetchQuotesFinnhub, fhStats } from "./lib/finnhub.mjs";
 import { fetchCandlesTD, hasTwelveData, tdSleep, tdStats } from "./lib/twelvedata.mjs";
-import { analyze, overallScore, aggregate, TFS, TF_WEIGHT, bandStable } from "./lib/indicators.mjs";
+import { analyze, overallScore, aggregate, confirmedCandles, TFS, TF_WEIGHT, bandStable } from "./lib/indicators.mjs";
 import { marketStatus, approxMarketStatus } from "./lib/session.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -210,6 +210,7 @@ async function buildSymbol(meta, prevDir, now, quotes, frames = ["1d", "1h", "15
   const rec = { s: sym, ar: meta.ar, en: meta.en, sec: meta.sec, tf: {}, src: "yahoo", updated: now };
   if (meta.mkt) rec.mkt = meta.mkt;
   let touched = false, errors = [], usedTD = false;
+  const sessionState = approxMarketStatus(now).state;
   // سلسلة الساعة كاملةً قبل القصّ — تُستعمل لاشتقاق 4h ولا تُخزَّن
   let full1h = null;
 
@@ -311,7 +312,8 @@ async function buildSymbol(meta, prevDir, now, quotes, frames = ["1d", "1h", "15
      المخزَّنة كما هي بدل إعادة اشتقاقها قصيرة — وإلا تذبذب طولها بين
      التشغيلات فتذبذبت معه النتيجة. */
   if (full1h?.length) {
-    rec.tf["4h"] = { updated: rec.tf["1h"].updated, c: slimCandles(aggregate(full1h, 4).slice(-KEEP)), derived: true };
+    const confirmed1h = confirmedCandles(full1h, "1h", now, meta.mkt, sessionState);
+    rec.tf["4h"] = { updated: rec.tf["1h"].updated, c: slimCandles(aggregate(confirmed1h, 4).slice(-KEEP)), derived: true };
   } else if (prev?.tf?.["4h"]?.c?.length) {
     /* 4h ليس في `frames` فلا يمرّ بحلقة الجلب، ولا يُنقل من `prev`
        تلقائياً. وبلا نقله هنا يُعاد اشتقاقه من الساعة **المقصوصة** في كل
@@ -321,13 +323,16 @@ async function buildSymbol(meta, prevDir, now, quotes, frames = ["1d", "1h", "15
     rec.tf["4h"] = prev.tf["4h"];
   } else if (rec.tf["1h"]?.c?.length) {
     // أول مرة ولا ساعةَ كاملة: مشتقٌّ قصير خيرٌ من فريمٍ غائب
-    rec.tf["4h"] = { updated: rec.tf["1h"].updated, c: slimCandles(aggregate(rec.tf["1h"].c, 4).slice(-KEEP)), derived: true };
+    const confirmed1h = confirmedCandles(rec.tf["1h"].c, "1h", now, meta.mkt, sessionState);
+    rec.tf["4h"] = { updated: rec.tf["1h"].updated, c: slimCandles(aggregate(confirmed1h, 4).slice(-KEEP)), derived: true };
   }
 
   // المؤشرات لكل فريم
   rec.an = {};
   for (const tf of AN_TFS) {
-    const a = rec.tf[tf]?.c ? analyze(rec.tf[tf].c) : null;
+    const raw = rec.tf[tf]?.c;
+    const input = raw && tf !== "4h" ? confirmedCandles(raw, tf, now, meta.mkt, sessionState) : raw;
+    const a = input?.length ? analyze(input) : null;
     if (!a) continue;
     const { series, ...rest } = a;                    // لا نحفظ السلاسل الكاملة (حجم)
     rec.an[tf] = slimAnalysis(rest);
@@ -725,6 +730,52 @@ function selfCheck() {
     if (packCandles(c)[0].c !== undefined) throw new Error("المضغوط يجب ألا يحمل c");
     if (typeof round[0].c.toFixed !== "function") throw new Error("المفكوك يجب أن يحمل رقماً في c");
     eq(unpackCandles(c), c, "المفكوك أصلاً يمرّ كما هو");
+  });
+
+  t("المؤشرات لا ترى الشمعة الجارية ولا لقطة Yahoo الشاذة", () => {
+    const now = Date.parse("2026-09-14T19:35:00Z");
+    const bar = (t, c, v = 100) => ({ t: Date.parse(t), o: c, h: c + 1, l: c - 1, c, v });
+    const q15 = [
+      bar("2026-09-14T19:00:00Z", 100), bar("2026-09-14T19:15:00Z", 101),
+      bar("2026-09-14T19:30:00Z", 80, 5)                 // ما زالت تتكوّن
+    ];
+    eq(confirmedCandles(q15, "15m", now, null, "REGULAR").map(x => x.c), [100, 101], "15د المكتملة فقط");
+
+    const q1h = [
+      bar("2026-09-14T18:30:00Z", 100, 5000),
+      bar("2026-09-14T19:30:00Z", 101, 4000),
+      bar("2026-09-14T19:31:04Z", 70, 0)                 // لقطة شاذة في نفس الفتحة
+    ];
+    const fixed = confirmedCandles(q1h, "1h", Date.parse("2026-09-14T21:00:00Z"), null, "POST");
+    eq(fixed.map(x => x.c), [100, 101], "الأعلى حجماً يبقى والشاذ يُسقط");
+  });
+
+  t("تغيّر الشمعة الجارية لا يغيّر النتيجة المؤكدة", () => {
+    const now = Date.parse("2026-09-14T19:35:00Z"), d = 15 * 60000;
+    const base = Array.from({ length: 260 }, (_, i) => {
+      const c = 100 + i * 0.08;
+      return { t: now - (261 - i) * d, o: c - 0.02, h: c + 0.2, l: c - 0.2, c, v: 1000 + i };
+    });
+    const partial = (c) => ({ t: Date.parse("2026-09-14T19:30:00Z"), o: 121, h: Math.max(121, c), l: Math.min(121, c), c, v: 10 });
+    const a = analyze(confirmedCandles([...base, partial(90)], "15m", now, null, "REGULAR"));
+    const b = analyze(confirmedCandles([...base, partial(140)], "15m", now, null, "REGULAR"));
+    eq(a.score, b.score, "هبوط/صعود داخل الشمعة الجارية لا يتسرّب");
+  });
+
+  t("تجميع 4h مثبت بحدود اليوم لا ببداية النافذة", () => {
+    const mk = (day, hour, c) => ({ t: Date.parse(`2026-09-${day}T${String(hour).padStart(2, "0")}:30:00Z`), o: c, h: c + 1, l: c - 1, c, v: 10 });
+    const d1 = [13,14,15,16,17].map((h, i) => mk(10, h, 10 + i));
+    const d2 = [13,14,15,16,17,18,19].map((h, i) => mk(11, h, 20 + i));
+    const tail = x => aggregate(x, 4).filter(b => new Date(b.t).getUTCDate() === 11).map(b => [b.t, b.o, b.c]);
+    eq(tail([...d1, ...d2]), tail([mk(10, 12, 9), ...d1, ...d2]), "يوم قديم لا يعيد تشكيل اليوم الحديث");
+  });
+
+  t("اليومي الأمريكي لا يصوّت قبل إغلاق جلسته", () => {
+    const prev = { t: Date.parse("2026-09-11T13:30:00Z"), o: 100, h: 102, l: 99, c: 101, v: 1 };
+    const cur = { t: Date.parse("2026-09-14T13:30:00Z"), o: 101, h: 104, l: 100, c: 103, v: 1 };
+    const now = Date.parse("2026-09-14T19:00:00Z");
+    eq(confirmedCandles([prev, cur], "1d", now, null, "REGULAR").map(x => x.c), [101], "أثناء الجلسة");
+    eq(confirmedCandles([prev, cur], "1d", now, null, "POST").map(x => x.c), [101, 103], "بعد الإغلاق");
   });
 
   t("أولوية الميزانية للرموز الناقصة لا الممتلئة", () => {
