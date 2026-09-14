@@ -1,1 +1,2833 @@
-{"note":"كون البحث: أكبر الشركات الأمريكية المدرجة. المهمة اليومية ترتّبها حسب القيمة السوقية الفعلية وتختار أعلى 70.","top":70,"symbols":[{"s":"NVDA","ar":"إنفيديا","en":"NVIDIA","sec":"تقنية"},{"s":"AAPL","ar":"أبل","en":"Apple","sec":"تقنية"},{"s":"MSFT","ar":"مايكروسوفت","en":"Microsoft","sec":"تقنية"},{"s":"GOOGL","ar":"ألفابت (جوجل)","en":"Alphabet","sec":"اتصالات"},{"s":"AMZN","ar":"أمازون","en":"Amazon","sec":"استهلاكي كمالي"},{"s":"META","ar":"ميتا (فيسبوك)","en":"Meta Platforms","sec":"اتصالات"},{"s":"AVGO","ar":"برودكوم","en":"Broadcom","sec":"تقنية"},{"s":"TSLA","ar":"تسلا","en":"Tesla","sec":"استهلاكي كمالي"},{"s":"BRK-B","ar":"بيركشاير هاثاواي","en":"Berkshire Hathaway","sec":"مالي"},{"s":"JPM","ar":"جي بي مورغان","en":"JPMorgan Chase","sec":"مالي"},{"s":"WMT","ar":"وولمارت","en":"Walmart","sec":"استهلاكي أساسي"},{"s":"LLY","ar":"إيلي ليلي","en":"Eli Lilly","sec":"رعاية صحية"},{"s":"ORCL","ar":"أوراكل","en":"Oracle","sec":"تقنية"},{"s":"V","ar":"فيزا","en":"Visa","sec":"مالي"},{"s":"MA","ar":"ماستركارد","en":"Mastercard","sec":"مالي"},{"s":"NFLX","ar":"نتفليكس","en":"Netflix","sec":"اتصالات"},{"s":"XOM","ar":"إكسون موبيل","en":"Exxon Mobil","sec":"طاقة"},{"s":"COST","ar":"كوستكو","en":"Costco","sec":"استهلاكي أساسي"},{"s":"JNJ","ar":"جونسون آند جونسون","en":"Johnson & Johnson","sec":"رعاية صحية"},{"s":"HD","ar":"هوم ديبوت","en":"Home Depot","sec":"استهلاكي كمالي"},{"s":"PG","ar":"بروكتر آند غامبل","en":"Procter & Gamble","sec":"استهلاكي أساسي"},{"s":"ABBV","ar":"أبفي","en":"AbbVie","sec":"رعاية صحية"},{"s":"BAC","ar":"بنك أوف أمريكا","en":"Bank of America","sec":"مالي"},{"s":"PLTR","ar":"بالانتير","en":"Palantir","sec":"تقنية"},{"s":"AMD","ar":"إيه إم دي","en":"AMD","sec":"تقنية"},{"s":"KO","ar":"كوكاكولا","en":"Coca-Cola","sec":"استهلاكي أساسي"},{"s":"CVX","ar":"شيفرون","en":"Chevron","sec":"طاقة"},{"s":"GE","ar":"جنرال إلكتريك للطيران","en":"GE Aerospace","sec":"صناعي"},{"s":"CSCO","ar":"سيسكو","en":"Cisco","sec":"تقنية"},{"s":"TMUS","ar":"تي موبايل","en":"T-Mobile US","sec":"اتصالات"},{"s":"WFC","ar":"ويلز فارغو","en":"Wells Fargo","sec":"مالي"},{"s":"CRM","ar":"سيلزفورس","en":"Salesforce","sec":"تقنية"},{"s":"PM","ar":"فيليب موريس","en":"Philip Morris","sec":"استهلاكي أساسي"},{"s":"IBM","ar":"آي بي إم","en":"IBM","sec":"تقنية"},{"s":"UNH","ar":"يونايتد هيلث","en":"UnitedHealth","sec":"رعاية صحية"},{"s":"MS","ar":"مورغان ستانلي","en":"Morgan Stanley","sec":"مالي"},{"s":"ABT","ar":"أبوت","en":"Abbott Laboratories","sec":"رعاية صحية"},{"s":"GS","ar":"غولدمان ساكس","en":"Goldman Sachs","sec":"مالي"},{"s":"LIN","ar":"ليندي","en":"Linde","sec":"مواد"},{"s":"MCD","ar":"ماكدونالدز","en":"McDonald's","sec":"استهلاكي كمالي"},{"s":"DIS","ar":"ديزني","en":"Walt Disney","sec":"اتصالات"},{"s":"NOW","ar":"سيرفس ناو","en":"ServiceNow","sec":"تقنية"},{"s":"INTU","ar":"إنتويت","en":"Intuit","sec":"تقنية"},{"s":"AXP","ar":"أمريكان إكسبريس","en":"American Express","sec":"مالي"},{"s":"MRK","ar":"ميرك","en":"Merck","sec":"رعاية صحية"},{"s":"RTX","ar":"آر تي إكس","en":"RTX Corporation","sec":"صناعي"},{"s":"T","ar":"إيه تي آند تي","en":"AT&T","sec":"اتصالات"},{"s":"PEP","ar":"بيبسيكو","en":"PepsiCo","sec":"استهلاكي أساسي"},{"s":"CAT","ar":"كاتربيلر","en":"Caterpillar","sec":"صناعي"},{"s":"UBER","ar":"أوبر","en":"Uber Technologies","sec":"صناعي"},{"s":"VZ","ar":"فيرايزون","en":"Verizon","sec":"اتصالات"},{"s":"BKNG","ar":"بوكينج","en":"Booking Holdings","sec":"استهلاكي كمالي"},{"s":"QCOM","ar":"كوالكوم","en":"Qualcomm","sec":"تقنية"},{"s":"TXN","ar":"تكساس إنسترومنتس","en":"Texas Instruments","sec":"تقنية"},{"s":"ISRG","ar":"إنتويتيف سيرجيكال","en":"Intuitive Surgical","sec":"رعاية صحية"},{"s":"BLK","ar":"بلاك روك","en":"BlackRock","sec":"مالي"},{"s":"AMGN","ar":"أمجين","en":"Amgen","sec":"رعاية صحية"},{"s":"SPGI","ar":"إس آند بي غلوبال","en":"S&P Global","sec":"مالي"},{"s":"C","ar":"سيتي غروب","en":"Citigroup","sec":"مالي"},{"s":"BA","ar":"بوينج","en":"Boeing","sec":"صناعي"},{"s":"ADBE","ar":"أدوبي","en":"Adobe","sec":"تقنية"},{"s":"HON","ar":"هانيويل","en":"Honeywell","sec":"صناعي"},{"s":"NEE","ar":"نكستيرا للطاقة","en":"NextEra Energy","sec":"مرافق"},{"s":"PFE","ar":"فايزر","en":"Pfizer","sec":"رعاية صحية"},{"s":"AMAT","ar":"أبلايد ماتيريالز","en":"Applied Materials","sec":"تقنية"},{"s":"ETN","ar":"إيتون","en":"Eaton","sec":"صناعي"},{"s":"LOW","ar":"لوز","en":"Lowe's","sec":"استهلاكي كمالي"},{"s":"TJX","ar":"تي جيه إكس","en":"TJX Companies","sec":"استهلاكي كمالي"},{"s":"SCHW","ar":"تشارلز شواب","en":"Charles Schwab","sec":"مالي"},{"s":"UNP","ar":"يونيون باسيفيك","en":"Union Pacific","sec":"صناعي"},{"s":"COP","ar":"كونوكو فيليبس","en":"ConocoPhillips","sec":"طاقة"},{"s":"SYK","ar":"سترايكر","en":"Stryker","sec":"رعاية صحية"},{"s":"PGR","ar":"بروجرسيف","en":"Progressive","sec":"مالي"},{"s":"LMT","ar":"لوكهيد مارتن","en":"Lockheed Martin","sec":"صناعي"},{"s":"BSX","ar":"بوسطن ساينتفك","en":"Boston Scientific","sec":"رعاية صحية"},{"s":"DE","ar":"جون ديري","en":"Deere & Company","sec":"صناعي"},{"s":"MU","ar":"مايكرون","en":"Micron Technology","sec":"تقنية"},{"s":"ANET","ar":"أريستا نتوركس","en":"Arista Networks","sec":"تقنية"},{"s":"KKR","ar":"كيه كيه آر","en":"KKR & Co.","sec":"مالي"},{"s":"PANW","ar":"بالو ألتو نتوركس","en":"Palo Alto Networks","sec":"تقنية"},{"s":"LRCX","ar":"لام ريسيرش","en":"Lam Research","sec":"تقنية"},{"s":"VRTX","ar":"فيرتكس","en":"Vertex Pharmaceuticals","sec":"رعاية صحية"},{"s":"ADP","ar":"إيه دي بي","en":"ADP","sec":"صناعي"},{"s":"GILD","ar":"جلعاد","en":"Gilead Sciences","sec":"رعاية صحية"},{"s":"MDT","ar":"ميدترونيك","en":"Medtronic","sec":"رعاية صحية"},{"s":"BX","ar":"بلاكستون","en":"Blackstone","sec":"مالي"},{"s":"MMC","ar":"مارش ماكلينان","en":"Marsh & McLennan","sec":"مالي"},{"s":"CB","ar":"تشب","en":"Chubb","sec":"مالي"},{"s":"INTC","ar":"إنتل","en":"Intel","sec":"تقنية"},{"s":"MDLZ","ar":"مونديليز","en":"Mondelez","sec":"استهلاكي أساسي"}],"wide":[{"s":"MMM","en":"3M","sec":"صناعي"},{"s":"AOS","en":"A. O. Smith","sec":"صناعي"},{"s":"ACN","en":"Accenture","sec":"تقنية"},{"s":"AES","en":"AES Corporation","sec":"مرافق"},{"s":"AFL","en":"Aflac","sec":"مالي"},{"s":"A","en":"Agilent Technologies","sec":"رعاية صحية"},{"s":"APD","en":"Air Products","sec":"مواد"},{"s":"ABNB","en":"Airbnb","sec":"استهلاكي كمالي"},{"s":"AKAM","en":"Akamai Technologies","sec":"تقنية"},{"s":"ALB","en":"Albemarle Corporation","sec":"مواد"},{"s":"ARE","en":"Alexandria Real Estate Equities","sec":"عقارات"},{"s":"ALGN","en":"Align Technology","sec":"رعاية صحية"},{"s":"ALLE","en":"Allegion","sec":"صناعي"},{"s":"LNT","en":"Alliant Energy","sec":"مرافق"},{"s":"ALL","en":"Allstate","sec":"مالي"},{"s":"GOOG","en":"Alphabet Inc. (Class C)","sec":"اتصالات"},{"s":"MO","en":"Altria","sec":"استهلاكي أساسي"},{"s":"AMCR","en":"Amcor","sec":"مواد"},{"s":"AEE","en":"Ameren","sec":"مرافق"},{"s":"AEP","en":"American Electric Power","sec":"مرافق"},{"s":"AIG","en":"American International Group","sec":"مالي"},{"s":"AMT","en":"American Tower","sec":"عقارات"},{"s":"AWK","en":"American Water Works","sec":"مرافق"},{"s":"AMP","en":"Ameriprise Financial","sec":"مالي"},{"s":"AME","en":"Ametek","sec":"صناعي"},{"s":"APH","en":"Amphenol","sec":"تقنية"},{"s":"ADI","en":"Analog Devices","sec":"تقنية"},{"s":"AON","en":"Aon plc","sec":"مالي"},{"s":"APA","en":"APA Corporation","sec":"طاقة"},{"s":"APO","en":"Apollo Global Management","sec":"مالي"},{"s":"APP","en":"AppLovin","sec":"اتصالات"},{"s":"APTV","en":"Aptiv","sec":"استهلاكي كمالي"},{"s":"ACGL","en":"Arch Capital Group","sec":"مالي"},{"s":"ADM","en":"Archer Daniels Midland","sec":"استهلاكي أساسي"},{"s":"ARES","en":"Ares Management","sec":"مالي"},{"s":"AJG","en":"Arthur J. Gallagher & Co.","sec":"مالي"},{"s":"AIZ","en":"Assurant","sec":"مالي"},{"s":"ATO","en":"Atmos Energy","sec":"مرافق"},{"s":"ADSK","en":"Autodesk","sec":"تقنية"},{"s":"AZO","en":"AutoZone","sec":"استهلاكي كمالي"},{"s":"AVY","en":"Avery Dennison","sec":"مواد"},{"s":"AXON","en":"Axon Enterprise","sec":"صناعي"},{"s":"BKR","en":"Baker Hughes","sec":"طاقة"},{"s":"BALL","en":"Ball Corporation","sec":"مواد"},{"s":"BAX","en":"Baxter International","sec":"رعاية صحية"},{"s":"BDX","en":"Becton Dickinson","sec":"رعاية صحية"},{"s":"BBY","en":"Best Buy","sec":"استهلاكي كمالي"},{"s":"TECH","en":"Bio-Techne","sec":"رعاية صحية"},{"s":"BIIB","en":"Biogen","sec":"رعاية صحية"},{"s":"XYZ","en":"Block, Inc.","sec":"مالي"},{"s":"BNY","en":"BNY Mellon","sec":"مالي"},{"s":"BMY","en":"Bristol Myers Squibb","sec":"رعاية صحية"},{"s":"BR","en":"Broadridge Financial Solutions","sec":"صناعي"},{"s":"BRO","en":"Brown & Brown","sec":"مالي"},{"s":"BF-B","en":"Brown–Forman","sec":"استهلاكي أساسي"},{"s":"BLDR","en":"Builders FirstSource","sec":"صناعي"},{"s":"BG","en":"Bunge Global","sec":"استهلاكي أساسي"},{"s":"BXP","en":"BXP, Inc.","sec":"عقارات"},{"s":"CHRW","en":"C.H. Robinson","sec":"صناعي"},{"s":"CDNS","en":"Cadence Design Systems","sec":"تقنية"},{"s":"CPT","en":"Camden Property Trust","sec":"عقارات"},{"s":"COF","en":"Capital One","sec":"مالي"},{"s":"CAH","en":"Cardinal Health","sec":"رعاية صحية"},{"s":"CCL","en":"Carnival Corporation","sec":"استهلاكي كمالي"},{"s":"CARR","en":"Carrier Global","sec":"صناعي"},{"s":"CVNA","en":"Carvana","sec":"استهلاكي كمالي"},{"s":"CASY","en":"Casey's","sec":"استهلاكي أساسي"},{"s":"CBOE","en":"Cboe Global Markets","sec":"مالي"},{"s":"CBRE","en":"CBRE Group","sec":"عقارات"},{"s":"CDW","en":"CDW Corporation","sec":"تقنية"},{"s":"COR","en":"Cencora","sec":"رعاية صحية"},{"s":"CNC","en":"Centene Corporation","sec":"رعاية صحية"},{"s":"CNP","en":"CenterPoint Energy","sec":"مرافق"},{"s":"CF","en":"CF Industries","sec":"مواد"},{"s":"CRL","en":"Charles River Laboratories","sec":"رعاية صحية"},{"s":"CHTR","en":"Charter Communications","sec":"اتصالات"},{"s":"CMG","en":"Chipotle Mexican Grill","sec":"استهلاكي كمالي"},{"s":"CHD","en":"Church & Dwight","sec":"استهلاكي أساسي"},{"s":"CIEN","en":"Ciena","sec":"تقنية"},{"s":"CI","en":"Cigna","sec":"رعاية صحية"},{"s":"CINF","en":"Cincinnati Financial","sec":"مالي"},{"s":"CTAS","en":"Cintas","sec":"صناعي"},{"s":"CFG","en":"Citizens Financial Group","sec":"مالي"},{"s":"CLX","en":"Clorox","sec":"استهلاكي أساسي"},{"s":"CME","en":"CME Group","sec":"مالي"},{"s":"CMS","en":"CMS Energy","sec":"مرافق"},{"s":"CTSH","en":"Cognizant","sec":"تقنية"},{"s":"COHR","en":"Coherent Corp.","sec":"تقنية"},{"s":"COIN","en":"Coinbase","sec":"مالي"},{"s":"CL","en":"Colgate-Palmolive","sec":"استهلاكي أساسي"},{"s":"CMCSA","en":"Comcast","sec":"اتصالات"},{"s":"FIX","en":"Comfort Systems USA","sec":"صناعي"},{"s":"ED","en":"Consolidated Edison","sec":"مرافق"},{"s":"STZ","en":"Constellation Brands","sec":"استهلاكي أساسي"},{"s":"CEG","en":"Constellation Energy","sec":"مرافق"},{"s":"COO","en":"Cooper Companies (The)","sec":"رعاية صحية"},{"s":"CPRT","en":"Copart","sec":"صناعي"},{"s":"GLW","en":"Corning Inc.","sec":"تقنية"},{"s":"CPAY","en":"Corpay","sec":"مالي"},{"s":"CTVA","en":"Corteva","sec":"مواد"},{"s":"CSGP","en":"CoStar Group","sec":"عقارات"},{"s":"CRH","en":"CRH plc","sec":"مواد"},{"s":"CRWD","en":"CrowdStrike","sec":"تقنية"},{"s":"CCI","en":"Crown Castle","sec":"عقارات"},{"s":"CSX","en":"CSX Corporation","sec":"صناعي"},{"s":"CMI","en":"Cummins","sec":"صناعي"},{"s":"CVS","en":"CVS Health","sec":"رعاية صحية"},{"s":"DHR","en":"Danaher Corporation","sec":"رعاية صحية"},{"s":"DRI","en":"Darden Restaurants","sec":"استهلاكي كمالي"},{"s":"DDOG","en":"Datadog","sec":"تقنية"},{"s":"DVA","en":"DaVita","sec":"رعاية صحية"},{"s":"DECK","en":"Deckers Brands","sec":"استهلاكي كمالي"},{"s":"DELL","en":"Dell Technologies","sec":"تقنية"},{"s":"DAL","en":"Delta Air Lines","sec":"صناعي"},{"s":"DVN","en":"Devon Energy","sec":"طاقة"},{"s":"DXCM","en":"Dexcom","sec":"رعاية صحية"},{"s":"FANG","en":"Diamondback Energy","sec":"طاقة"},{"s":"DLR","en":"Digital Realty","sec":"عقارات"},{"s":"DG","en":"Dollar General","sec":"استهلاكي أساسي"},{"s":"DLTR","en":"Dollar Tree","sec":"استهلاكي أساسي"},{"s":"D","en":"Dominion Energy","sec":"مرافق"},{"s":"DPZ","en":"Domino's","sec":"استهلاكي كمالي"},{"s":"DASH","en":"DoorDash","sec":"استهلاكي كمالي"},{"s":"DOV","en":"Dover Corporation","sec":"صناعي"},{"s":"DOW","en":"Dow Inc.","sec":"مواد"},{"s":"DHI","en":"D. R. Horton","sec":"استهلاكي كمالي"},{"s":"DTE","en":"DTE Energy","sec":"مرافق"},{"s":"DUK","en":"Duke Energy","sec":"مرافق"},{"s":"DD","en":"DuPont","sec":"صناعي"},{"s":"EBAY","en":"eBay Inc.","sec":"استهلاكي كمالي"},{"s":"ECHO","en":"EchoStar","sec":"اتصالات"},{"s":"ECL","en":"Ecolab","sec":"مواد"},{"s":"EIX","en":"Edison International","sec":"مرافق"},{"s":"EW","en":"Edwards Lifesciences","sec":"رعاية صحية"},{"s":"ELV","en":"Elevance Health","sec":"رعاية صحية"},{"s":"EME","en":"Emcor","sec":"صناعي"},{"s":"EMR","en":"Emerson Electric","sec":"صناعي"},{"s":"ETR","en":"Entergy","sec":"مرافق"},{"s":"EOG","en":"EOG Resources","sec":"طاقة"},{"s":"EQT","en":"EQT Corporation","sec":"طاقة"},{"s":"EFX","en":"Equifax","sec":"صناعي"},{"s":"EQIX","en":"Equinix","sec":"عقارات"},{"s":"ERIE","en":"Erie Indemnity","sec":"مالي"},{"s":"ESS","en":"Essex Property Trust","sec":"عقارات"},{"s":"EL","en":"Estée Lauder Companies (The)","sec":"استهلاكي أساسي"},{"s":"EG","en":"Everest Group","sec":"مالي"},{"s":"EVRG","en":"Evergy","sec":"مرافق"},{"s":"ES","en":"Eversource Energy","sec":"مرافق"},{"s":"EXC","en":"Exelon","sec":"مرافق"},{"s":"EXE","en":"Expand Energy","sec":"طاقة"},{"s":"EXPE","en":"Expedia Group","sec":"استهلاكي كمالي"},{"s":"EXPD","en":"Expeditors International","sec":"صناعي"},{"s":"EXR","en":"Extra Space Storage","sec":"عقارات"},{"s":"FFIV","en":"F5, Inc.","sec":"تقنية"},{"s":"FDS","en":"FactSet","sec":"مالي"},{"s":"FICO","en":"Fair Isaac","sec":"تقنية"},{"s":"FAST","en":"Fastenal","sec":"صناعي"},{"s":"FRT","en":"Federal Realty Investment Trust","sec":"عقارات"},{"s":"FDX","en":"FedEx","sec":"صناعي"},{"s":"FDXF","en":"FedEx Freight","sec":"صناعي"},{"s":"FERG","en":"Ferguson Enterprises","sec":"صناعي"},{"s":"FIS","en":"Fidelity National Information Services","sec":"مالي"},{"s":"FITB","en":"Fifth Third Bancorp","sec":"مالي"},{"s":"FSLR","en":"First Solar","sec":"تقنية"},{"s":"FE","en":"FirstEnergy","sec":"مرافق"},{"s":"FISV","en":"Fiserv","sec":"مالي"},{"s":"FLEX","en":"Flex Ltd.","sec":"تقنية"},{"s":"F","en":"Ford Motor Company","sec":"استهلاكي كمالي"},{"s":"FTNT","en":"Fortinet","sec":"تقنية"},{"s":"FTV","en":"Fortive","sec":"صناعي"},{"s":"FOXA","en":"Fox Corporation (Class A)","sec":"اتصالات"},{"s":"FOX","en":"Fox Corporation (Class B)","sec":"اتصالات"},{"s":"BEN","en":"Franklin Resources","sec":"مالي"},{"s":"FCX","en":"Freeport-McMoRan","sec":"مواد"},{"s":"GRMN","en":"Garmin","sec":"استهلاكي كمالي"},{"s":"IT","en":"Gartner","sec":"تقنية"},{"s":"GEHC","en":"GE HealthCare","sec":"رعاية صحية"},{"s":"GEV","en":"GE Vernova","sec":"صناعي"},{"s":"GEN","en":"Gen Digital","sec":"تقنية"},{"s":"GNRC","en":"Generac","sec":"صناعي"},{"s":"GD","en":"General Dynamics","sec":"صناعي"},{"s":"GIS","en":"General Mills","sec":"استهلاكي أساسي"},{"s":"GM","en":"General Motors","sec":"استهلاكي كمالي"},{"s":"GPC","en":"Genuine Parts Company","sec":"استهلاكي كمالي"},{"s":"GPN","en":"Global Payments","sec":"مالي"},{"s":"GL","en":"Globe Life","sec":"مالي"},{"s":"GDDY","en":"GoDaddy","sec":"تقنية"},{"s":"HAL","en":"Halliburton","sec":"طاقة"},{"s":"HIG","en":"Hartford (The)","sec":"مالي"},{"s":"HAS","en":"Hasbro","sec":"استهلاكي كمالي"},{"s":"HCA","en":"HCA Healthcare","sec":"رعاية صحية"},{"s":"DOC","en":"Healthpeak Properties","sec":"عقارات"},{"s":"HSIC","en":"Henry Schein","sec":"رعاية صحية"},{"s":"HSY","en":"Hershey Company (The)","sec":"استهلاكي أساسي"},{"s":"HPE","en":"Hewlett Packard Enterprise","sec":"تقنية"},{"s":"HLT","en":"Hilton Worldwide","sec":"استهلاكي كمالي"},{"s":"HONA","en":"Honeywell Aerospace","sec":"صناعي"},{"s":"HRL","en":"Hormel Foods","sec":"استهلاكي أساسي"},{"s":"HST","en":"Host Hotels & Resorts","sec":"عقارات"},{"s":"HWM","en":"Howmet Aerospace","sec":"صناعي"},{"s":"HPQ","en":"HP Inc.","sec":"تقنية"},{"s":"HUBB","en":"Hubbell Incorporated","sec":"صناعي"},{"s":"HUM","en":"Humana","sec":"رعاية صحية"},{"s":"HBAN","en":"Huntington Bancshares","sec":"مالي"},{"s":"HII","en":"Huntington Ingalls Industries","sec":"صناعي"},{"s":"IEX","en":"IDEX Corporation","sec":"صناعي"},{"s":"IDXX","en":"Idexx Laboratories","sec":"رعاية صحية"},{"s":"ITW","en":"Illinois Tool Works","sec":"صناعي"},{"s":"INCY","en":"Incyte","sec":"رعاية صحية"},{"s":"IR","en":"Ingersoll Rand","sec":"صناعي"},{"s":"PODD","en":"Insulet Corporation","sec":"رعاية صحية"},{"s":"IBKR","en":"Interactive Brokers","sec":"مالي"},{"s":"ICE","en":"Intercontinental Exchange","sec":"مالي"},{"s":"IFF","en":"International Flavors & Fragrances","sec":"مواد"},{"s":"IP","en":"International Paper","sec":"مواد"},{"s":"IVZ","en":"Invesco","sec":"مالي"},{"s":"INVH","en":"Invitation Homes","sec":"عقارات"},{"s":"IQV","en":"IQVIA","sec":"رعاية صحية"},{"s":"IRM","en":"Iron Mountain","sec":"عقارات"},{"s":"JBHT","en":"J.B. Hunt","sec":"صناعي"},{"s":"JBL","en":"Jabil","sec":"تقنية"},{"s":"JKHY","en":"Jack Henry & Associates","sec":"مالي"},{"s":"J","en":"Jacobs Solutions","sec":"صناعي"},{"s":"JCI","en":"Johnson Controls","sec":"صناعي"},{"s":"KVUE","en":"Kenvue","sec":"استهلاكي أساسي"},{"s":"KDP","en":"Keurig Dr Pepper","sec":"استهلاكي أساسي"},{"s":"KEY","en":"KeyCorp","sec":"مالي"},{"s":"KEYS","en":"Keysight Technologies","sec":"تقنية"},{"s":"KMB","en":"Kimberly-Clark","sec":"استهلاكي أساسي"},{"s":"KIM","en":"Kimco Realty","sec":"عقارات"},{"s":"KMI","en":"Kinder Morgan","sec":"طاقة"},{"s":"KLAC","en":"KLA Corporation","sec":"تقنية"},{"s":"KHC","en":"Kraft Heinz","sec":"استهلاكي أساسي"},{"s":"KR","en":"Kroger","sec":"استهلاكي أساسي"},{"s":"LHX","en":"L3Harris","sec":"صناعي"},{"s":"LH","en":"Labcorp","sec":"رعاية صحية"},{"s":"LVS","en":"Las Vegas Sands","sec":"استهلاكي كمالي"},{"s":"LDOS","en":"Leidos","sec":"صناعي"},{"s":"LEN","en":"Lennar","sec":"استهلاكي كمالي"},{"s":"LII","en":"Lennox International","sec":"صناعي"},{"s":"LYV","en":"Live Nation Entertainment","sec":"اتصالات"},{"s":"L","en":"Loews Corporation","sec":"مالي"},{"s":"LULU","en":"Lululemon Athletica","sec":"استهلاكي كمالي"},{"s":"LITE","en":"Lumentum","sec":"تقنية"},{"s":"LYB","en":"LyondellBasell","sec":"مواد"},{"s":"MTB","en":"M&T Bank","sec":"مالي"},{"s":"MPC","en":"Marathon Petroleum","sec":"طاقة"},{"s":"MAR","en":"Marriott International","sec":"استهلاكي كمالي"},{"s":"MRSH","en":"Marsh McLennan","sec":"مالي"},{"s":"MLM","en":"Martin Marietta Materials","sec":"مواد"},{"s":"MRVL","en":"Marvell Technology","sec":"تقنية"},{"s":"MAS","en":"Masco","sec":"صناعي"},{"s":"MKC","en":"McCormick & Company","sec":"استهلاكي أساسي"},{"s":"MCK","en":"McKesson Corporation","sec":"رعاية صحية"},{"s":"MET","en":"MetLife","sec":"مالي"},{"s":"MTD","en":"Mettler Toledo","sec":"رعاية صحية"},{"s":"MGM","en":"MGM Resorts","sec":"استهلاكي كمالي"},{"s":"MCHP","en":"Microchip Technology","sec":"تقنية"},{"s":"MAA","en":"Mid-America Apartment Communities","sec":"عقارات"},{"s":"MRNA","en":"Moderna","sec":"رعاية صحية"},{"s":"TAP","en":"Molson Coors Beverage Company","sec":"استهلاكي أساسي"},{"s":"MPWR","en":"Monolithic Power Systems","sec":"تقنية"},{"s":"MNST","en":"Monster Beverage","sec":"استهلاكي أساسي"},{"s":"MCO","en":"Moody's Corporation","sec":"مالي"},{"s":"MOS","en":"Mosaic Company (The)","sec":"مواد"},{"s":"MSI","en":"Motorola Solutions","sec":"تقنية"},{"s":"MSCI","en":"MSCI","sec":"مالي"},{"s":"NDAQ","en":"Nasdaq, Inc.","sec":"مالي"},{"s":"NTAP","en":"NetApp","sec":"تقنية"},{"s":"NEM","en":"Newmont","sec":"مواد"},{"s":"NWSA","en":"News Corp (Class A)","sec":"اتصالات"},{"s":"NWS","en":"News Corp (Class B)","sec":"اتصالات"},{"s":"NKE","en":"Nike, Inc.","sec":"استهلاكي كمالي"},{"s":"NI","en":"NiSource","sec":"مرافق"},{"s":"NDSN","en":"Nordson Corporation","sec":"صناعي"},{"s":"NSC","en":"Norfolk Southern","sec":"صناعي"},{"s":"NTRS","en":"Northern Trust","sec":"مالي"},{"s":"NOC","en":"Northrop Grumman","sec":"صناعي"},{"s":"NCLH","en":"Norwegian Cruise Line Holdings","sec":"استهلاكي كمالي"},{"s":"NRG","en":"NRG Energy","sec":"مرافق"},{"s":"NUE","en":"Nucor","sec":"مواد"},{"s":"NVR","en":"NVR, Inc.","sec":"استهلاكي كمالي"},{"s":"NXPI","en":"NXP Semiconductors","sec":"تقنية"},{"s":"ORLY","en":"O'Reilly Automotive","sec":"استهلاكي كمالي"},{"s":"OXY","en":"Occidental Petroleum","sec":"طاقة"},{"s":"ODFL","en":"Old Dominion","sec":"صناعي"},{"s":"OMC","en":"Omnicom Group","sec":"اتصالات"},{"s":"ON","en":"ON Semiconductor","sec":"تقنية"},{"s":"OKE","en":"Oneok","sec":"طاقة"},{"s":"OTIS","en":"Otis Worldwide","sec":"صناعي"},{"s":"PCAR","en":"Paccar","sec":"صناعي"},{"s":"PKG","en":"Packaging Corporation of America","sec":"مواد"},{"s":"PSKY","en":"Paramount Skydance Corporation","sec":"اتصالات"},{"s":"PH","en":"Parker Hannifin","sec":"صناعي"},{"s":"PAYX","en":"Paychex","sec":"صناعي"},{"s":"PYPL","en":"PayPal","sec":"مالي"},{"s":"PNR","en":"Pentair","sec":"صناعي"},{"s":"PCG","en":"PG&E Corporation","sec":"مرافق"},{"s":"PSX","en":"Phillips 66","sec":"طاقة"},{"s":"PNW","en":"Pinnacle West Capital","sec":"مرافق"},{"s":"PNC","en":"PNC Financial Services","sec":"مالي"},{"s":"PPG","en":"PPG Industries","sec":"مواد"},{"s":"PPL","en":"PPL Corporation","sec":"مرافق"},{"s":"PFG","en":"Principal Financial Group","sec":"مالي"},{"s":"PLD","en":"Prologis","sec":"عقارات"},{"s":"PRU","en":"Prudential Financial","sec":"مالي"},{"s":"PEG","en":"Public Service Enterprise Group","sec":"مرافق"},{"s":"PTC","en":"PTC Inc.","sec":"تقنية"},{"s":"PSA","en":"Public Storage","sec":"عقارات"},{"s":"PHM","en":"PulteGroup","sec":"استهلاكي كمالي"},{"s":"PWR","en":"Quanta Services","sec":"صناعي"},{"s":"DGX","en":"Quest Diagnostics","sec":"رعاية صحية"},{"s":"Q","en":"Qnity Electronics","sec":"تقنية"},{"s":"RL","en":"Ralph Lauren Corporation","sec":"استهلاكي كمالي"},{"s":"RJF","en":"Raymond James Financial","sec":"مالي"},{"s":"RDDT","en":"Reddit","sec":"اتصالات"},{"s":"O","en":"Realty Income","sec":"عقارات"},{"s":"REG","en":"Regency Centers","sec":"عقارات"},{"s":"REGN","en":"Regeneron Pharmaceuticals","sec":"رعاية صحية"},{"s":"RF","en":"Regions Financial Corporation","sec":"مالي"},{"s":"RSG","en":"Republic Services","sec":"صناعي"},{"s":"RMD","en":"ResMed|","sec":"رعاية صحية"},{"s":"RVTY","en":"Revvity","sec":"رعاية صحية"},{"s":"HOOD","en":"Robinhood Markets","sec":"مالي"},{"s":"ROK","en":"Rockwell Automation","sec":"صناعي"},{"s":"ROL","en":"Rollins, Inc.","sec":"صناعي"},{"s":"ROP","en":"Roper Technologies","sec":"تقنية"},{"s":"ROST","en":"Ross Stores","sec":"استهلاكي كمالي"},{"s":"RCL","en":"Royal Caribbean Group","sec":"استهلاكي كمالي"},{"s":"SNDK","en":"Sandisk","sec":"تقنية"},{"s":"SBAC","en":"SBA Communications","sec":"عقارات"},{"s":"SLB","en":"Schlumberger","sec":"طاقة"},{"s":"STX","en":"Seagate Technology","sec":"تقنية"},{"s":"SRE","en":"Sempra","sec":"مرافق"},{"s":"SHW","en":"Sherwin-Williams","sec":"مواد"},{"s":"SPG","en":"Simon Property Group","sec":"عقارات"},{"s":"SWKS","en":"Skyworks Solutions","sec":"تقنية"},{"s":"SJM","en":"J.M. Smucker Company (The)","sec":"استهلاكي أساسي"},{"s":"SW","en":"Smurfit Westrock","sec":"مواد"},{"s":"SNA","en":"Snap-on","sec":"صناعي"},{"s":"SOLV","en":"Solventum","sec":"رعاية صحية"},{"s":"SO","en":"Southern Company","sec":"مرافق"},{"s":"LUV","en":"Southwest Airlines","sec":"صناعي"},{"s":"SWK","en":"Stanley Black & Decker","sec":"صناعي"},{"s":"SBUX","en":"Starbucks","sec":"استهلاكي كمالي"},{"s":"STT","en":"State Street Corporation","sec":"مالي"},{"s":"STLD","en":"Steel Dynamics","sec":"مواد"},{"s":"STE","en":"Steris","sec":"رعاية صحية"},{"s":"SMCI","en":"Supermicro","sec":"تقنية"},{"s":"SYF","en":"Synchrony Financial","sec":"مالي"},{"s":"SNPS","en":"Synopsys","sec":"تقنية"},{"s":"SYY","en":"Sysco","sec":"استهلاكي أساسي"},{"s":"TROW","en":"T. Rowe Price","sec":"مالي"},{"s":"TTWO","en":"Take-Two Interactive","sec":"اتصالات"},{"s":"TPR","en":"Tapestry, Inc.","sec":"استهلاكي كمالي"},{"s":"TRGP","en":"Targa Resources","sec":"طاقة"},{"s":"TGT","en":"Target Corporation","sec":"استهلاكي أساسي"},{"s":"TEL","en":"TE Connectivity","sec":"تقنية"},{"s":"TDY","en":"Teledyne Technologies","sec":"تقنية"},{"s":"TER","en":"Teradyne","sec":"تقنية"},{"s":"TPL","en":"Texas Pacific Land Corporation","sec":"طاقة"},{"s":"TXT","en":"Textron","sec":"صناعي"},{"s":"TMO","en":"Thermo Fisher Scientific","sec":"رعاية صحية"},{"s":"TKO","en":"TKO Group Holdings","sec":"اتصالات"},{"s":"TTD","en":"Trade Desk (The)","sec":"اتصالات"},{"s":"TSCO","en":"Tractor Supply","sec":"استهلاكي كمالي"},{"s":"TT","en":"Trane Technologies","sec":"صناعي"},{"s":"TDG","en":"TransDigm Group","sec":"صناعي"},{"s":"TRV","en":"Travelers Companies (The)","sec":"مالي"},{"s":"TRMB","en":"Trimble Inc.","sec":"تقنية"},{"s":"TFC","en":"Truist Financial","sec":"مالي"},{"s":"TYL","en":"Tyler Technologies","sec":"تقنية"},{"s":"TSN","en":"Tyson Foods","sec":"استهلاكي أساسي"},{"s":"USB","en":"U.S. Bancorp","sec":"مالي"},{"s":"UDR","en":"UDR, Inc.","sec":"عقارات"},{"s":"ULTA","en":"Ulta Beauty","sec":"استهلاكي كمالي"},{"s":"UAL","en":"United Airlines Holdings","sec":"صناعي"},{"s":"UPS","en":"United Parcel Service","sec":"صناعي"},{"s":"URI","en":"United Rentals","sec":"صناعي"},{"s":"UHS","en":"Universal Health Services","sec":"رعاية صحية"},{"s":"VLO","en":"Valero Energy","sec":"طاقة"},{"s":"VEEV","en":"Veeva Systems","sec":"رعاية صحية"},{"s":"VTR","en":"Ventas","sec":"عقارات"},{"s":"VLTO","en":"Veralto","sec":"صناعي"},{"s":"VRSN","en":"Verisign","sec":"تقنية"},{"s":"VRSK","en":"Verisk Analytics","sec":"صناعي"},{"s":"VRT","en":"Vertiv","sec":"صناعي"},{"s":"VTRS","en":"Viatris","sec":"رعاية صحية"},{"s":"VICI","en":"Vici Properties","sec":"عقارات"},{"s":"VST","en":"Vistra Corp.","sec":"مرافق"},{"s":"VMRK","en":"Vivmark Residential","sec":"عقارات"},{"s":"VMC","en":"Vulcan Materials Company","sec":"مواد"},{"s":"WRB","en":"W. R. Berkley Corporation","sec":"مالي"},{"s":"GWW","en":"W. W. Grainger","sec":"صناعي"},{"s":"WAB","en":"Wabtec","sec":"صناعي"},{"s":"WBD","en":"Warner Bros. Discovery","sec":"اتصالات"},{"s":"WM","en":"Waste Management","sec":"صناعي"},{"s":"WAT","en":"Waters Corporation","sec":"رعاية صحية"},{"s":"WEC","en":"WEC Energy Group","sec":"مرافق"},{"s":"WELL","en":"Welltower","sec":"عقارات"},{"s":"WST","en":"West Pharmaceutical Services","sec":"رعاية صحية"},{"s":"WDC","en":"Western Digital","sec":"تقنية"},{"s":"WY","en":"Weyerhaeuser","sec":"عقارات"},{"s":"WSM","en":"Williams-Sonoma, Inc.","sec":"استهلاكي كمالي"},{"s":"WMB","en":"Williams Companies","sec":"طاقة"},{"s":"WTW","en":"Willis Towers Watson","sec":"مالي"},{"s":"WDAY","en":"Workday, Inc.","sec":"تقنية"},{"s":"WYNN","en":"Wynn Resorts","sec":"استهلاكي كمالي"},{"s":"XEL","en":"Xcel Energy","sec":"مرافق"},{"s":"XYL","en":"Xylem Inc.","sec":"صناعي"},{"s":"YUM","en":"Yum! Brands","sec":"استهلاكي كمالي"},{"s":"ZBRA","en":"Zebra Technologies","sec":"تقنية"},{"s":"ZBH","en":"Zimmer Biomet","sec":"رعاية صحية"},{"s":"ZTS","en":"Zoetis","sec":"رعاية صحية"}],"crypto":[{"s":"BTC-USD","ar":"بيتكوين","en":"Bitcoin","sec":"كريبتو","mkt":"crypto"},{"s":"ETH-USD","ar":"إيثيريوم","en":"Ethereum","sec":"كريبتو","mkt":"crypto"},{"s":"XRP-USD","ar":"ريبل","en":"XRP","sec":"كريبتو","mkt":"crypto"},{"s":"BNB-USD","ar":"بينانس كوين","en":"BNB","sec":"كريبتو","mkt":"crypto"},{"s":"SOL-USD","ar":"سولانا","en":"Solana","sec":"كريبتو","mkt":"crypto"},{"s":"DOGE-USD","ar":"دوجكوين","en":"Dogecoin","sec":"كريبتو","mkt":"crypto"},{"s":"ADA-USD","ar":"كاردانو","en":"Cardano","sec":"كريبتو","mkt":"crypto"},{"s":"TRX-USD","ar":"ترون","en":"TRON","sec":"كريبتو","mkt":"crypto"},{"s":"AVAX-USD","ar":"أفالانش","en":"Avalanche","sec":"كريبتو","mkt":"crypto"},{"s":"LINK-USD","ar":"تشين لينك","en":"Chainlink","sec":"كريبتو","mkt":"crypto"},{"s":"DOT-USD","ar":"بولكادوت","en":"Polkadot","sec":"كريبتو","mkt":"crypto"},{"s":"LTC-USD","ar":"لايتكوين","en":"Litecoin","sec":"كريبتو","mkt":"crypto"},{"s":"BCH-USD","ar":"بيتكوين كاش","en":"Bitcoin Cash","sec":"كريبتو","mkt":"crypto"},{"s":"XLM-USD","ar":"ستيلر","en":"Stellar","sec":"كريبتو","mkt":"crypto"},{"s":"UNI-USD","ar":"يونيسواب","en":"Uniswap","sec":"كريبتو","mkt":"crypto"},{"s":"ATOM-USD","ar":"كوزموس","en":"Cosmos","sec":"كريبتو","mkt":"crypto"},{"s":"ETC-USD","ar":"إيثيريوم كلاسيك","en":"Ethereum Classic","sec":"كريبتو","mkt":"crypto"},{"s":"HBAR-USD","ar":"هيدرا","en":"Hedera","sec":"كريبتو","mkt":"crypto"},{"s":"NEAR-USD","ar":"نير","en":"NEAR Protocol","sec":"كريبتو","mkt":"crypto"},{"s":"APT-USD","ar":"أبتوس","en":"Aptos","sec":"كريبتو","mkt":"crypto"},{"s":"ICP-USD","ar":"إنترنت كمبيوتر","en":"Internet Computer","sec":"كريبتو","mkt":"crypto"},{"s":"FIL-USD","ar":"فايلكوين","en":"Filecoin","sec":"كريبتو","mkt":"crypto"},{"s":"ARB-USD","ar":"أربيتروم","en":"Arbitrum","sec":"كريبتو","mkt":"crypto"},{"s":"OP-USD","ar":"أوبتيميزم","en":"Optimism","sec":"كريبتو","mkt":"crypto"},{"s":"SHIB-USD","ar":"شيبا إينو","en":"Shiba Inu","sec":"كريبتو","mkt":"crypto"},{"s":"POL-USD","ar":"بوليجون","en":"Polygon","sec":"كريبتو","mkt":"crypto"}],"indices":[{"s":"^GSPC","ar":"إس آند بي 500","en":"S&P 500","proxy":"SPY"},{"s":"^IXIC","ar":"ناسداك المجمّع","en":"Nasdaq Composite","proxy":"QQQ"},{"s":"^DJI","ar":"داو جونز","en":"Dow Jones","proxy":"DIA"},{"s":"^VIX","ar":"مؤشر الخوف VIX","en":"CBOE Volatility Index","proxy":"VIXY"}]}
+{
+  "note": "كون البحث: أكبر الشركات الأمريكية المدرجة. المهمة اليومية ترتّبها حسب القيمة السوقية الفعلية وتختار أعلى 70.",
+  "top": 71,
+  "symbols": [
+    {
+      "s": "NVDA",
+      "ar": "إنفيديا",
+      "en": "NVIDIA",
+      "sec": "تقنية"
+    },
+    {
+      "s": "AAPL",
+      "ar": "أبل",
+      "en": "Apple",
+      "sec": "تقنية"
+    },
+    {
+      "s": "MSFT",
+      "ar": "مايكروسوفت",
+      "en": "Microsoft",
+      "sec": "تقنية"
+    },
+    {
+      "s": "GOOGL",
+      "ar": "ألفابت (جوجل)",
+      "en": "Alphabet",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "AMZN",
+      "ar": "أمازون",
+      "en": "Amazon",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "META",
+      "ar": "ميتا (فيسبوك)",
+      "en": "Meta Platforms",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "AVGO",
+      "ar": "برودكوم",
+      "en": "Broadcom",
+      "sec": "تقنية"
+    },
+    {
+      "s": "TSLA",
+      "ar": "تسلا",
+      "en": "Tesla",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "BRK-B",
+      "ar": "بيركشاير هاثاواي",
+      "en": "Berkshire Hathaway",
+      "sec": "مالي"
+    },
+    {
+      "s": "JPM",
+      "ar": "جي بي مورغان",
+      "en": "JPMorgan Chase",
+      "sec": "مالي"
+    },
+    {
+      "s": "WMT",
+      "ar": "وولمارت",
+      "en": "Walmart",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "LLY",
+      "ar": "إيلي ليلي",
+      "en": "Eli Lilly",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "ORCL",
+      "ar": "أوراكل",
+      "en": "Oracle",
+      "sec": "تقنية"
+    },
+    {
+      "s": "V",
+      "ar": "فيزا",
+      "en": "Visa",
+      "sec": "مالي"
+    },
+    {
+      "s": "MA",
+      "ar": "ماستركارد",
+      "en": "Mastercard",
+      "sec": "مالي"
+    },
+    {
+      "s": "NFLX",
+      "ar": "نتفليكس",
+      "en": "Netflix",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "XOM",
+      "ar": "إكسون موبيل",
+      "en": "Exxon Mobil",
+      "sec": "طاقة"
+    },
+    {
+      "s": "COST",
+      "ar": "كوستكو",
+      "en": "Costco",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "JNJ",
+      "ar": "جونسون آند جونسون",
+      "en": "Johnson & Johnson",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "HD",
+      "ar": "هوم ديبوت",
+      "en": "Home Depot",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "PG",
+      "ar": "بروكتر آند غامبل",
+      "en": "Procter & Gamble",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "ABBV",
+      "ar": "أبفي",
+      "en": "AbbVie",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "BAC",
+      "ar": "بنك أوف أمريكا",
+      "en": "Bank of America",
+      "sec": "مالي"
+    },
+    {
+      "s": "PLTR",
+      "ar": "بالانتير",
+      "en": "Palantir",
+      "sec": "تقنية"
+    },
+    {
+      "s": "AMD",
+      "ar": "إيه إم دي",
+      "en": "AMD",
+      "sec": "تقنية"
+    },
+    {
+      "s": "KO",
+      "ar": "كوكاكولا",
+      "en": "Coca-Cola",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "CVX",
+      "ar": "شيفرون",
+      "en": "Chevron",
+      "sec": "طاقة"
+    },
+    {
+      "s": "GE",
+      "ar": "جنرال إلكتريك للطيران",
+      "en": "GE Aerospace",
+      "sec": "صناعي"
+    },
+    {
+      "s": "CSCO",
+      "ar": "سيسكو",
+      "en": "Cisco",
+      "sec": "تقنية"
+    },
+    {
+      "s": "TMUS",
+      "ar": "تي موبايل",
+      "en": "T-Mobile US",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "WFC",
+      "ar": "ويلز فارغو",
+      "en": "Wells Fargo",
+      "sec": "مالي"
+    },
+    {
+      "s": "CRM",
+      "ar": "سيلزفورس",
+      "en": "Salesforce",
+      "sec": "تقنية"
+    },
+    {
+      "s": "PM",
+      "ar": "فيليب موريس",
+      "en": "Philip Morris",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "IBM",
+      "ar": "آي بي إم",
+      "en": "IBM",
+      "sec": "تقنية"
+    },
+    {
+      "s": "UNH",
+      "ar": "يونايتد هيلث",
+      "en": "UnitedHealth",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "MS",
+      "ar": "مورغان ستانلي",
+      "en": "Morgan Stanley",
+      "sec": "مالي"
+    },
+    {
+      "s": "ABT",
+      "ar": "أبوت",
+      "en": "Abbott Laboratories",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "GS",
+      "ar": "غولدمان ساكس",
+      "en": "Goldman Sachs",
+      "sec": "مالي"
+    },
+    {
+      "s": "LIN",
+      "ar": "ليندي",
+      "en": "Linde",
+      "sec": "مواد"
+    },
+    {
+      "s": "MCD",
+      "ar": "ماكدونالدز",
+      "en": "McDonald's",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "DIS",
+      "ar": "ديزني",
+      "en": "Walt Disney",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "NOW",
+      "ar": "سيرفس ناو",
+      "en": "ServiceNow",
+      "sec": "تقنية"
+    },
+    {
+      "s": "INTU",
+      "ar": "إنتويت",
+      "en": "Intuit",
+      "sec": "تقنية"
+    },
+    {
+      "s": "AXP",
+      "ar": "أمريكان إكسبريس",
+      "en": "American Express",
+      "sec": "مالي"
+    },
+    {
+      "s": "MRK",
+      "ar": "ميرك",
+      "en": "Merck",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "RTX",
+      "ar": "آر تي إكس",
+      "en": "RTX Corporation",
+      "sec": "صناعي"
+    },
+    {
+      "s": "T",
+      "ar": "إيه تي آند تي",
+      "en": "AT&T",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "PEP",
+      "ar": "بيبسيكو",
+      "en": "PepsiCo",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "CAT",
+      "ar": "كاتربيلر",
+      "en": "Caterpillar",
+      "sec": "صناعي"
+    },
+    {
+      "s": "UBER",
+      "ar": "أوبر",
+      "en": "Uber Technologies",
+      "sec": "صناعي"
+    },
+    {
+      "s": "VZ",
+      "ar": "فيرايزون",
+      "en": "Verizon",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "BKNG",
+      "ar": "بوكينج",
+      "en": "Booking Holdings",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "QCOM",
+      "ar": "كوالكوم",
+      "en": "Qualcomm",
+      "sec": "تقنية"
+    },
+    {
+      "s": "TXN",
+      "ar": "تكساس إنسترومنتس",
+      "en": "Texas Instruments",
+      "sec": "تقنية"
+    },
+    {
+      "s": "ISRG",
+      "ar": "إنتويتيف سيرجيكال",
+      "en": "Intuitive Surgical",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "BLK",
+      "ar": "بلاك روك",
+      "en": "BlackRock",
+      "sec": "مالي"
+    },
+    {
+      "s": "AMGN",
+      "ar": "أمجين",
+      "en": "Amgen",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "SPGI",
+      "ar": "إس آند بي غلوبال",
+      "en": "S&P Global",
+      "sec": "مالي"
+    },
+    {
+      "s": "C",
+      "ar": "سيتي غروب",
+      "en": "Citigroup",
+      "sec": "مالي"
+    },
+    {
+      "s": "BA",
+      "ar": "بوينج",
+      "en": "Boeing",
+      "sec": "صناعي"
+    },
+    {
+      "s": "ADBE",
+      "ar": "أدوبي",
+      "en": "Adobe",
+      "sec": "تقنية"
+    },
+    {
+      "s": "HON",
+      "ar": "هانيويل",
+      "en": "Honeywell",
+      "sec": "صناعي"
+    },
+    {
+      "s": "NEE",
+      "ar": "نكستيرا للطاقة",
+      "en": "NextEra Energy",
+      "sec": "مرافق"
+    },
+    {
+      "s": "PFE",
+      "ar": "فايزر",
+      "en": "Pfizer",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "AMAT",
+      "ar": "أبلايد ماتيريالز",
+      "en": "Applied Materials",
+      "sec": "تقنية"
+    },
+    {
+      "s": "ETN",
+      "ar": "إيتون",
+      "en": "Eaton",
+      "sec": "صناعي"
+    },
+    {
+      "s": "LOW",
+      "ar": "لوز",
+      "en": "Lowe's",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "TJX",
+      "ar": "تي جيه إكس",
+      "en": "TJX Companies",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "SCHW",
+      "ar": "تشارلز شواب",
+      "en": "Charles Schwab",
+      "sec": "مالي"
+    },
+    {
+      "s": "UNP",
+      "ar": "يونيون باسيفيك",
+      "en": "Union Pacific",
+      "sec": "صناعي"
+    },
+    {
+      "s": "COP",
+      "ar": "كونوكو فيليبس",
+      "en": "ConocoPhillips",
+      "sec": "طاقة"
+    },
+    {
+      "s": "SYK",
+      "ar": "سترايكر",
+      "en": "Stryker",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "PGR",
+      "ar": "بروجرسيف",
+      "en": "Progressive",
+      "sec": "مالي"
+    },
+    {
+      "s": "LMT",
+      "ar": "لوكهيد مارتن",
+      "en": "Lockheed Martin",
+      "sec": "صناعي"
+    },
+    {
+      "s": "BSX",
+      "ar": "بوسطن ساينتفك",
+      "en": "Boston Scientific",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "DE",
+      "ar": "جون ديري",
+      "en": "Deere & Company",
+      "sec": "صناعي"
+    },
+    {
+      "s": "MU",
+      "ar": "مايكرون",
+      "en": "Micron Technology",
+      "sec": "تقنية"
+    },
+    {
+      "s": "ANET",
+      "ar": "أريستا نتوركس",
+      "en": "Arista Networks",
+      "sec": "تقنية"
+    },
+    {
+      "s": "KKR",
+      "ar": "كيه كيه آر",
+      "en": "KKR & Co.",
+      "sec": "مالي"
+    },
+    {
+      "s": "PANW",
+      "ar": "بالو ألتو نتوركس",
+      "en": "Palo Alto Networks",
+      "sec": "تقنية"
+    },
+    {
+      "s": "CRWD",
+      "ar": "كراودسترايك",
+      "en": "CrowdStrike",
+      "sec": "تقنية"
+    },
+    {
+      "s": "LRCX",
+      "ar": "لام ريسيرش",
+      "en": "Lam Research",
+      "sec": "تقنية"
+    },
+    {
+      "s": "VRTX",
+      "ar": "فيرتكس",
+      "en": "Vertex Pharmaceuticals",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "ADP",
+      "ar": "إيه دي بي",
+      "en": "ADP",
+      "sec": "صناعي"
+    },
+    {
+      "s": "GILD",
+      "ar": "جلعاد",
+      "en": "Gilead Sciences",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "MDT",
+      "ar": "ميدترونيك",
+      "en": "Medtronic",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "BX",
+      "ar": "بلاكستون",
+      "en": "Blackstone",
+      "sec": "مالي"
+    },
+    {
+      "s": "MMC",
+      "ar": "مارش ماكلينان",
+      "en": "Marsh & McLennan",
+      "sec": "مالي"
+    },
+    {
+      "s": "CB",
+      "ar": "تشب",
+      "en": "Chubb",
+      "sec": "مالي"
+    },
+    {
+      "s": "INTC",
+      "ar": "إنتل",
+      "en": "Intel",
+      "sec": "تقنية"
+    },
+    {
+      "s": "MDLZ",
+      "ar": "مونديليز",
+      "en": "Mondelez",
+      "sec": "استهلاكي أساسي"
+    }
+  ],
+  "wide": [
+    {
+      "s": "MMM",
+      "en": "3M",
+      "sec": "صناعي"
+    },
+    {
+      "s": "AOS",
+      "en": "A. O. Smith",
+      "sec": "صناعي"
+    },
+    {
+      "s": "ACN",
+      "en": "Accenture",
+      "sec": "تقنية"
+    },
+    {
+      "s": "AES",
+      "en": "AES Corporation",
+      "sec": "مرافق"
+    },
+    {
+      "s": "AFL",
+      "en": "Aflac",
+      "sec": "مالي"
+    },
+    {
+      "s": "A",
+      "en": "Agilent Technologies",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "APD",
+      "en": "Air Products",
+      "sec": "مواد"
+    },
+    {
+      "s": "ABNB",
+      "en": "Airbnb",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "AKAM",
+      "en": "Akamai Technologies",
+      "sec": "تقنية"
+    },
+    {
+      "s": "ALB",
+      "en": "Albemarle Corporation",
+      "sec": "مواد"
+    },
+    {
+      "s": "ARE",
+      "en": "Alexandria Real Estate Equities",
+      "sec": "عقارات"
+    },
+    {
+      "s": "ALGN",
+      "en": "Align Technology",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "ALLE",
+      "en": "Allegion",
+      "sec": "صناعي"
+    },
+    {
+      "s": "LNT",
+      "en": "Alliant Energy",
+      "sec": "مرافق"
+    },
+    {
+      "s": "ALL",
+      "en": "Allstate",
+      "sec": "مالي"
+    },
+    {
+      "s": "GOOG",
+      "en": "Alphabet Inc. (Class C)",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "MO",
+      "en": "Altria",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "AMCR",
+      "en": "Amcor",
+      "sec": "مواد"
+    },
+    {
+      "s": "AEE",
+      "en": "Ameren",
+      "sec": "مرافق"
+    },
+    {
+      "s": "AEP",
+      "en": "American Electric Power",
+      "sec": "مرافق"
+    },
+    {
+      "s": "AIG",
+      "en": "American International Group",
+      "sec": "مالي"
+    },
+    {
+      "s": "AMT",
+      "en": "American Tower",
+      "sec": "عقارات"
+    },
+    {
+      "s": "AWK",
+      "en": "American Water Works",
+      "sec": "مرافق"
+    },
+    {
+      "s": "AMP",
+      "en": "Ameriprise Financial",
+      "sec": "مالي"
+    },
+    {
+      "s": "AME",
+      "en": "Ametek",
+      "sec": "صناعي"
+    },
+    {
+      "s": "APH",
+      "en": "Amphenol",
+      "sec": "تقنية"
+    },
+    {
+      "s": "ADI",
+      "en": "Analog Devices",
+      "sec": "تقنية"
+    },
+    {
+      "s": "AON",
+      "en": "Aon plc",
+      "sec": "مالي"
+    },
+    {
+      "s": "APA",
+      "en": "APA Corporation",
+      "sec": "طاقة"
+    },
+    {
+      "s": "APO",
+      "en": "Apollo Global Management",
+      "sec": "مالي"
+    },
+    {
+      "s": "APP",
+      "en": "AppLovin",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "APTV",
+      "en": "Aptiv",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "ACGL",
+      "en": "Arch Capital Group",
+      "sec": "مالي"
+    },
+    {
+      "s": "ADM",
+      "en": "Archer Daniels Midland",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "ARES",
+      "en": "Ares Management",
+      "sec": "مالي"
+    },
+    {
+      "s": "AJG",
+      "en": "Arthur J. Gallagher & Co.",
+      "sec": "مالي"
+    },
+    {
+      "s": "AIZ",
+      "en": "Assurant",
+      "sec": "مالي"
+    },
+    {
+      "s": "ATO",
+      "en": "Atmos Energy",
+      "sec": "مرافق"
+    },
+    {
+      "s": "ADSK",
+      "en": "Autodesk",
+      "sec": "تقنية"
+    },
+    {
+      "s": "AZO",
+      "en": "AutoZone",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "AVY",
+      "en": "Avery Dennison",
+      "sec": "مواد"
+    },
+    {
+      "s": "AXON",
+      "en": "Axon Enterprise",
+      "sec": "صناعي"
+    },
+    {
+      "s": "BKR",
+      "en": "Baker Hughes",
+      "sec": "طاقة"
+    },
+    {
+      "s": "BALL",
+      "en": "Ball Corporation",
+      "sec": "مواد"
+    },
+    {
+      "s": "BAX",
+      "en": "Baxter International",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "BDX",
+      "en": "Becton Dickinson",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "BBY",
+      "en": "Best Buy",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "TECH",
+      "en": "Bio-Techne",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "BIIB",
+      "en": "Biogen",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "XYZ",
+      "en": "Block, Inc.",
+      "sec": "مالي"
+    },
+    {
+      "s": "BNY",
+      "en": "BNY Mellon",
+      "sec": "مالي"
+    },
+    {
+      "s": "BMY",
+      "en": "Bristol Myers Squibb",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "BR",
+      "en": "Broadridge Financial Solutions",
+      "sec": "صناعي"
+    },
+    {
+      "s": "BRO",
+      "en": "Brown & Brown",
+      "sec": "مالي"
+    },
+    {
+      "s": "BF-B",
+      "en": "Brown–Forman",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "BLDR",
+      "en": "Builders FirstSource",
+      "sec": "صناعي"
+    },
+    {
+      "s": "BG",
+      "en": "Bunge Global",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "BXP",
+      "en": "BXP, Inc.",
+      "sec": "عقارات"
+    },
+    {
+      "s": "CHRW",
+      "en": "C.H. Robinson",
+      "sec": "صناعي"
+    },
+    {
+      "s": "CDNS",
+      "en": "Cadence Design Systems",
+      "sec": "تقنية"
+    },
+    {
+      "s": "CPT",
+      "en": "Camden Property Trust",
+      "sec": "عقارات"
+    },
+    {
+      "s": "COF",
+      "en": "Capital One",
+      "sec": "مالي"
+    },
+    {
+      "s": "CAH",
+      "en": "Cardinal Health",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "CCL",
+      "en": "Carnival Corporation",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "CARR",
+      "en": "Carrier Global",
+      "sec": "صناعي"
+    },
+    {
+      "s": "CVNA",
+      "en": "Carvana",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "CASY",
+      "en": "Casey's",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "CBOE",
+      "en": "Cboe Global Markets",
+      "sec": "مالي"
+    },
+    {
+      "s": "CBRE",
+      "en": "CBRE Group",
+      "sec": "عقارات"
+    },
+    {
+      "s": "CDW",
+      "en": "CDW Corporation",
+      "sec": "تقنية"
+    },
+    {
+      "s": "COR",
+      "en": "Cencora",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "CNC",
+      "en": "Centene Corporation",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "CNP",
+      "en": "CenterPoint Energy",
+      "sec": "مرافق"
+    },
+    {
+      "s": "CF",
+      "en": "CF Industries",
+      "sec": "مواد"
+    },
+    {
+      "s": "CRL",
+      "en": "Charles River Laboratories",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "CHTR",
+      "en": "Charter Communications",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "CMG",
+      "en": "Chipotle Mexican Grill",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "CHD",
+      "en": "Church & Dwight",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "CIEN",
+      "en": "Ciena",
+      "sec": "تقنية"
+    },
+    {
+      "s": "CI",
+      "en": "Cigna",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "CINF",
+      "en": "Cincinnati Financial",
+      "sec": "مالي"
+    },
+    {
+      "s": "CTAS",
+      "en": "Cintas",
+      "sec": "صناعي"
+    },
+    {
+      "s": "CFG",
+      "en": "Citizens Financial Group",
+      "sec": "مالي"
+    },
+    {
+      "s": "CLX",
+      "en": "Clorox",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "CME",
+      "en": "CME Group",
+      "sec": "مالي"
+    },
+    {
+      "s": "CMS",
+      "en": "CMS Energy",
+      "sec": "مرافق"
+    },
+    {
+      "s": "CTSH",
+      "en": "Cognizant",
+      "sec": "تقنية"
+    },
+    {
+      "s": "COHR",
+      "en": "Coherent Corp.",
+      "sec": "تقنية"
+    },
+    {
+      "s": "COIN",
+      "en": "Coinbase",
+      "sec": "مالي"
+    },
+    {
+      "s": "CL",
+      "en": "Colgate-Palmolive",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "CMCSA",
+      "en": "Comcast",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "FIX",
+      "en": "Comfort Systems USA",
+      "sec": "صناعي"
+    },
+    {
+      "s": "ED",
+      "en": "Consolidated Edison",
+      "sec": "مرافق"
+    },
+    {
+      "s": "STZ",
+      "en": "Constellation Brands",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "CEG",
+      "en": "Constellation Energy",
+      "sec": "مرافق"
+    },
+    {
+      "s": "COO",
+      "en": "Cooper Companies (The)",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "CPRT",
+      "en": "Copart",
+      "sec": "صناعي"
+    },
+    {
+      "s": "GLW",
+      "en": "Corning Inc.",
+      "sec": "تقنية"
+    },
+    {
+      "s": "CPAY",
+      "en": "Corpay",
+      "sec": "مالي"
+    },
+    {
+      "s": "CTVA",
+      "en": "Corteva",
+      "sec": "مواد"
+    },
+    {
+      "s": "CSGP",
+      "en": "CoStar Group",
+      "sec": "عقارات"
+    },
+    {
+      "s": "CRH",
+      "en": "CRH plc",
+      "sec": "مواد"
+    },
+    {
+      "s": "CCI",
+      "en": "Crown Castle",
+      "sec": "عقارات"
+    },
+    {
+      "s": "CSX",
+      "en": "CSX Corporation",
+      "sec": "صناعي"
+    },
+    {
+      "s": "CMI",
+      "en": "Cummins",
+      "sec": "صناعي"
+    },
+    {
+      "s": "CVS",
+      "en": "CVS Health",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "DHR",
+      "en": "Danaher Corporation",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "DRI",
+      "en": "Darden Restaurants",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "DDOG",
+      "en": "Datadog",
+      "sec": "تقنية"
+    },
+    {
+      "s": "DVA",
+      "en": "DaVita",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "DECK",
+      "en": "Deckers Brands",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "DELL",
+      "en": "Dell Technologies",
+      "sec": "تقنية"
+    },
+    {
+      "s": "DAL",
+      "en": "Delta Air Lines",
+      "sec": "صناعي"
+    },
+    {
+      "s": "DVN",
+      "en": "Devon Energy",
+      "sec": "طاقة"
+    },
+    {
+      "s": "DXCM",
+      "en": "Dexcom",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "FANG",
+      "en": "Diamondback Energy",
+      "sec": "طاقة"
+    },
+    {
+      "s": "DLR",
+      "en": "Digital Realty",
+      "sec": "عقارات"
+    },
+    {
+      "s": "DG",
+      "en": "Dollar General",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "DLTR",
+      "en": "Dollar Tree",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "D",
+      "en": "Dominion Energy",
+      "sec": "مرافق"
+    },
+    {
+      "s": "DPZ",
+      "en": "Domino's",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "DASH",
+      "en": "DoorDash",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "DOV",
+      "en": "Dover Corporation",
+      "sec": "صناعي"
+    },
+    {
+      "s": "DOW",
+      "en": "Dow Inc.",
+      "sec": "مواد"
+    },
+    {
+      "s": "DHI",
+      "en": "D. R. Horton",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "DTE",
+      "en": "DTE Energy",
+      "sec": "مرافق"
+    },
+    {
+      "s": "DUK",
+      "en": "Duke Energy",
+      "sec": "مرافق"
+    },
+    {
+      "s": "DD",
+      "en": "DuPont",
+      "sec": "صناعي"
+    },
+    {
+      "s": "EBAY",
+      "en": "eBay Inc.",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "ECHO",
+      "en": "EchoStar",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "ECL",
+      "en": "Ecolab",
+      "sec": "مواد"
+    },
+    {
+      "s": "EIX",
+      "en": "Edison International",
+      "sec": "مرافق"
+    },
+    {
+      "s": "EW",
+      "en": "Edwards Lifesciences",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "ELV",
+      "en": "Elevance Health",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "EME",
+      "en": "Emcor",
+      "sec": "صناعي"
+    },
+    {
+      "s": "EMR",
+      "en": "Emerson Electric",
+      "sec": "صناعي"
+    },
+    {
+      "s": "ETR",
+      "en": "Entergy",
+      "sec": "مرافق"
+    },
+    {
+      "s": "EOG",
+      "en": "EOG Resources",
+      "sec": "طاقة"
+    },
+    {
+      "s": "EQT",
+      "en": "EQT Corporation",
+      "sec": "طاقة"
+    },
+    {
+      "s": "EFX",
+      "en": "Equifax",
+      "sec": "صناعي"
+    },
+    {
+      "s": "EQIX",
+      "en": "Equinix",
+      "sec": "عقارات"
+    },
+    {
+      "s": "ERIE",
+      "en": "Erie Indemnity",
+      "sec": "مالي"
+    },
+    {
+      "s": "ESS",
+      "en": "Essex Property Trust",
+      "sec": "عقارات"
+    },
+    {
+      "s": "EL",
+      "en": "Estée Lauder Companies (The)",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "EG",
+      "en": "Everest Group",
+      "sec": "مالي"
+    },
+    {
+      "s": "EVRG",
+      "en": "Evergy",
+      "sec": "مرافق"
+    },
+    {
+      "s": "ES",
+      "en": "Eversource Energy",
+      "sec": "مرافق"
+    },
+    {
+      "s": "EXC",
+      "en": "Exelon",
+      "sec": "مرافق"
+    },
+    {
+      "s": "EXE",
+      "en": "Expand Energy",
+      "sec": "طاقة"
+    },
+    {
+      "s": "EXPE",
+      "en": "Expedia Group",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "EXPD",
+      "en": "Expeditors International",
+      "sec": "صناعي"
+    },
+    {
+      "s": "EXR",
+      "en": "Extra Space Storage",
+      "sec": "عقارات"
+    },
+    {
+      "s": "FFIV",
+      "en": "F5, Inc.",
+      "sec": "تقنية"
+    },
+    {
+      "s": "FDS",
+      "en": "FactSet",
+      "sec": "مالي"
+    },
+    {
+      "s": "FICO",
+      "en": "Fair Isaac",
+      "sec": "تقنية"
+    },
+    {
+      "s": "FAST",
+      "en": "Fastenal",
+      "sec": "صناعي"
+    },
+    {
+      "s": "FRT",
+      "en": "Federal Realty Investment Trust",
+      "sec": "عقارات"
+    },
+    {
+      "s": "FDX",
+      "en": "FedEx",
+      "sec": "صناعي"
+    },
+    {
+      "s": "FDXF",
+      "en": "FedEx Freight",
+      "sec": "صناعي"
+    },
+    {
+      "s": "FERG",
+      "en": "Ferguson Enterprises",
+      "sec": "صناعي"
+    },
+    {
+      "s": "FIS",
+      "en": "Fidelity National Information Services",
+      "sec": "مالي"
+    },
+    {
+      "s": "FITB",
+      "en": "Fifth Third Bancorp",
+      "sec": "مالي"
+    },
+    {
+      "s": "FSLR",
+      "en": "First Solar",
+      "sec": "تقنية"
+    },
+    {
+      "s": "FE",
+      "en": "FirstEnergy",
+      "sec": "مرافق"
+    },
+    {
+      "s": "FISV",
+      "en": "Fiserv",
+      "sec": "مالي"
+    },
+    {
+      "s": "FLEX",
+      "en": "Flex Ltd.",
+      "sec": "تقنية"
+    },
+    {
+      "s": "F",
+      "en": "Ford Motor Company",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "FTNT",
+      "en": "Fortinet",
+      "sec": "تقنية"
+    },
+    {
+      "s": "FTV",
+      "en": "Fortive",
+      "sec": "صناعي"
+    },
+    {
+      "s": "FOXA",
+      "en": "Fox Corporation (Class A)",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "FOX",
+      "en": "Fox Corporation (Class B)",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "BEN",
+      "en": "Franklin Resources",
+      "sec": "مالي"
+    },
+    {
+      "s": "FCX",
+      "en": "Freeport-McMoRan",
+      "sec": "مواد"
+    },
+    {
+      "s": "GRMN",
+      "en": "Garmin",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "IT",
+      "en": "Gartner",
+      "sec": "تقنية"
+    },
+    {
+      "s": "GEHC",
+      "en": "GE HealthCare",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "GEV",
+      "en": "GE Vernova",
+      "sec": "صناعي"
+    },
+    {
+      "s": "GEN",
+      "en": "Gen Digital",
+      "sec": "تقنية"
+    },
+    {
+      "s": "GNRC",
+      "en": "Generac",
+      "sec": "صناعي"
+    },
+    {
+      "s": "GD",
+      "en": "General Dynamics",
+      "sec": "صناعي"
+    },
+    {
+      "s": "GIS",
+      "en": "General Mills",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "GM",
+      "en": "General Motors",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "GPC",
+      "en": "Genuine Parts Company",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "GPN",
+      "en": "Global Payments",
+      "sec": "مالي"
+    },
+    {
+      "s": "GL",
+      "en": "Globe Life",
+      "sec": "مالي"
+    },
+    {
+      "s": "GDDY",
+      "en": "GoDaddy",
+      "sec": "تقنية"
+    },
+    {
+      "s": "HAL",
+      "en": "Halliburton",
+      "sec": "طاقة"
+    },
+    {
+      "s": "HIG",
+      "en": "Hartford (The)",
+      "sec": "مالي"
+    },
+    {
+      "s": "HAS",
+      "en": "Hasbro",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "HCA",
+      "en": "HCA Healthcare",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "DOC",
+      "en": "Healthpeak Properties",
+      "sec": "عقارات"
+    },
+    {
+      "s": "HSIC",
+      "en": "Henry Schein",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "HSY",
+      "en": "Hershey Company (The)",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "HPE",
+      "en": "Hewlett Packard Enterprise",
+      "sec": "تقنية"
+    },
+    {
+      "s": "HLT",
+      "en": "Hilton Worldwide",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "HONA",
+      "en": "Honeywell Aerospace",
+      "sec": "صناعي"
+    },
+    {
+      "s": "HRL",
+      "en": "Hormel Foods",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "HST",
+      "en": "Host Hotels & Resorts",
+      "sec": "عقارات"
+    },
+    {
+      "s": "HWM",
+      "en": "Howmet Aerospace",
+      "sec": "صناعي"
+    },
+    {
+      "s": "HPQ",
+      "en": "HP Inc.",
+      "sec": "تقنية"
+    },
+    {
+      "s": "HUBB",
+      "en": "Hubbell Incorporated",
+      "sec": "صناعي"
+    },
+    {
+      "s": "HUM",
+      "en": "Humana",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "HBAN",
+      "en": "Huntington Bancshares",
+      "sec": "مالي"
+    },
+    {
+      "s": "HII",
+      "en": "Huntington Ingalls Industries",
+      "sec": "صناعي"
+    },
+    {
+      "s": "IEX",
+      "en": "IDEX Corporation",
+      "sec": "صناعي"
+    },
+    {
+      "s": "IDXX",
+      "en": "Idexx Laboratories",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "ITW",
+      "en": "Illinois Tool Works",
+      "sec": "صناعي"
+    },
+    {
+      "s": "INCY",
+      "en": "Incyte",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "IR",
+      "en": "Ingersoll Rand",
+      "sec": "صناعي"
+    },
+    {
+      "s": "PODD",
+      "en": "Insulet Corporation",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "IBKR",
+      "en": "Interactive Brokers",
+      "sec": "مالي"
+    },
+    {
+      "s": "ICE",
+      "en": "Intercontinental Exchange",
+      "sec": "مالي"
+    },
+    {
+      "s": "IFF",
+      "en": "International Flavors & Fragrances",
+      "sec": "مواد"
+    },
+    {
+      "s": "IP",
+      "en": "International Paper",
+      "sec": "مواد"
+    },
+    {
+      "s": "IVZ",
+      "en": "Invesco",
+      "sec": "مالي"
+    },
+    {
+      "s": "INVH",
+      "en": "Invitation Homes",
+      "sec": "عقارات"
+    },
+    {
+      "s": "IQV",
+      "en": "IQVIA",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "IRM",
+      "en": "Iron Mountain",
+      "sec": "عقارات"
+    },
+    {
+      "s": "JBHT",
+      "en": "J.B. Hunt",
+      "sec": "صناعي"
+    },
+    {
+      "s": "JBL",
+      "en": "Jabil",
+      "sec": "تقنية"
+    },
+    {
+      "s": "JKHY",
+      "en": "Jack Henry & Associates",
+      "sec": "مالي"
+    },
+    {
+      "s": "J",
+      "en": "Jacobs Solutions",
+      "sec": "صناعي"
+    },
+    {
+      "s": "JCI",
+      "en": "Johnson Controls",
+      "sec": "صناعي"
+    },
+    {
+      "s": "KVUE",
+      "en": "Kenvue",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "KDP",
+      "en": "Keurig Dr Pepper",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "KEY",
+      "en": "KeyCorp",
+      "sec": "مالي"
+    },
+    {
+      "s": "KEYS",
+      "en": "Keysight Technologies",
+      "sec": "تقنية"
+    },
+    {
+      "s": "KMB",
+      "en": "Kimberly-Clark",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "KIM",
+      "en": "Kimco Realty",
+      "sec": "عقارات"
+    },
+    {
+      "s": "KMI",
+      "en": "Kinder Morgan",
+      "sec": "طاقة"
+    },
+    {
+      "s": "KLAC",
+      "en": "KLA Corporation",
+      "sec": "تقنية"
+    },
+    {
+      "s": "KHC",
+      "en": "Kraft Heinz",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "KR",
+      "en": "Kroger",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "LHX",
+      "en": "L3Harris",
+      "sec": "صناعي"
+    },
+    {
+      "s": "LH",
+      "en": "Labcorp",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "LVS",
+      "en": "Las Vegas Sands",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "LDOS",
+      "en": "Leidos",
+      "sec": "صناعي"
+    },
+    {
+      "s": "LEN",
+      "en": "Lennar",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "LII",
+      "en": "Lennox International",
+      "sec": "صناعي"
+    },
+    {
+      "s": "LYV",
+      "en": "Live Nation Entertainment",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "L",
+      "en": "Loews Corporation",
+      "sec": "مالي"
+    },
+    {
+      "s": "LULU",
+      "en": "Lululemon Athletica",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "LITE",
+      "en": "Lumentum",
+      "sec": "تقنية"
+    },
+    {
+      "s": "LYB",
+      "en": "LyondellBasell",
+      "sec": "مواد"
+    },
+    {
+      "s": "MTB",
+      "en": "M&T Bank",
+      "sec": "مالي"
+    },
+    {
+      "s": "MPC",
+      "en": "Marathon Petroleum",
+      "sec": "طاقة"
+    },
+    {
+      "s": "MAR",
+      "en": "Marriott International",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "MRSH",
+      "en": "Marsh McLennan",
+      "sec": "مالي"
+    },
+    {
+      "s": "MLM",
+      "en": "Martin Marietta Materials",
+      "sec": "مواد"
+    },
+    {
+      "s": "MRVL",
+      "en": "Marvell Technology",
+      "sec": "تقنية"
+    },
+    {
+      "s": "MAS",
+      "en": "Masco",
+      "sec": "صناعي"
+    },
+    {
+      "s": "MKC",
+      "en": "McCormick & Company",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "MCK",
+      "en": "McKesson Corporation",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "MET",
+      "en": "MetLife",
+      "sec": "مالي"
+    },
+    {
+      "s": "MTD",
+      "en": "Mettler Toledo",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "MGM",
+      "en": "MGM Resorts",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "MCHP",
+      "en": "Microchip Technology",
+      "sec": "تقنية"
+    },
+    {
+      "s": "MAA",
+      "en": "Mid-America Apartment Communities",
+      "sec": "عقارات"
+    },
+    {
+      "s": "MRNA",
+      "en": "Moderna",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "TAP",
+      "en": "Molson Coors Beverage Company",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "MPWR",
+      "en": "Monolithic Power Systems",
+      "sec": "تقنية"
+    },
+    {
+      "s": "MNST",
+      "en": "Monster Beverage",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "MCO",
+      "en": "Moody's Corporation",
+      "sec": "مالي"
+    },
+    {
+      "s": "MOS",
+      "en": "Mosaic Company (The)",
+      "sec": "مواد"
+    },
+    {
+      "s": "MSI",
+      "en": "Motorola Solutions",
+      "sec": "تقنية"
+    },
+    {
+      "s": "MSCI",
+      "en": "MSCI",
+      "sec": "مالي"
+    },
+    {
+      "s": "NDAQ",
+      "en": "Nasdaq, Inc.",
+      "sec": "مالي"
+    },
+    {
+      "s": "NTAP",
+      "en": "NetApp",
+      "sec": "تقنية"
+    },
+    {
+      "s": "NEM",
+      "en": "Newmont",
+      "sec": "مواد"
+    },
+    {
+      "s": "NWSA",
+      "en": "News Corp (Class A)",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "NWS",
+      "en": "News Corp (Class B)",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "NKE",
+      "en": "Nike, Inc.",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "NI",
+      "en": "NiSource",
+      "sec": "مرافق"
+    },
+    {
+      "s": "NDSN",
+      "en": "Nordson Corporation",
+      "sec": "صناعي"
+    },
+    {
+      "s": "NSC",
+      "en": "Norfolk Southern",
+      "sec": "صناعي"
+    },
+    {
+      "s": "NTRS",
+      "en": "Northern Trust",
+      "sec": "مالي"
+    },
+    {
+      "s": "NOC",
+      "en": "Northrop Grumman",
+      "sec": "صناعي"
+    },
+    {
+      "s": "NCLH",
+      "en": "Norwegian Cruise Line Holdings",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "NRG",
+      "en": "NRG Energy",
+      "sec": "مرافق"
+    },
+    {
+      "s": "NUE",
+      "en": "Nucor",
+      "sec": "مواد"
+    },
+    {
+      "s": "NVR",
+      "en": "NVR, Inc.",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "NXPI",
+      "en": "NXP Semiconductors",
+      "sec": "تقنية"
+    },
+    {
+      "s": "ORLY",
+      "en": "O'Reilly Automotive",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "OXY",
+      "en": "Occidental Petroleum",
+      "sec": "طاقة"
+    },
+    {
+      "s": "ODFL",
+      "en": "Old Dominion",
+      "sec": "صناعي"
+    },
+    {
+      "s": "OMC",
+      "en": "Omnicom Group",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "ON",
+      "en": "ON Semiconductor",
+      "sec": "تقنية"
+    },
+    {
+      "s": "OKE",
+      "en": "Oneok",
+      "sec": "طاقة"
+    },
+    {
+      "s": "OTIS",
+      "en": "Otis Worldwide",
+      "sec": "صناعي"
+    },
+    {
+      "s": "PCAR",
+      "en": "Paccar",
+      "sec": "صناعي"
+    },
+    {
+      "s": "PKG",
+      "en": "Packaging Corporation of America",
+      "sec": "مواد"
+    },
+    {
+      "s": "PSKY",
+      "en": "Paramount Skydance Corporation",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "PH",
+      "en": "Parker Hannifin",
+      "sec": "صناعي"
+    },
+    {
+      "s": "PAYX",
+      "en": "Paychex",
+      "sec": "صناعي"
+    },
+    {
+      "s": "PYPL",
+      "en": "PayPal",
+      "sec": "مالي"
+    },
+    {
+      "s": "PNR",
+      "en": "Pentair",
+      "sec": "صناعي"
+    },
+    {
+      "s": "PCG",
+      "en": "PG&E Corporation",
+      "sec": "مرافق"
+    },
+    {
+      "s": "PSX",
+      "en": "Phillips 66",
+      "sec": "طاقة"
+    },
+    {
+      "s": "PNW",
+      "en": "Pinnacle West Capital",
+      "sec": "مرافق"
+    },
+    {
+      "s": "PNC",
+      "en": "PNC Financial Services",
+      "sec": "مالي"
+    },
+    {
+      "s": "PPG",
+      "en": "PPG Industries",
+      "sec": "مواد"
+    },
+    {
+      "s": "PPL",
+      "en": "PPL Corporation",
+      "sec": "مرافق"
+    },
+    {
+      "s": "PFG",
+      "en": "Principal Financial Group",
+      "sec": "مالي"
+    },
+    {
+      "s": "PLD",
+      "en": "Prologis",
+      "sec": "عقارات"
+    },
+    {
+      "s": "PRU",
+      "en": "Prudential Financial",
+      "sec": "مالي"
+    },
+    {
+      "s": "PEG",
+      "en": "Public Service Enterprise Group",
+      "sec": "مرافق"
+    },
+    {
+      "s": "PTC",
+      "en": "PTC Inc.",
+      "sec": "تقنية"
+    },
+    {
+      "s": "PSA",
+      "en": "Public Storage",
+      "sec": "عقارات"
+    },
+    {
+      "s": "PHM",
+      "en": "PulteGroup",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "PWR",
+      "en": "Quanta Services",
+      "sec": "صناعي"
+    },
+    {
+      "s": "DGX",
+      "en": "Quest Diagnostics",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "Q",
+      "en": "Qnity Electronics",
+      "sec": "تقنية"
+    },
+    {
+      "s": "RL",
+      "en": "Ralph Lauren Corporation",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "RJF",
+      "en": "Raymond James Financial",
+      "sec": "مالي"
+    },
+    {
+      "s": "RDDT",
+      "en": "Reddit",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "O",
+      "en": "Realty Income",
+      "sec": "عقارات"
+    },
+    {
+      "s": "REG",
+      "en": "Regency Centers",
+      "sec": "عقارات"
+    },
+    {
+      "s": "REGN",
+      "en": "Regeneron Pharmaceuticals",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "RF",
+      "en": "Regions Financial Corporation",
+      "sec": "مالي"
+    },
+    {
+      "s": "RSG",
+      "en": "Republic Services",
+      "sec": "صناعي"
+    },
+    {
+      "s": "RMD",
+      "en": "ResMed|",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "RVTY",
+      "en": "Revvity",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "HOOD",
+      "en": "Robinhood Markets",
+      "sec": "مالي"
+    },
+    {
+      "s": "ROK",
+      "en": "Rockwell Automation",
+      "sec": "صناعي"
+    },
+    {
+      "s": "ROL",
+      "en": "Rollins, Inc.",
+      "sec": "صناعي"
+    },
+    {
+      "s": "ROP",
+      "en": "Roper Technologies",
+      "sec": "تقنية"
+    },
+    {
+      "s": "ROST",
+      "en": "Ross Stores",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "RCL",
+      "en": "Royal Caribbean Group",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "SNDK",
+      "en": "Sandisk",
+      "sec": "تقنية"
+    },
+    {
+      "s": "SBAC",
+      "en": "SBA Communications",
+      "sec": "عقارات"
+    },
+    {
+      "s": "SLB",
+      "en": "Schlumberger",
+      "sec": "طاقة"
+    },
+    {
+      "s": "STX",
+      "en": "Seagate Technology",
+      "sec": "تقنية"
+    },
+    {
+      "s": "SRE",
+      "en": "Sempra",
+      "sec": "مرافق"
+    },
+    {
+      "s": "SHW",
+      "en": "Sherwin-Williams",
+      "sec": "مواد"
+    },
+    {
+      "s": "SPG",
+      "en": "Simon Property Group",
+      "sec": "عقارات"
+    },
+    {
+      "s": "SWKS",
+      "en": "Skyworks Solutions",
+      "sec": "تقنية"
+    },
+    {
+      "s": "SJM",
+      "en": "J.M. Smucker Company (The)",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "SW",
+      "en": "Smurfit Westrock",
+      "sec": "مواد"
+    },
+    {
+      "s": "SNA",
+      "en": "Snap-on",
+      "sec": "صناعي"
+    },
+    {
+      "s": "SOLV",
+      "en": "Solventum",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "SO",
+      "en": "Southern Company",
+      "sec": "مرافق"
+    },
+    {
+      "s": "LUV",
+      "en": "Southwest Airlines",
+      "sec": "صناعي"
+    },
+    {
+      "s": "SWK",
+      "en": "Stanley Black & Decker",
+      "sec": "صناعي"
+    },
+    {
+      "s": "SBUX",
+      "en": "Starbucks",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "STT",
+      "en": "State Street Corporation",
+      "sec": "مالي"
+    },
+    {
+      "s": "STLD",
+      "en": "Steel Dynamics",
+      "sec": "مواد"
+    },
+    {
+      "s": "STE",
+      "en": "Steris",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "SMCI",
+      "en": "Supermicro",
+      "sec": "تقنية"
+    },
+    {
+      "s": "SYF",
+      "en": "Synchrony Financial",
+      "sec": "مالي"
+    },
+    {
+      "s": "SNPS",
+      "en": "Synopsys",
+      "sec": "تقنية"
+    },
+    {
+      "s": "SYY",
+      "en": "Sysco",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "TROW",
+      "en": "T. Rowe Price",
+      "sec": "مالي"
+    },
+    {
+      "s": "TTWO",
+      "en": "Take-Two Interactive",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "TPR",
+      "en": "Tapestry, Inc.",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "TRGP",
+      "en": "Targa Resources",
+      "sec": "طاقة"
+    },
+    {
+      "s": "TGT",
+      "en": "Target Corporation",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "TEL",
+      "en": "TE Connectivity",
+      "sec": "تقنية"
+    },
+    {
+      "s": "TDY",
+      "en": "Teledyne Technologies",
+      "sec": "تقنية"
+    },
+    {
+      "s": "TER",
+      "en": "Teradyne",
+      "sec": "تقنية"
+    },
+    {
+      "s": "TPL",
+      "en": "Texas Pacific Land Corporation",
+      "sec": "طاقة"
+    },
+    {
+      "s": "TXT",
+      "en": "Textron",
+      "sec": "صناعي"
+    },
+    {
+      "s": "TMO",
+      "en": "Thermo Fisher Scientific",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "TKO",
+      "en": "TKO Group Holdings",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "TTD",
+      "en": "Trade Desk (The)",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "TSCO",
+      "en": "Tractor Supply",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "TT",
+      "en": "Trane Technologies",
+      "sec": "صناعي"
+    },
+    {
+      "s": "TDG",
+      "en": "TransDigm Group",
+      "sec": "صناعي"
+    },
+    {
+      "s": "TRV",
+      "en": "Travelers Companies (The)",
+      "sec": "مالي"
+    },
+    {
+      "s": "TRMB",
+      "en": "Trimble Inc.",
+      "sec": "تقنية"
+    },
+    {
+      "s": "TFC",
+      "en": "Truist Financial",
+      "sec": "مالي"
+    },
+    {
+      "s": "TYL",
+      "en": "Tyler Technologies",
+      "sec": "تقنية"
+    },
+    {
+      "s": "TSN",
+      "en": "Tyson Foods",
+      "sec": "استهلاكي أساسي"
+    },
+    {
+      "s": "USB",
+      "en": "U.S. Bancorp",
+      "sec": "مالي"
+    },
+    {
+      "s": "UDR",
+      "en": "UDR, Inc.",
+      "sec": "عقارات"
+    },
+    {
+      "s": "ULTA",
+      "en": "Ulta Beauty",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "UAL",
+      "en": "United Airlines Holdings",
+      "sec": "صناعي"
+    },
+    {
+      "s": "UPS",
+      "en": "United Parcel Service",
+      "sec": "صناعي"
+    },
+    {
+      "s": "URI",
+      "en": "United Rentals",
+      "sec": "صناعي"
+    },
+    {
+      "s": "UHS",
+      "en": "Universal Health Services",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "VLO",
+      "en": "Valero Energy",
+      "sec": "طاقة"
+    },
+    {
+      "s": "VEEV",
+      "en": "Veeva Systems",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "VTR",
+      "en": "Ventas",
+      "sec": "عقارات"
+    },
+    {
+      "s": "VLTO",
+      "en": "Veralto",
+      "sec": "صناعي"
+    },
+    {
+      "s": "VRSN",
+      "en": "Verisign",
+      "sec": "تقنية"
+    },
+    {
+      "s": "VRSK",
+      "en": "Verisk Analytics",
+      "sec": "صناعي"
+    },
+    {
+      "s": "VRT",
+      "en": "Vertiv",
+      "sec": "صناعي"
+    },
+    {
+      "s": "VTRS",
+      "en": "Viatris",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "VICI",
+      "en": "Vici Properties",
+      "sec": "عقارات"
+    },
+    {
+      "s": "VST",
+      "en": "Vistra Corp.",
+      "sec": "مرافق"
+    },
+    {
+      "s": "VMRK",
+      "en": "Vivmark Residential",
+      "sec": "عقارات"
+    },
+    {
+      "s": "VMC",
+      "en": "Vulcan Materials Company",
+      "sec": "مواد"
+    },
+    {
+      "s": "WRB",
+      "en": "W. R. Berkley Corporation",
+      "sec": "مالي"
+    },
+    {
+      "s": "GWW",
+      "en": "W. W. Grainger",
+      "sec": "صناعي"
+    },
+    {
+      "s": "WAB",
+      "en": "Wabtec",
+      "sec": "صناعي"
+    },
+    {
+      "s": "WBD",
+      "en": "Warner Bros. Discovery",
+      "sec": "اتصالات"
+    },
+    {
+      "s": "WM",
+      "en": "Waste Management",
+      "sec": "صناعي"
+    },
+    {
+      "s": "WAT",
+      "en": "Waters Corporation",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "WEC",
+      "en": "WEC Energy Group",
+      "sec": "مرافق"
+    },
+    {
+      "s": "WELL",
+      "en": "Welltower",
+      "sec": "عقارات"
+    },
+    {
+      "s": "WST",
+      "en": "West Pharmaceutical Services",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "WDC",
+      "en": "Western Digital",
+      "sec": "تقنية"
+    },
+    {
+      "s": "WY",
+      "en": "Weyerhaeuser",
+      "sec": "عقارات"
+    },
+    {
+      "s": "WSM",
+      "en": "Williams-Sonoma, Inc.",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "WMB",
+      "en": "Williams Companies",
+      "sec": "طاقة"
+    },
+    {
+      "s": "WTW",
+      "en": "Willis Towers Watson",
+      "sec": "مالي"
+    },
+    {
+      "s": "WDAY",
+      "en": "Workday, Inc.",
+      "sec": "تقنية"
+    },
+    {
+      "s": "WYNN",
+      "en": "Wynn Resorts",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "XEL",
+      "en": "Xcel Energy",
+      "sec": "مرافق"
+    },
+    {
+      "s": "XYL",
+      "en": "Xylem Inc.",
+      "sec": "صناعي"
+    },
+    {
+      "s": "YUM",
+      "en": "Yum! Brands",
+      "sec": "استهلاكي كمالي"
+    },
+    {
+      "s": "ZBRA",
+      "en": "Zebra Technologies",
+      "sec": "تقنية"
+    },
+    {
+      "s": "ZBH",
+      "en": "Zimmer Biomet",
+      "sec": "رعاية صحية"
+    },
+    {
+      "s": "ZTS",
+      "en": "Zoetis",
+      "sec": "رعاية صحية"
+    }
+  ],
+  "crypto": [
+    {
+      "s": "BTC-USD",
+      "ar": "بيتكوين",
+      "en": "Bitcoin",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "ETH-USD",
+      "ar": "إيثيريوم",
+      "en": "Ethereum",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "XRP-USD",
+      "ar": "ريبل",
+      "en": "XRP",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "BNB-USD",
+      "ar": "بينانس كوين",
+      "en": "BNB",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "SOL-USD",
+      "ar": "سولانا",
+      "en": "Solana",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "DOGE-USD",
+      "ar": "دوجكوين",
+      "en": "Dogecoin",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "ADA-USD",
+      "ar": "كاردانو",
+      "en": "Cardano",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "TRX-USD",
+      "ar": "ترون",
+      "en": "TRON",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "AVAX-USD",
+      "ar": "أفالانش",
+      "en": "Avalanche",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "LINK-USD",
+      "ar": "تشين لينك",
+      "en": "Chainlink",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "DOT-USD",
+      "ar": "بولكادوت",
+      "en": "Polkadot",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "LTC-USD",
+      "ar": "لايتكوين",
+      "en": "Litecoin",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "BCH-USD",
+      "ar": "بيتكوين كاش",
+      "en": "Bitcoin Cash",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "XLM-USD",
+      "ar": "ستيلر",
+      "en": "Stellar",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "UNI7083-USD",
+      "ar": "يونيسواب",
+      "en": "Uniswap",
+      "sec": "كريبتو",
+      "mkt": "crypto",
+      "note": "رمز UNI-USD أسقطه ياهو (no usable candles)؛ الحقيقي بلاحقة CMC"
+    },
+    {
+      "s": "ATOM-USD",
+      "ar": "كوزموس",
+      "en": "Cosmos",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "ETC-USD",
+      "ar": "إيثيريوم كلاسيك",
+      "en": "Ethereum Classic",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "HBAR-USD",
+      "ar": "هيدرا",
+      "en": "Hedera",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "NEAR-USD",
+      "ar": "نير",
+      "en": "NEAR Protocol",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "APT21794-USD",
+      "ar": "أبتوس",
+      "en": "Aptos",
+      "sec": "كريبتو",
+      "mkt": "crypto",
+      "note": "رمز APT-USD أسقطه ياهو (no usable candles)؛ الحقيقي بلاحقة CMC"
+    },
+    {
+      "s": "ICP-USD",
+      "ar": "إنترنت كمبيوتر",
+      "en": "Internet Computer",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "FIL-USD",
+      "ar": "فايلكوين",
+      "en": "Filecoin",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "ARB11841-USD",
+      "ar": "أربيتروم",
+      "en": "Arbitrum",
+      "sec": "كريبتو",
+      "mkt": "crypto",
+      "note": "ARB-USD عند ياهو أصلٌ ميت مجمَّد بحجم صفر؛ أربيتروم الحقيقية بلاحقة CMC"
+    },
+    {
+      "s": "OP-USD",
+      "ar": "أوبتيميزم",
+      "en": "Optimism",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "SHIB-USD",
+      "ar": "شيبا إينو",
+      "en": "Shiba Inu",
+      "sec": "كريبتو",
+      "mkt": "crypto"
+    },
+    {
+      "s": "POL28321-USD",
+      "ar": "بوليجون",
+      "en": "Polygon",
+      "sec": "كريبتو",
+      "mkt": "crypto",
+      "note": "رمز POL-USD أسقطه ياهو (no usable candles)؛ الحقيقي بلاحقة CMC"
+    }
+  ],
+  "indices": [
+    {
+      "s": "^GSPC",
+      "ar": "إس آند بي 500",
+      "en": "S&P 500",
+      "proxy": "SPY"
+    },
+    {
+      "s": "^IXIC",
+      "ar": "ناسداك المجمّع",
+      "en": "Nasdaq Composite",
+      "proxy": "QQQ"
+    },
+    {
+      "s": "^DJI",
+      "ar": "داو جونز",
+      "en": "Dow Jones",
+      "proxy": "DIA"
+    },
+    {
+      "s": "^VIX",
+      "ar": "مؤشر الخوف VIX",
+      "en": "CBOE Volatility Index",
+      "proxy": "VIXY"
+    }
+  ]
+}

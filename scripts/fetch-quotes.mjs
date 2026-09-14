@@ -18,6 +18,7 @@
      node scripts/fetch-quotes.mjs --check
    ===================================================================== */
 import fs from "node:fs";
+import { rp } from "./lib/round.mjs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { fetchQuotesFinnhub, fhStats } from "./lib/finnhub.mjs";
@@ -38,11 +39,7 @@ const r2 = (v) => v === null ? null : Math.round(v * 100) / 100;
    0.0000051 (شيبا إينو) يصير صفراً بالتقريب إلى أربع خانات. نفس
    الدالة في fetch-market.mjs — أي اختلاف بينهما يجعل السعر يقفز بين
    دورة الأسعار ودورة الشمعات. */
-const rp = (v) => {
-  if (v === null || v === undefined || !Number.isFinite(v)) return null;
-  if (v === 0) return 0;
-  return Math.abs(v) >= 1 ? Math.round(v * 10000) / 10000 : Number(v.toPrecision(6));
-};
+/* التقريب السعري مشتركٌ — انظر `lib/round.mjs`. */
 
 /* يُعاد حسابه من نسب التغيّر الجديدة. الاتساع والنتيجة الفنية لا،
    لأنهما من الشمعات التي لم تتغيّر. */

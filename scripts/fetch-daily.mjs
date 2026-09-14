@@ -63,7 +63,43 @@ export function extractFundamentals(res) {
     margin:  num(fd.profitMargins) ?? num(ks.profitMargins),
     revGrow: num(fd.revenueGrowth),
     roe:     num(fd.returnOnEquity),
+
+    /* الملاءة والتدفّق — كانت في نفس الاستجابة وتُرمى.
+
+       `financialData` و`defaultKeyStatistics` يصلان في **نفس النداء**
+       الذي يجلب المكرر والهامش، فهذه الحقول كلفتها **صفر طلبات**. وكان
+       التحليل المالي عندنا نصفَ تحليل: ربحيةٌ ونموٌّ وتقييم، بلا كلمةٍ
+       واحدة عن الديون. وشركةٌ ROE فيها ‎40%‎ لأنها مموَّلة بالدين ليست
+       شركةَ ROE ‎40%‎ — المقام صغيرٌ لا البسط كبير. */
+    de:      num(fd.debtToEquity),           // نسبة مئوية عند ياهو (‎154‎ = 1.54×)
+    cash:    num(fd.totalCash),
+    debt:    num(fd.totalDebt),
+    cr:      num(fd.currentRatio),
+    qr:      num(fd.quickRatio),
+    fcf:     num(fd.freeCashflow),
+    ocf:     num(fd.operatingCashflow),
+    ebitda:  num(fd.ebitda),
+    rev:     num(fd.totalRevenue),
+    opMargin: num(fd.operatingMargins),
+    gMargin: num(fd.grossMargins),
+    roa:     num(fd.returnOnAssets),
+    earnGrow: num(fd.earningsGrowth),         // نمو الأرباح — أدقّ من نمو الإيراد لـPEG
+    qGrow:   num(ks.earningsQuarterlyGrowth),
+    ev:      num(ks.enterpriseValue),
+    evEbitda: num(ks.enterpriseToEbitda),
+    evRev:   num(ks.enterpriseToRevenue),
+    peg:     num(ks.pegRatio),
+    book:    num(ks.bookValue),
+    psales:  num(sd.priceToSalesTrailing12Months),
+    payout:  num(sd.payoutRatio),
+    shortPct: num(ks.shortPercentOfFloat),
+    float:   num(ks.floatShares),
+    insiderPct: num(ks.heldPercentInsiders),
+    instPct: num(ks.heldPercentInstitutions),
+
     target:  num(fd.targetMeanPrice),
+    targetHi: num(fd.targetHighPrice),
+    targetLo: num(fd.targetLowPrice),
     rec:     fd.recommendationKey ? (REC_AR[fd.recommendationKey] || fd.recommendationKey) : null,
     recN:    num(fd.numberOfAnalystOpinions),
     earnings,

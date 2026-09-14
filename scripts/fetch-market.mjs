@@ -8,6 +8,7 @@
      node scripts/fetch-market.mjs --check        (فحص ذاتي بلا شبكة)
    ===================================================================== */
 import fs from "node:fs";
+import { rp, r2 } from "./lib/round.mjs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -15,7 +16,7 @@ import {
 } from "./lib/yahoo.mjs";
 import { fetchQuotesFinnhub, fhStats } from "./lib/finnhub.mjs";
 import { fetchCandlesTD, hasTwelveData, tdSleep, tdStats } from "./lib/twelvedata.mjs";
-import { analyze, overallScore, aggregate, TFS, TF_WEIGHT } from "./lib/indicators.mjs";
+import { analyze, overallScore, aggregate, TFS, TF_WEIGHT, bandStable } from "./lib/indicators.mjs";
 import { marketStatus, approxMarketStatus } from "./lib/session.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -24,15 +25,39 @@ const CHECK = args.includes("--check");
 const OUT = (() => { const i = args.indexOf("--out"); return i >= 0 ? path.resolve(args[i + 1]) : path.join(ROOT, "out"); })();
 
 const KEEP = 260;                 // يكفي لـ EMA200 مع هامش، ويُبقي الملفات خفيفة
-const MAX_AGE = { "15m": 0, "1h": 55 * 60e3, "1d": 20 * 3600e3 };
-// اليومي يتغيّر أثناء الجلسة؛ تجميده عشرين ساعة يترك المستويات والنتيجة
-// على شمعة أمس حتى اليوم التالي. بعد الإغلاق نلتقط الإغلاق الرسمي أيضاً.
+const MAX_AGE = { "5m": 0, "15m": 0, "1h": 55 * 60e3, "1d": 20 * 3600e3 };
+// صلاحية الفريم اليومي **أثناء الجلسة**. شمعةُ اليوم قيد التكوّن ما دامت
+// الجلسة قائمة، فتجميدها عشرين ساعة يعني أن ارتفاع اليوم وانخفاضه لا
+// يدخلان الحساب قبل الغد. والعشرون ساعة لا تقسم الأربعةَ والعشرين، فوقتُ
+// الجلب ينزلق أربع ساعات للخلف كل يوم: يقع داخل الجلسة أياماً وقبل
+// الافتتاح أياماً، بلا نمط ظاهر. وقع فعلاً 2026-09-11: جُلب 11:37 UTC —
+// قبل الافتتاح بساعتين — فبقي 487 رمزاً من 510 على شمعة أمس طوال اليوم.
 const DAILY_LIVE_AGE = 30 * 60e3;
 // سقف رموز الطبقة الواسعة لكل تشغيل. صلاحية اليومي عشرون ساعة، ودورة
 // السوق عشر دقائق، فـ 60 رمزاً/تشغيل تكفي لتجديد 414 رمزاً في ~70 دقيقة
 // دون أن ترتفع دورة واحدة إلى مئات الطلبات فتستدعي 429.
 const WIDE_PER_RUN = Number(process.env.WIDE_PER_RUN || 60);
-const RANGE   = { "15m": "60d", "1h": "730d", "1d": "5y" };
+const RANGE   = { "5m": "60d", "15m": "60d", "1h": "730d", "1d": "5y" };
+
+/* =====================================================================
+   فريم 5 دقائق — يُحسب ولا يدخل النتيجة الفنية.
+
+   `TFS` أربعةٌ بأوزانها، و`overallScore` و`tfScore` يدوران عليها وحدها،
+   و`allTF` في `scans.js` تشترط `v.length === 4` بالضبط. فإضافةُ خامسٍ
+   إليها تغيّر نتيجة كل رمز في الكون، فتُبطل الأرشيف كلَّه وتُسقط شرطَي
+   «توافق الفريمات» **بصمت** — لا خطأ ولا استثناء، فقط أرقامٌ أخرى.
+
+   ولهذا `AN_TFS` قائمةٌ منفصلة للتحليل وحده: `rec.an["5m"]` يُكتب
+   ويقرؤه ماسح الاستراتيجيات، و`rec.score` و`tfScore` لا يريانه.
+   و`check-ui` يحرس هذا الفصل صراحةً.
+
+   وبلا `prePost`: نطاق الافتتاح وVWAP الجلسة يحتاجان الجلسة الرسمية
+   وحدها، وهي بالضبط ما يعطيه الطلب بلا جلسات ممتدة. ومكسبٌ ثانٍ أن
+   260 شمعة تصير 3.3 يوم تداول بدل 1.8، فتكفي EMA200 بهامش. ولذلك لا
+   يمرّ 5د بـ`tradingOnly`: حجمه حقيقيٌّ كله، والبوابة عليه تعريضٌ بلا
+   مقابل (نفس سبب استثناء الساعة واليومي منها).
+   ===================================================================== */
+const AN_TFS = [...TFS, "5m"];
 
 const cfg = JSON.parse(fs.readFileSync(path.join(ROOT, "stocks/symbols.json"), "utf8"));
 
@@ -50,26 +75,77 @@ const tdBudget = { left: TD_PER_RUN };
 const PREFER_YAHOO = process.env.PREFER_YAHOO === "1";
 
 /* تقريب — Yahoo يعيد 62.014999389648438 والتخزين بلا تقريب يضاعف حجم الملفات */
-const r2 = (v) => (v === null || v === undefined || !isFinite(v)) ? null : Math.round(v * 100) / 100;
 const r4 = (v) => (v === null || v === undefined || !isFinite(v)) ? null : Math.round(v * 10000) / 10000;
 
-/* =====================================================================
-   تقريب الأسعار — بالأرقام المعنوية لا بالخانات العشرية.
-
-   الأسعار عندنا تمتد من 0.0000051 (شيبا إينو) إلى 5,800 (بوكينج).
-   التقريب الثابت إلى أربع خانات عشرية يمحو الصغير منها تماماً: سعر شيبا
-   صار صفراً، وشمعاتها كلها أصفاراً، وATR صفراً — ولم يظهر ذلك إلا حين
-   رفضت بوابة النشر الصفَّ كاملاً.
-   ===================================================================== */
-export const rp = (v) => {
-  if (v === null || v === undefined || !Number.isFinite(v)) return null;
-  if (v === 0) return 0;
-  return Math.abs(v) >= 1 ? Math.round(v * 10000) / 10000 : Number(v.toPrecision(6));
-};
+/* التقريب السعري مشتركٌ — انظر `lib/round.mjs` (نسخةٌ ثالثة منه في
+   `track-signals` كتبت لقطةَ شيبا أصفاراً). ويُعاد تصديره لمن يستورده
+   من هنا. */
+export { rp };
 
 const slimCandles = (c) => c.map(x => ({
   t: x.t, o: rp(x.o), h: rp(x.h), l: rp(x.l), c: rp(x.c), v: Math.round(x.v || 0)
 }));
+
+/* =====================================================================
+   شمعاتُ الحجم الصفري — أخطر تشويشٍ في المشروع، ولم يكن يبدو خللاً.
+
+   فريم 15د وحده يُطلب بـ`prePost: true` (ما قبل الافتتاح وما بعد
+   الإغلاق)، وياهو **يحشو** الساعات المغلقة بشمعاتٍ حجمها صفر تحمل آخر
+   سعرٍ معروف مكرَّراً. قياس 2026-09-13 على أبل: **156 من 260** شمعة
+   بحجم صفر — أي أن ‎60%‎ من فريم 15د لم يكن تداولاً أصلاً، بل سعراً
+   واحداً منسوخاً على مئة شمعة.
+
+   والنتيجة أن مؤشّرات الفريم تقيس اللاشيء: نطاق بولنجر لأبل ضاق إلى
+   **35 سنتاً** (332.35–332.70)، والتصق EMA20 بالسعر على مسافة **1.5
+   سنت**، وحام MACD على الصفر. فصارت كل بوابةٍ على حدّ السكين تنقلب في
+   كل دورة — وهذا هو المصدر الحقيقي لـ‎195 حالة‎ تغيّرت فيها النتيجة
+   والسعر لم يتغيّر بأيّ كسر.
+
+   فنُسقِط الشمعات التي لا تداولَ فيها **قبل** `slice(-KEEP)`: الطلب
+   يعيد 60 يوماً (~2600 شمعة مع الجلسات الممتدة، و~1070 بدونها)،
+   فيبقى بعد الإسقاط 260 شمعةَ تداولٍ حقيقي تغطّي ~10 أيام تداول.
+
+   والبوابةُ شرطُ سلامة لا تجميل: مصدرٌ لا يعطي حجماً إطلاقاً
+   (Twelve Data وStooq) تُصفّره `Math.round(x.v || 0)` فيمحو السلسلة
+   كاملةً. فإن لم يبقَ ما يكفي EMA200 أعدنا الأصل كما هو — بياناتٌ
+   مشوَّشة أفضل من لا بيانات.
+
+   وعلى 15د وحده: اليوميُّ والساعة يأتيان بلا `prePost` ونسبةُ الحجم
+   الحقيقي فيهما ‎100%‎، وتطبيقُه عليهما يعرّضهما للبوابة بلا مقابل. */
+const NEED_BARS = 220;                  // EMA200 + هامش
+function tradingOnly(candles, tf) {
+  if (tf !== "15m") return candles;
+  const live = candles.filter(x => (x.v || 0) > 0);
+  return live.length >= NEED_BARS ? live : candles;
+}
+
+/* =====================================================================
+   السلسلة المجمّدة — بياناتٌ خاطئة لا حالةَ سوق، والفرق يهمّ.
+
+   `ARB-USD` عند ياهو ليس أربيتروم: أصلٌ ميت مجمَّد على 0.000629 بحجم
+   صفر منذ 260 يوماً. والتطبيق كان يعرضه بسعره ذاك، ويحسب له اتجاهاً
+   («ميل هابط»، نتيجة ‎−50.59‎ — لأن `px > e200` تعيد `false` عند التساوي
+   التامّ)، ويرشّحه للفرص. أربيتروم الحقيقية `ARB11841-USD` بسعر 0.14
+   وحجم 240 مليون يومياً.
+
+   ولم يكشفه شيء: السعر رقمٌ صالح، والشارت خطٌّ مستقيم، والنتيجة رقمٌ
+   في مداه. نفس مصيدة «الأرقام تبدو صحيحة» مطبَّقةً على رمزٍ كامل.
+
+   الشرطان **مجتمعان** لا أحدهما: مسطَّحةٌ *وبلا* حجم. فسهمٌ هادئ له حجم،
+   ومصدرٌ لا يعطي حجماً (Twelve Data وStooq) قد يعطي سلسلةً سليمة —
+   ولهذا الحارس على مصدر ياهو وحده، وهو الذي يعطي الحجم فعلاً. */
+const FROZEN_BARS = 30;
+function frozenSeries(rec) {
+  if (rec.src !== "yahoo") return false;
+  const c = rec.tf?.["1d"]?.c;
+  if (!c || c.length < FROZEN_BARS) return false;
+  const t = c.slice(-FROZEN_BARS);
+  const hi = Math.max(...t.map(x => x.c)), lo = Math.min(...t.map(x => x.c));
+  if (!(lo > 0)) return true;                       // أسعار صفرية أو سالبة
+  const flat = (hi - lo) / lo < 0.005;              // مدى ‎30‎ يوماً أقلّ من نصف بالمئة
+  const traded = t.filter(x => (x.v || 0) > 0).length;
+  return flat && traded <= 2;
+}
 /* ضغط الشمعات عند الكتابة فقط: مصفوفة بدل كائن يوفّر ~45% من الحجم.
    [الوقت بالثواني, فتح, أعلى, أدنى, إغلاق, حجم] */
 const packCandles = (c) => c.map(x => [Math.round(x.t / 1000), x.o, x.h, x.l, x.c, x.v]);
@@ -97,12 +173,20 @@ function writeJSON(rel, obj) {
 }
 
 /* ---------- أي فريم يحتاج تحديثاً؟ ---------- */
+/* هل الشمعة اليومية قيد التكوّن الآن؟ الكريبتو دائماً — لا إغلاق له.
+   و`POST` مشمولة عمداً: آخر جلب أثناء الجلسة يقع قبل الإغلاق بنصف ساعة
+   على الأكثر، فإغلاقُ اليوم المحفوظ يكون سعرَ 19:40 لا الإغلاق الرسمي —
+   ورقمٌ خاطئ هنا ينتقل إلى بيفوت الغد كلّه. `PRE` مستثناة: شمعة اليوم
+   لم تبدأ بعد، فالجلب فيها طلبٌ بلا مقابل. */
 function dailyIsLive(now, mkt) {
   if (mkt === "crypto") return true;
   const st = approxMarketStatus(now).state;
   return st === "REGULAR" || st === "POST";
 }
 
+/* `live` يمرّرها النداء لا تُحسب هنا: الطبقة الواسعة بوابتُها `wideDue`
+   بصلاحية العشرين ساعة، وتقصيرُها لها يجعل 414 رمزاً تستحق التجديد كل
+   نصف ساعة بينما السقف 60 لكل تشغيل — فلا تكتمل دورةٌ أبداً. */
 function stale(prev, tf, now, live = false) {
   const u = prev?.tf?.[tf]?.updated;
   if (!u) return true;
@@ -126,11 +210,17 @@ async function buildSymbol(meta, prevDir, now, quotes, frames = ["1d", "1h", "15
   const rec = { s: sym, ar: meta.ar, en: meta.en, sec: meta.sec, tf: {}, src: "yahoo", updated: now };
   if (meta.mkt) rec.mkt = meta.mkt;
   let touched = false, errors = [], usedTD = false;
+  // سلسلة الساعة كاملةً قبل القصّ — تُستعمل لاشتقاق 4h ولا تُخزَّن
+  let full1h = null;
 
   // الترتيب مقصود: اليومي أولاً لأنه أساس الشارت والنتيجة الفنية، فحين
   // تنفد ميزانية الطلبات في تشغيل واحد تكون الفريمات الأهم قد امتلأت
   for (const tf of frames) {
-    if (!stale(prev, tf, now, tier === "core" && dailyIsLive(now, meta.mkt)) && prev?.tf?.[tf]?.c?.length) {
+    /* 4h يُشتقّ من الساعة الكاملة، فسلسلةٌ قصيرة محفوظة من قبل لا تُصلَح
+       إلا بإعادة جلب الساعة. بلا هذا تبقى 65 شمعة حتى تنتهي صلاحية
+       الساعة وحدها — إصلاحٌ يعتمد على التوقيت بدل أن يكون حتمياً. */
+    const shortDerived = tf === "1h" && (prev?.tf?.["4h"]?.c?.length || 0) < 200;
+    if (!shortDerived && !stale(prev, tf, now, tier === "core" && dailyIsLive(now, meta.mkt)) && prev?.tf?.[tf]?.c?.length) {
       rec.tf[tf] = prev.tf[tf];                       // ما زال حديثاً — أبقِه
       continue;
     }
@@ -147,7 +237,13 @@ async function buildSymbol(meta, prevDir, now, quotes, frames = ["1d", "1h", "15
       const { candles, meta: m } = await fetchChart(sym, {
         range: RANGE[tf], interval: tf, prePost: tf === "15m"
       });
-      rec.tf[tf] = { updated: now, c: slimCandles(candles.slice(-KEEP)) };
+      const full = tradingOnly(candles, tf);
+      // الساعة تُطلب بمدى سنتين (`RANGE["1h"]`) فتعود بآلاف الشمعات، ثم
+      // تُقصّ إلى KEEP. و4h تُشتقّ منها — فاشتقاقُها **بعد** القصّ يعطي
+      // 260/4 = 65 شمعة، وEMA200 تحتاج 200. السلسلة الكاملة تُمرَّر
+      // للاشتقاق ولا تُخزَّن: الملفّ يبقى بـ KEEP لكل فريم.
+      if (tf === "1h") full1h = full;
+      rec.tf[tf] = { updated: now, c: slimCandles(full.slice(-KEEP)) };
       // فترات التداول الحقيقية لا يوفّرها غير Yahoo — وهي أدق من التقدير
       if (tf === "15m" && m) { rec.period = tradingPeriodFromMeta(m); rec.cur = num(m.regularMarketPrice); }
       rec.src = "yahoo";
@@ -202,18 +298,45 @@ async function buildSymbol(meta, prevDir, now, quotes, frames = ["1d", "1h", "15
     rec.noChart = true;
   }
 
-  // اشتقاق فريم 4 ساعات من الساعة (Yahoo لا يوفّره)
-  if (rec.tf["1h"]?.c?.length) rec.tf["4h"] = { updated: rec.tf["1h"].updated, c: slimCandles(aggregate(rec.tf["1h"].c, 4).slice(-KEEP)), derived: true };
+  /* اشتقاق فريم 4 ساعات من الساعة (Yahoo لا يوفّره).
+
+     من السلسلة **الكاملة** حين تتوفّر، فتخرج 260 شمعة بدل 65 — وهو فرقُ
+     وجودِ EMA200 من عدمه. وبلا e200 تسقط بوابتا الاتجاه الأمّ (‎4.0‎ من
+     ‎8.5‎) فيقيس الفريم المدى القصير وحده ويُسمّى «اتجاهاً»، وأصغر خطوةٍ
+     فيه تصير ‎11.11‎ — أي أنه عاجزٌ بنيوياً عن التعبير عن ميلٍ ضعيف
+     فيسقط من `allTF` وإن كان له جهةٌ حقيقية. قِيس: 96 رمزاً من 96 بلا
+     e200 على 4h، و`MSFT` و`V` تسقطان من توافق الفريمات بسببها وحدها.
+
+     وحين لا تتوفّر الكاملة (الساعة لم تُجدَّد هذا التشغيل) نُبقي 4h
+     المخزَّنة كما هي بدل إعادة اشتقاقها قصيرة — وإلا تذبذب طولها بين
+     التشغيلات فتذبذبت معه النتيجة. */
+  if (full1h?.length) {
+    rec.tf["4h"] = { updated: rec.tf["1h"].updated, c: slimCandles(aggregate(full1h, 4).slice(-KEEP)), derived: true };
+  } else if (prev?.tf?.["4h"]?.c?.length) {
+    /* 4h ليس في `frames` فلا يمرّ بحلقة الجلب، ولا يُنقل من `prev`
+       تلقائياً. وبلا نقله هنا يُعاد اشتقاقه من الساعة **المقصوصة** في كل
+       تشغيلٍ لا تُجدَّد فيه الساعة — فيهبط من 260 شمعة إلى 65 ويضيع
+       e200 الذي بُني قبل دقائق. أثرٌ صامت: الطول يتذبذب بين التشغيلات
+       ومعه نتيجة الفريم كلها. */
+    rec.tf["4h"] = prev.tf["4h"];
+  } else if (rec.tf["1h"]?.c?.length) {
+    // أول مرة ولا ساعةَ كاملة: مشتقٌّ قصير خيرٌ من فريمٍ غائب
+    rec.tf["4h"] = { updated: rec.tf["1h"].updated, c: slimCandles(aggregate(rec.tf["1h"].c, 4).slice(-KEEP)), derived: true };
+  }
 
   // المؤشرات لكل فريم
   rec.an = {};
-  for (const tf of TFS) {
+  for (const tf of AN_TFS) {
     const a = rec.tf[tf]?.c ? analyze(rec.tf[tf].c) : null;
     if (!a) continue;
     const { series, ...rest } = a;                    // لا نحفظ السلاسل الكاملة (حجم)
     rec.an[tf] = slimAnalysis(rest);
   }
   rec.score = r2(overallScore(rec.an));
+  /* النطاق المثبَّت — لا يُغيَّر إلا بتجاوز حدّه بهامش. يُحسب هنا لا في
+     المتصفح لأن الهيستريسس يحتاج ذاكرةً بالدورة السابقة، والخادم هو من
+     يملكها (`prev`). والمتصفح يعرضه كما هو فلا يختلف وسمُ شاشتين. */
+  rec.band = bandStable(rec.score, prev?.band);
   rec.stale = !touched;
   if (errors.length) rec.errors = errors;
   return rec;
@@ -270,7 +393,7 @@ async function main() {
     console.log(`  الطبقة الواسعة: ${wideDue.length} مستحقّ من ${wideAll.length} (سقف ${WIDE_PER_RUN}/تشغيل)`);
 
   // الوظائف: الأساسية والكريبتو بالفريمات الثلاثة، والواسعة باليومي وحده
-  const FULL = ["1d", "1h", "15m"];
+  const FULL = ["1d", "1h", "15m", "5m"];
   const jobs = [
     ...chosen.map(m => ({ m, frames: FULL, tier: "core" })),
     ...cryptoAll.map(m => ({ m, frames: FULL, tier: "core" })),
@@ -308,12 +431,20 @@ async function main() {
   // من ~28 دقيقة إلى دقائق معدودة لكل الرموز السبعين.
   const lanes = (hasTwelveData() && !PREFER_YAHOO) ? 1 : 3;
   const results = await pool(jobs, lanes, (j) => buildSymbol(j.m, OUT, now, quotes, j.frames, j.tier));
-  const rows = [], wideRecs = [], failed = [];
+  const rows = [], wideRecs = [], failed = [], frozen = [];
   results.forEach((r, i) => {
     const j = jobs[i];
-    if (r.ok) (j.tier === "wide" ? wideRecs : rows).push(r.value);
-    else { failed.push({ s: j.m.s, error: r.error }); console.warn(`  ✗ ${j.m.s}: ${r.error}`); }
+    if (!r.ok) { failed.push({ s: j.m.s, error: r.error }); console.warn(`  ✗ ${j.m.s}: ${r.error}`); return; }
+    // رمزٌ مجمَّد يُستبعد من الملخّص كاملاً: وجودُه بسعرٍ وهميّ أسوأ من
+    // غيابه، لأنه يبدو حالةَ سوق ويدخل الإحصاء والفرص
+    if (frozenSeries(r.value)) {
+      frozen.push(j.m.s);
+      console.warn(`  ⃠ ${j.m.s}: سلسلة مجمّدة بلا حجم — مستبعد`);
+      return;
+    }
+    (j.tier === "wide" ? wideRecs : rows).push(r.value);
   });
+  if (frozen.length) console.warn(`  ⃠ مستبعدة لتجمّد سلسلتها: ${frozen.join(" ")}`);
   console.log(`  ✓ نجح ${rows.length + wideRecs.length} / ${jobs.length}`);
   // بوابة السلامة على الطبقة الأساسية وحدها: الواسعة تراكمية، وتشغيل لم
   // يستحقّ فيه أي رمز واسع تحديثاً ليس فشلاً.
@@ -353,7 +484,25 @@ async function main() {
       s: rec.s, ar: rec.ar, en: rec.en, sec: rec.sec, ...(rec.mkt ? { mkt: rec.mkt } : {}),
       p: rp(price), chg: r2(chg), ext, ...(withSpark ? { spark } : {}),
       score: rec.score,
+      ...(Number.isFinite(rec.band) ? { band: rec.band } : {}),
       atr: rp(rec.an["1d"]?.atr ?? null), rsi: r2(rec.an["1d"]?.rsi ?? null),
+      /* قوّة الاتجاه والانضغاط والتباعد من الفريم اليومي.
+         تُنشر في صفّ الملخّص لا في ملف الرمز وحده لأن شروط الماسح تعمل
+         على الصفوف كلّها قبل فتح أي رمز — قراءتُها من ملف الرمز تعني
+         تحميل 510 ملفاً لعرض شاشة الفرص.
+         و`div` رقمٌ لا كائن: ‎+1‎ صاعد و‎−1‎ هابط، والاتجاه هو كلّ ما
+         يُصفّى عليه. وتخزينُ كائنٍ لكل صفّ يضاعف حجماً يُقرأ في كل
+         تحميل صفحة. */
+      /* المتوسّطات الثلاثة في الصفّ: شرطُ «ارتدادٍ داخل اتجاه صاعد»
+         يحتاج أن يفرّق بين الاتجاه الأمّ (e200/e50) والزخم القصير
+         (e20) — وهو تفريقٌ لا تعطيه `score` لأنها تجمعهما في رقمٍ
+         واحد، بل إنّ تساويَهما بالضبط هو ما يُخرجها صفراً. وتُنشر في
+         الصفّ لا في ملف الرمز لأن الماسح يمرّ على الكون قبل فتح رمز. */
+      e20: rp(rec.an["1d"]?.e20 ?? null), e50: rp(rec.an["1d"]?.e50 ?? null),
+      e200: rp(rec.an["1d"]?.e200 ?? null),
+      adx: r2(rec.an["1d"]?.adx ?? null), pdi: r2(rec.an["1d"]?.pdi ?? null),
+      mdi: r2(rec.an["1d"]?.mdi ?? null), squeeze: r2(rec.an["1d"]?.squeeze ?? null),
+      ...(rec.an["1d"]?.div?.dir ? { div: rec.an["1d"].div.dir } : {}),
       tfScore: Object.fromEntries(TFS.filter(t => rec.an[t]).map(t => [t, +rec.an[t].score.toFixed(1)])),
       mc: num(q?.marketCap) ?? ranking?.mc?.[rec.s] ?? null,
       // حجم آخر شمعة يومية = حجم الجلسة الجارية (أو آخر جلسة مكتملة حين
@@ -371,11 +520,18 @@ async function main() {
   // الطبقة الواسعة تراكمية: كل تشغيل يجدّد حصّته فقط، فندمج الجديد فوق
   // القديم بدل استبداله. بلا الدمج يخرج الملف بستين صفاً كل مرة وينهار
   // البحث إلى آخر دفعة جُلبت.
-  const wideMerged = new Map(prevWide.map(r => [r.s, r]));
-  for (const rec of wideRecs) wideMerged.set(rec.s, { ...buildRow(rec, false), u: now });
+  /* رمزٌ رُقّي إلى الأساسية يخرج من الواسعة. الملف تراكمي فلا يخرج
+     وحده، ولو بقي لظهر **مرّتين** في `allRows()` — صفٌّ بأربعة فريمات
+     وآخر بفريمٍ واحد — فيُحسب مرّتين في كل ما يمرّ على الكون. */
+  const coreSyms = new Set(cfg.symbols.map(x => x.s));
+  const wideMerged = new Map(prevWide.filter(r => !coreSyms.has(r.s)).map(r => [r.s, r]));
+  for (const rec of wideRecs) if (!coreSyms.has(rec.s)) wideMerged.set(rec.s, { ...buildRow(rec, false), u: now });
   const wideRows = [...wideMerged.values()].sort((a, b) => (b.mc ?? 0) - (a.mc ?? 0));
-  if (wideRows.length < prevWide.length)
-    throw new Error(`الطبقة الواسعة تقلّصت ${prevWide.length}→${wideRows.length} — لن نكتب`);
+  /* البوابة تقارن بما كان **بعد** استبعاد المرقّى: تقلّصٌ مشروح بالترقية
+     ليس خطأ دمج، وتقلّصٌ بلا سبب هو الخطأ الذي بُنيت له. */
+  const prevKept = prevWide.filter(r => !coreSyms.has(r.s)).length;
+  if (wideRows.length < prevKept)
+    throw new Error(`الطبقة الواسعة تقلّصت ${prevKept}→${wideRows.length} — لن نكتب`);
   bytes += writeJSON("wide.json", { updated: now, count: wideRows.length, rows: wideRows });
   console.log(`  ✓ الطبقة الواسعة: ${wideRows.length} صفاً (+${wideRecs.length} محدَّثاً)`);
 
@@ -427,6 +583,9 @@ async function main() {
   const period = rows.find(r => r.mkt !== "crypto" && r.period)?.period || null;
   const status = period ? marketStatus(period, now) : approxMarketStatus(now);
 
+  const mktScore = scored.length ? r2(scored.reduce((a, r) => a + r.score, 0) / scored.length) : null;
+  const mktBand = bandStable(mktScore, readJSON(path.join(OUT, "market.json"), {})?.band);
+
   writeJSON("market.json", {
     updated: now, status, period, indices: idxRows, sectors,
     breadth: {
@@ -435,7 +594,10 @@ async function main() {
       flat: withChg.filter(r => r.chg === 0).length,
       total: withChg.length
     },
-    marketScore: scored.length ? r2(scored.reduce((a, r) => a + r.score, 0) / scored.length) : null,
+    marketScore: mktScore,
+    // ونطاقُه مثبَّتٌ كنطاق السهم: «مزاج السوق» يتقلّب بين وسمين في نصف
+    // ساعة يُقرأ إشاراتٍ متناقضة لا رقماً يهتزّ
+    ...(Number.isFinite(mktBand) ? { band: mktBand } : {}),
     gainers: [...withChg].sort((a, b) => b.chg - a.chg).slice(0, 5).map(r => ({ s: r.s, ar: r.ar, chg: r.chg, p: r.p })),
     losers:  [...withChg].sort((a, b) => a.chg - b.chg).slice(0, 5).map(r => ({ s: r.s, ar: r.ar, chg: r.chg, p: r.p }))
   });
@@ -449,6 +611,8 @@ async function main() {
     marketRun: {
       at: new Date(now).toISOString(),
       ok: rows.length, failed: failed.length, failures: failed,
+      // مستبعدة لتجمّد سلسلتها — تظهر في التشخيص لا تختفي بصمت
+      ...(frozen.length ? { frozen } : {}),
       stale: summary.filter(r => r.stale).map(r => r.s),
       quotes: quotes ? Object.keys(quotes).length : 0,
       requests: stats.requests, retries: stats.retries, sources: stats.sources,
@@ -469,9 +633,14 @@ function selfCheck() {
   const t = (name, fn) => { try { fn(); console.log(`  ✓ ${name}`); pass++; } catch (e) { console.log(`  ✗ ${name} — ${e.message}`); fail++; } };
   const eq = (a, b, m) => { if (JSON.stringify(a) !== JSON.stringify(b)) throw new Error(`${m}: ${JSON.stringify(a)} ≠ ${JSON.stringify(b)}`); };
 
-  t("symbols.json صالح و 90 مرشّحاً أساسياً", () => {
-    if (cfg.symbols.length !== 90) throw new Error(`${cfg.symbols.length}`);
-    if (cfg.top !== 70) throw new Error("top ≠ 70");
+  /* الخاصيّة لا الرقم: `!== 90` كان يُسقط الفحص عند إضافة أيّ مرشّح،
+     فيدفع إلى تخفيف الفحص بدل قراءته. المطلوب أن يكفي المرشّحون للاختيار
+     منهم وأن يكون لكلٍّ حقولُه — لا أن يبقى العدد كما كان يوم كُتب. */
+  t("symbols.json صالح ومرشّحوه يكفون الاختيار", () => {
+    if (!Array.isArray(cfg.symbols) || !cfg.symbols.length) throw new Error("لا مرشّحين");
+    if (!Number.isFinite(cfg.top) || cfg.top <= 0) throw new Error("top غير صالح");
+    if (cfg.symbols.length < cfg.top)
+      throw new Error(`${cfg.symbols.length} مرشّحاً و${cfg.top} مطلوب`);
     for (const s of cfg.symbols) if (!s.s || !s.ar || !s.sec) throw new Error(`حقل ناقص في ${s.s}`);
   });
 
@@ -507,19 +676,26 @@ function selfCheck() {
 
   t("الفريم اليومي يتجدّد أثناء الجلسة ويتجمّد خارجها", () => {
     const T = (iso) => Date.parse(iso);
-    const REG = T("2026-09-11T15:00:00Z");
-    const PRE = T("2026-09-11T12:00:00Z");
-    const POST = T("2026-09-11T22:00:00Z");
-    const SAT = T("2026-09-12T10:00:00Z");
-    eq(dailyIsLive(REG), true, "الجلسة حيّة");
-    eq(dailyIsLive(POST), true, "بعد الإغلاق حيّ");
-    eq(dailyIsLive(PRE), false, "ما قبل الافتتاح");
-    eq(dailyIsLive(SAT), false, "السبت مغلق");
+    const REG  = T("2026-09-11T15:00:00Z");   // 11:00 نيويورك — جلسة
+    const PRE  = T("2026-09-11T12:00:00Z");   // 08:00 — ما قبل الافتتاح
+    const POST = T("2026-09-11T22:00:00Z");   // 18:00 — بعد الإغلاق
+    const SAT  = T("2026-09-12T10:00:00Z");   // السبت — مغلق
+
+    eq(dailyIsLive(REG),  true,  "الجلسة حيّة");
+    eq(dailyIsLive(POST), true,  "بعد الإغلاق حيّ — لالتقاط الإغلاق الرسمي");
+    eq(dailyIsLive(PRE),  false, "ما قبل الافتتاح: شمعة اليوم لم تبدأ");
+    eq(dailyIsLive(SAT),  false, "السبت مغلق");
     eq(dailyIsLive(SAT, "crypto"), true, "الكريبتو بلا إغلاق");
+
+    // الأثر: يوميٌّ عمره ساعتان قديمٌ في الجلسة وحديثٌ خارجها
     const twoH = { tf: { "1d": { updated: REG - 2 * H } } };
-    eq(stale(twoH, "1d", REG, dailyIsLive(REG)), true, "ساعتان في الجلسة = قديم");
-    eq(stale({ tf: { "1d": { updated: SAT - 2 * H } } }, "1d", SAT, dailyIsLive(SAT)), false, "ساعتان خارج الجلسة = حديث");
-    eq(stale(twoH, "1d", REG, false), false, "الواسعة لا تتأثر");
+    eq(stale(twoH, "1d", REG, dailyIsLive(REG)), true,  "ساعتان في الجلسة = قديم");
+    eq(stale({ tf: { "1d": { updated: SAT - 2 * H } } }, "1d", SAT, dailyIsLive(SAT)),
+      false, "ساعتان خارج الجلسة = حديث");
+    // والطبقة الواسعة تبقى على العشرين ساعة مهما كانت الجلسة
+    eq(stale(twoH, "1d", REG, false), false, "الواسعة لا تتأثر بالجلسة");
+    // والفريمات الأخرى لم تُمَس
+    eq(stale({ tf: { "1h": { updated: REG - 10 * 60e3 } } }, "1h", REG, true), false, "1h كما كان");
   });
 
   t("marketStatus يميّز الجلسات الأربع", () => {
@@ -564,6 +740,51 @@ function selfCheck() {
     const sorted = [{ s: "ممتلئ", t: full }, { s: "فارغ", t: empty }]
       .sort((a, b) => rank(a.t) - rank(b.t)).map(x => x.s);
     eq(sorted, ["فارغ", "ممتلئ"], "الترتيب يقدّم الناقص");
+  });
+
+  t("tradingOnly يُسقط حشو الجلسات المغلقة ولا يمحو سلسلةً بلا حجم", () => {
+    // 300 شمعة تداول + 300 حشو بحجم صفر -> يبقى التداول وحده
+    const mk = (n, v) => Array.from({ length: n }, (_, i) => ({ t: i, o: 1, h: 1, l: 1, c: 1, v }));
+    eq(tradingOnly([...mk(300, 5000), ...mk(300, 0)], "15m").length, 300, "الحشو يُسقط");
+    // مصدرٌ لا يعطي حجماً إطلاقاً: الإسقاط يمحو كل شيء، فالبوابة تُعيد الأصل
+    eq(tradingOnly(mk(300, 0), "15m").length, 300, "بلا حجم يبقى الأصل");
+    // ما بقي أقلّ من EMA200 + هامش -> الأصل كذلك، بياناتٌ مشوَّشة أفضل من لا بيانات
+    eq(tradingOnly([...mk(100, 5000), ...mk(300, 0)], "15m").length, 400, "الناقص يبقى الأصل");
+    // الفريمات الأخرى لا تُمسّ: تأتي بلا prePost وحجمها حقيقي أصلاً
+    eq(tradingOnly([...mk(10, 5000), ...mk(10, 0)], "1d").length, 20, "اليومي لا يُمسّ");
+  });
+
+  t("frozenSeries يكشف الأصل الميت ولا يطعن في السهم الهادئ", () => {
+    const bars = (n, c, v) => Array.from({ length: n }, (_, i) => ({ t: i, o: c, h: c, l: c, c, v }));
+    const rec = (c, src = "yahoo") => ({ src, tf: { "1d": { c } } });
+    // `ARB-USD` بالحرف: سعرٌ واحد بحجم صفر
+    if (!frozenSeries(rec(bars(40, 0.000629, 0)))) throw new Error("الميت لم يُكشف");
+    // سهمٌ هادئ جداً لكن له حجم -> ليس ميتاً
+    if (frozenSeries(rec(bars(40, 50, 900000)))) throw new Error("الهادئ اتُّهم ظلماً");
+    // مصدرٌ لا يعطي حجماً -> لا حكم عليه أصلاً
+    if (frozenSeries(rec(bars(40, 50, 0), "twelvedata"))) throw new Error("مصدر بلا حجم لا يُحاكم");
+    // سلسلةٌ متحركة بحجم صفر (حشو): مسطَّحة؟ لا -> ليست مجمّدة
+    const moving = Array.from({ length: 40 }, (_, i) => ({ t: i, o: 50 + i, h: 50 + i, l: 50 + i, c: 50 + i, v: 0 }));
+    if (frozenSeries(rec(moving))) throw new Error("المتحركة ليست مجمّدة");
+    // سلسلةٌ أقصر من نافذة الحكم: لا حكم
+    if (frozenSeries(rec(bars(10, 1, 0)))) throw new Error("القصيرة لا يُحكم عليها");
+  });
+
+  t("فريم 5د يُحلَّل ولا يتسرّب إلى النتيجة الفنية", () => {
+    // الحارس الحقيقي: `overallScore` و`tfScore` يدوران على `TFS` وحدها،
+    // فوجود `an["5m"]` يجب ألّا يغيّر رقماً واحداً. وبلا هذا الفحص يمرّ
+    // تعديلٌ يضيف 5د إلى `TFS` بلا أن يبدو شيءٌ معطّلاً — فتتغيّر نتيجة
+    // كل رمز في الكون ويُبطل الأرشيف بصمت.
+    eq(TFS.length, 4, "TFS أربعة لا خمسة");
+    if (TFS.includes("5m")) throw new Error("5د تسرّب إلى TFS");
+    if (!AN_TFS.includes("5m")) throw new Error("5د غائب عن قائمة التحليل");
+    const four = { "15m": { score: 10 }, "1h": { score: 20 }, "4h": { score: 30 }, "1d": { score: 40 } };
+    const five = { ...four, "5m": { score: -100 } };
+    eq(overallScore(five), overallScore(four), "5د لا يغيّر النتيجة الكلية");
+    const tfs = (an) => Object.fromEntries(TFS.filter(t => an[t]).map(t => [t, an[t].score]));
+    eq(Object.keys(tfs(five)).length, 4, "tfScore يبقى بأربعة مفاتيح");
+    // و`allTF` في scans.js تشترط أربعة بالضبط — خامسٌ يُسقط الشرطين معاً
+    eq(Object.values(tfs(five)).length === 4, true, "allTF ما زالت تجد أربعة");
   });
 
   t("aggregate يبني 4h صحيحة من 1h", () => {

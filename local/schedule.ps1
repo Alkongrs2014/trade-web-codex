@@ -28,11 +28,14 @@ if (-not (Test-Path $vbs)) { throw "لم يُعثر على $vbs" }
 #   السعر يتغيّر كل لحظة · الشمعة المكتملة لا · سلسلة العقود أبطأ ·
 #   أرقام الشركة تتغيّر مرة كل ربع سنة.
 $tasks = @(
-  @{ Name='TradeWebCodex-Quotes';  Job='quotes';  Every=2;    LimitMin=5;   Desc='أسعار فقط' }
-  @{ Name='TradeWebCodex-Market';  Job='market';  Every=10;   LimitMin=20;  Desc='شمعات ومؤشرات وإشارات وأخبار' }
-  @{ Name='TradeWebCodex-Options'; Job='options'; Every=30;   LimitMin=25;  Desc='عقود الخيارات والجريكس' }
+  # الإزاحات تمنع المهام من الاصطدام في الدقيقة نفسها. القفل يبقى شبكة
+  # أمان فقط، لأن الانسحاب أمام مهمة أخرى يعني دورة بيانات مفقودة.
+  @{ Name='TradeWebCodex-Quotes';  Job='quotes';  Every=2;  Start='00:00'; LimitMin=5;  Desc='أسعار + تحديث بوابات الماسح السعرية' }
+  @{ Name='TradeWebCodex-Market';  Job='market';  Every=10; Start='00:01'; LimitMin=20; Desc='شمعات ومؤشرات وإشارات واستراتيجيات وأخبار' }
+  @{ Name='TradeWebCodex-Options'; Job='options'; Every=30; Start='00:05'; LimitMin=25; Desc='عقود الخيارات والجريكس' }
+  @{ Name='TradeWebCodex-Filings'; Job='filings'; Every=10; Start='00:07'; LimitMin=5;  Desc='إيداعات SEC الرسمية' }
   # الأرشيف يجلب خمس سنوات لخمسمئة رمز، فسقفه ساعة لا نصف
-  @{ Name='TradeWebCodex-Daily';   Job='daily';   At='09:30'; LimitMin=60;  Desc='أساسيات وترتيب وأحداث وأرشيف' }
+  @{ Name='TradeWebCodex-Daily';   Job='daily';   At='09:27'; LimitMin=60; Desc='أساسيات وترتيب وأحداث وأرشيف وتحليل' }
 )
 
 # بلا نشر: لا حاجة لدورة الأسعار السريعة، فهي موجودة أصلاً كي يبقى
@@ -44,12 +47,11 @@ Write-Host "  جدولة المرصد$(if ($Publish) {' — مع النشر ال
 Write-Host "  المجلد: $root"
 Write-Host ""
 foreach ($t in $tasks) {
-  $when = if ($t.At) { "يومياً $($t.At)" } else { "كل $($t.Every) دقيقة" }
+  $when = if ($t.At) { "يومياً $($t.At)" } else { "كل $($t.Every) دقيقة من $($t.Start)" }
   Write-Host ("    {0,-18} {1,-16} {2}" -f $t.Name, $when, $t.Desc)
 }
 Write-Host ""
-Write-Host "  المهام لا تتداخل: قفل في data يجعل المتأخّرة تنسحب، لأن دورتين"
-Write-Host "  معاً تتجاوزان حصّة الطلبات فيبدأ المزوّد بالرفض."
+Write-Host "  أوقات البدء مزاحة كي لا تتصادم المهام، والقفل شبكة أمان إذا طالت مهمة."
 if ($Publish) {
   Write-Host ""
   Write-Host "  يتطلب أن يكون المجلد مربوطاً بـ GitHub (local\link-github.bat)."
@@ -70,7 +72,7 @@ foreach ($t in $tasks) {
   $tr = 'wscript.exe "' + $vbs + '" ' + $jobArgs
   $a = @('/Create', '/TN', $t.Name, '/TR', $tr, '/F')
   $a += if ($t.At) { @('/SC', 'DAILY', '/ST', $t.At) }
-        else       { @('/SC', 'MINUTE', '/MO', "$($t.Every)") }
+        else       { @('/SC', 'MINUTE', '/MO', "$($t.Every)", '/ST', $t.Start) }
 
   $out = & schtasks.exe @a 2>&1
   if ($LASTEXITCODE -ne 0) {

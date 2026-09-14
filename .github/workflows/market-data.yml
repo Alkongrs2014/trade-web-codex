@@ -32,6 +32,10 @@ jobs:
         run: |
           node scripts/fetch-market.mjs --check
           node scripts/fetch-news.mjs --check
+          node scripts/track-signals.mjs --check
+          node scripts/track-strategies.mjs --check
+          node scripts/check-strategies.mjs
+          node scripts/fetch-filings.mjs --check
           node scripts/intelligence.mjs --check
 
       - name: إحضار البيانات الحالية من فرع data
@@ -53,6 +57,18 @@ jobs:
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
           TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
         run: node scripts/fetch-market.mjs --out ./out
+
+      - name: تثبيت إشارات الفرص والاستراتيجيات
+        # مشتق من اللقطة التي كُتبت للتو، بلا طلب شبكة. يجب أن يسبق النشر
+        # حتى يكون وقت بدء الإشارة والخطة هما ما رآه المستخدم فعلاً.
+        run: |
+          node scripts/track-signals.mjs --out ./out
+          node scripts/track-strategies.mjs --out ./out
+
+      - name: إيداعات SEC الرسمية
+        # مصدر أولي بلا مفتاح. فشل الشبكة لا يمحو آخر ملف سليم ولا يوقف السوق.
+        continue-on-error: true
+        run: node scripts/fetch-filings.mjs --out ./out
 
       - name: الأخبار
         # دورتها دقائق لا يوم، فتُجلب مع كل تحديث سوق. فشلها لا يوقف

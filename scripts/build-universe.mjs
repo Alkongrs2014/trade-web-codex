@@ -63,18 +63,18 @@ const CRYPTO = [
   ["LTC-USD",  "لايتكوين",       "Litecoin"],
   ["BCH-USD",  "بيتكوين كاش",    "Bitcoin Cash"],
   ["XLM-USD",  "ستيلر",          "Stellar"],
-  ["UNI-USD",  "يونيسواب",       "Uniswap"],
+  ["UNI7083-USD",  "يونيسواب",   "Uniswap"],
   ["ATOM-USD", "كوزموس",         "Cosmos"],
   ["ETC-USD",  "إيثيريوم كلاسيك", "Ethereum Classic"],
   ["HBAR-USD", "هيدرا",          "Hedera"],
   ["NEAR-USD", "نير",            "NEAR Protocol"],
-  ["APT-USD",  "أبتوس",          "Aptos"],
+  ["APT21794-USD", "أبتوس",      "Aptos"],
   ["ICP-USD",  "إنترنت كمبيوتر",  "Internet Computer"],
   ["FIL-USD",  "فايلكوين",       "Filecoin"],
-  ["ARB-USD",  "أربيتروم",       "Arbitrum"],
+  ["ARB11841-USD", "أربيتروم",   "Arbitrum"],
   ["OP-USD",   "أوبتيميزم",      "Optimism"],
   ["SHIB-USD", "شيبا إينو",      "Shiba Inu"],
-  ["POL-USD",  "بوليجون",        "Polygon"]
+  ["POL28321-USD", "بوليجون",    "Polygon"]
 ];
 
 /* رموز ياهو تستعمل الشرطة حيث يستعمل المؤشر النقطة (BRK.B ← BRK-B) */
@@ -127,13 +127,30 @@ async function main() {
   const quotes = await fetchQuotes(all);
   if (!quotes) throw new Error("لم تصل أي أسعار — لن نكتب فوق ملف سليم");
 
-  const alive = (s) => Number.isFinite(quotes[s]?.regularMarketPrice);
+  /* =====================================================================
+     الحياة = سعرٌ **وحجم**، لا سعرٌ وحده.
+
+     أربعة رموز كريبتو مرّت من هذا التحقق سنةً كاملة وهي ميتة: `ARB-USD`
+     مجمَّد على 0.000629 بحجم صفر منذ 260 يوماً، و`UNI-USD` و`APT-USD`
+     و`POL-USD` أسقطها ياهو لاحقاً كلياً. كلُّها كانت تعطي
+     `regularMarketPrice` رقماً صالحاً — فالسعر وحده لا يثبت أن الأصل
+     يُتداول، والرمز الميت أسوأ من الغائب لأنه يُعرض سعراً ويُحسب له
+     اتجاهٌ ويُرشَّح للفرص.
+
+     ياهو يلاحق رموز العملات المكرَّرة برقم CoinMarketCap
+     (`ARB11841-USD`)، ويُبقي الرمز القصير على أصلٍ آخر قديم يحمل نفس
+     الاختصار. فالقاعدة: لكل عملةٍ يجب أن يأتي **حجمٌ موجب**. */
+  const px  = (s) => Number.isFinite(quotes[s]?.regularMarketPrice) && quotes[s].regularMarketPrice > 0;
+  const vol = (s) => Number.isFinite(quotes[s]?.regularMarketVolume) && quotes[s].regularMarketVolume > 0;
+  const alive = (s) => px(s) && vol(s);
   const wide = candidates.filter(c => alive(c.s));
-  const dropped = candidates.filter(c => !alive(c.s)).map(c => c.s);
+  const dropped = candidates.filter(c => !alive(c.s))
+    .map(c => c.s + (px(c.s) ? " (بلا حجم)" : " (بلا سعر)"));
   // `mkt` صريح لا استنتاج من اسم القطاع: الواجهة والخادم يفرزان عليه،
   // ومقارنة نصّ عربي لتقرير سوق الرمز تنكسر بأول تغيير في التسمية.
   const crypto = CRYPTO.filter(([s]) => alive(s)).map(([s, ar, en]) => ({ s, ar, en, sec: "كريبتو", mkt: "crypto" }));
-  const noCrypto = CRYPTO.filter(([s]) => !alive(s)).map(c => c[0]);
+  const noCrypto = CRYPTO.filter(([s]) => !alive(s))
+    .map(([s]) => s + (px(s) ? " (بلا حجم — رمزٌ ميت؟ جرّب لاحقة CMC)" : " (بلا سعر)"));
 
   if (dropped.length) console.log(`  ⚠ سقط ${dropped.length} رمزاً بلا سعر: ${dropped.join(", ")}`);
   if (noCrypto.length) console.log(`  ⚠ عملات بلا سعر: ${noCrypto.join(", ")}`);
@@ -193,9 +210,21 @@ function selfCheck() {
     }
   });
 
-  t("الملف الحالي ما زال يقرأ ومرشّحوه 90", () => {
+  /* الخاصيّة لا الرقم. `!== 90` كان يُسقط الفحص عند إضافة أيّ مرشّح،
+     وهذا يدفع إلى **تخفيف الفحص بدل قراءته** — أسوأ ما يفعله اختبار.
+     نفس علاج `SCANS.length !== 8` سابقاً. */
+  t("الملف الحالي يقرأ ومرشّحوه أكثر من المطلوب بلا تكرار", () => {
     const cfg = JSON.parse(fs.readFileSync(CFG_PATH, "utf8"));
-    if (cfg.symbols.length !== 90) throw new Error(`${cfg.symbols.length} مرشّحاً`);
+    if (!Array.isArray(cfg.symbols) || cfg.symbols.length < cfg.top)
+      throw new Error(`${cfg.symbols?.length} مرشّحاً و${cfg.top} مطلوب`);
+    const seen = new Set();
+    for (const x of cfg.symbols) {
+      if (!x.s || !x.ar || !x.en || !x.sec) throw new Error(`${x.s || "?"} حقلٌ ناقص`);
+      if (seen.has(x.s)) throw new Error(`${x.s} مكرّر`);
+      seen.add(x.s);
+    }
+    // رمزٌ في الطبقتين يُجلب مرّتين ويُحسب مرّتين في الاتساع
+    for (const w of cfg.wide || []) if (seen.has(w.s)) throw new Error(`${w.s} في الأساسية والواسعة معاً`);
   });
 
   console.log(`\n${fail ? "✗" : "✔"} ${pass} نجح · ${fail} فشل`);

@@ -24,7 +24,12 @@ jobs:
           node-version: "20"
 
       - name: فحص ذاتي للكود
-        run: node scripts/fetch-daily.mjs --check
+        run: |
+          node scripts/fetch-daily.mjs --check
+          node scripts/backtest.mjs --check
+          node scripts/backtest-strategies.mjs --check
+          node scripts/analytics.mjs --check
+          node scripts/intelligence.mjs --check
 
       - name: إحضار البيانات الحالية من فرع data
         run: |
@@ -43,6 +48,13 @@ jobs:
         run: node scripts/fetch-daily.mjs --out ./out
         env:
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+
+      - name: تحديث التحليل المشتق ورادار الدقة
+        # لا يغيّر قواعد الخطة؛ يضيف المقاييس والرفض المفسّر فوق البيانات.
+        continue-on-error: true
+        run: |
+          node scripts/analytics.mjs --out ./out
+          node scripts/intelligence.mjs --out ./out
 
       - name: التحقق من سلامة الملفات
         run: |

@@ -60,7 +60,15 @@ scripts/lib/yahoo.mjs      شموع (أساسي محلياً) + Stooq احتيا
 scripts/lib/indicators.mjs المؤشرات — مشتركة بين الخادم والمتصفح
 scripts/lib/options.mjs    Black–Scholes والجريكس واستخراج التقلّب الضمني
 stocks/scans.js            شروط الماسح — نسخة واحدة للمتصفح والخادم
+stocks/score.js            نواة النتيجة والنطاقات — مشتركة بين المتصفح والخادم
+stocks/indicators.js       المؤشرات + ADX والتباعد والانضغاط وMFI/OBV/Stochastic
+stocks/strategies.js       عشر استراتيجيات وبواباتها وخططها — مشتركة
+stocks/consensus.js        الإجماع الموزون وكشف التعارض وحالة السوق
+stocks/scanner-pro.js      واجهة الماسح وترتيب الكون والتحليل التفصيلي
 scripts/backtest.mjs       الأرشيف التاريخي — سجلّ كل شرط على خمس سنوات
+scripts/backtest-strategies.mjs أرشيف لحظي لاستراتيجيات الماسح
+scripts/track-strategies.mjs حالة الاستراتيجيات ولحظة البدء والتسلسل
+scripts/fetch-filings.mjs  إيداعات SEC الرسمية (8-K وForm 4)
 scripts/track-signals.mjs  السجلّ الحيّ — يثبّت ما ظهر فعلاً ويتابعه
 scripts/fetch-events.mjs   الأحداث القوية — تقويم الفدرالي الرسمي
 scripts/fetch-options.mjs  عقود الخيارات — دورة نصف ساعة مستقلة
@@ -90,6 +98,10 @@ node scripts/build-universe.mjs --check
 node scripts/test-evaluate.mjs
 node scripts/analytics.mjs --check
 node scripts/intelligence.mjs --check
+node scripts/check-strategies.mjs
+node scripts/track-strategies.mjs --check
+node scripts/backtest-strategies.mjs --check
+node scripts/fetch-filings.mjs --check
 node scripts/check-ui.mjs
 
 node local/run.mjs quotes                # أسعار فقط (~90 ثانية)
@@ -101,6 +113,9 @@ node local/run.mjs signals               # تثبيت إشارات اليوم (�
 node local/run.mjs events                # تقويم الفدرالي (يومياً)
 node local/run.mjs learn                 # قراءة السجل واقتراحاته (بلا شبكة، مع daily)
 node local/run.mjs intelligence          # إعادة بناء رادار الدقة (بلا شبكة)
+node local/run.mjs strategies            # حالة الماسح وتسلسله (بلا شبكة)
+node local/run.mjs stratbt               # أرشيف الاستراتيجيات اللحظي
+node local/run.mjs filings               # إيداعات SEC الرسمية
 node local/run.mjs both                  # كل شيء
 node local/run.mjs serve                 # خادم على localhost:8080
 node local/run.mjs publish               # نشر data/ على فرع data

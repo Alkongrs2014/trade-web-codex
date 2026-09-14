@@ -13,8 +13,11 @@
      node local/run.mjs news       الأخبار وحدها
      node local/run.mjs daily      أساسيات وترتيب + الأرشيف (مرة يومياً)
      node local/run.mjs options    عقود الخيارات (كل نصف ساعة)
+     node local/run.mjs filings    إيداعات SEC (كل عشر دقائق، بلا مفتاح)
      node local/run.mjs backtest   الأرشيف التاريخي وحده
      node local/run.mjs signals    تثبيت إشارات اليوم وتحديث المفتوحة
+     node local/run.mjs strategies ماسح الاستراتيجيات — الحالة والتسلسل (بلا شبكة)
+     node local/run.mjs stratbt    أرشيف الاستراتيجيات اللحظي (60 يوماً)
      node local/run.mjs events     تقويم الفدرالي (أحداث قوية قادمة)
      node local/run.mjs learn      قراءة السجل واقتراحات التحسين (بلا شبكة)
      node local/run.mjs analytics  قوة نسبية وبيتا وارتباط وفجوات (بلا شبكة)
@@ -69,13 +72,29 @@ function alive(pid) {
   try { process.kill(pid, 0); return true; } catch (e) { return e.code === "EPERM"; }
 }
 
+/* التشغيل الذي ينسحب بسبب القفل يجب أن يترك دليلاً؛ وإلا يبدو نجاحاً
+   كاملاً بينما البيانات تتقادم. الملف محلي وتشخيصي، وآخر 50 محاولة تكفي. */
+const SKIPS = path.join(DATA, ".run.skips.json");
+function noteSkip(job, blocker, waited) {
+  try {
+    const raw = JSON.parse(fs.readFileSync(SKIPS, "utf8"));
+    const rows = Array.isArray(raw) ? raw : [];
+    rows.push({ job, blocker, waited, at: Date.now() });
+    fs.writeFileSync(SKIPS, JSON.stringify(rows.slice(-50)));
+  } catch {
+    try { fs.writeFileSync(SKIPS, JSON.stringify([{ job, blocker, waited, at: Date.now() }])); } catch {}
+  }
+}
+
 function acquireLock(job) {
   try {
     const prev = JSON.parse(fs.readFileSync(LOCK, "utf8"));
     const age = Date.now() - prev.at;
     // عملية ماتت دون تنظيف تترك قفلاً أبدياً، فنُسقطه بعد عشرين دقيقة
     if (age < 20 * 60000 && alive(prev.pid)) {
-      console.log(`  ⏭ ${prev.job} ما زالت تعمل منذ ${Math.round(age / 1000)} ثانية — ننسحب`);
+      const waited = Math.round(age / 1000);
+      console.log(`  ⏭ ${prev.job} ما زالت تعمل منذ ${waited} ثانية — ننسحب`);
+      noteSkip(job, prev.job, waited);
       return false;
     }
   } catch (e) { /* لا قفل، أو قفل تالف — امضِ */ }
@@ -87,8 +106,10 @@ const releaseLock = () => { try { fs.unlinkSync(LOCK); } catch (e) {} };
 
 /* ---------- تشغيل سكربت الجلب كعملية منفصلة ---------- */
 function runScript(name) {
+  // دورة الأسعار تشغّل متتبّع الاستراتيجيات بوضع السعر فقط، بلا نسخة ثانية.
+  const [file, ...extra] = String(name).split(/\s+/).filter(Boolean);
   return new Promise((resolve) => {
-    const p = spawn(process.execPath, [path.join(ROOT, "scripts", name), "--out", DATA], {
+    const p = spawn(process.execPath, [path.join(ROOT, "scripts", file), "--out", DATA, ...extra], {
       stdio: "inherit",
       env: { ...process.env, PREFER_YAHOO: process.env.PREFER_YAHOO ?? "1" }
     });
@@ -110,7 +131,11 @@ function serve() {
     // الموقع يقرأ من ./data، والصفحة نفسها في stocks/
     const candidates = [path.join(ROOT, "stocks", p), path.join(ROOT, p)];
     const file = candidates.find(f => f.startsWith(ROOT) && fs.existsSync(f) && fs.statSync(f).isFile());
-    if (!file) { res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" }); return res.end("غير موجود"); }
+    if (!file) {
+      console.warn(`  404  ${p}`);
+      res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+      return res.end("غير موجود");
+    }
     res.writeHead(200, {
       "Content-Type": MIME[path.extname(file)] || "application/octet-stream",
       "Cache-Control": "no-store"          // البيانات تتغيّر كل تشغيل
@@ -191,7 +216,8 @@ function publish() {
   fs.rmSync(stage, { recursive: true, force: true });
   // القفل ملف تشغيل محلي لا بيانات، ونشره يعني دفعة جديدة كل دورة
   // لمجرد تغيّر رقم العملية
-  fs.cpSync(DATA, stage, { recursive: true, filter: (src) => path.basename(src) !== ".run.lock" });
+  const NO_PUBLISH = new Set([".run.lock", ".run.skips.json", "i18n.json", "cik.json"]);
+  fs.cpSync(DATA, stage, { recursive: true, filter: (src) => !NO_PUBLISH.has(path.basename(src)) });
 
   // اسم المؤلّف من إعدادات المستودع الأب إن وُجد، وإلا اسم محايد
   const cfg = (k, d) => { try { return git(["config", k], ROOT) || d; } catch { return d; } };
@@ -235,16 +261,18 @@ else {
 
   // الأخبار مع كل تحديث سوق: دورتها دقائق لا يوم، وهي أرخص جزء في
   // التشغيل (بضع خلاصات RSS) فلا تكلّف شيئاً أن تُرافق الأسعار
-  const jobs = cmd === "quotes" ? ["fetch-quotes.mjs"]
+  const jobs = cmd === "quotes" ? ["fetch-quotes.mjs", "track-strategies.mjs --only-price"]
              // التتبّع بعد الشمعات مباشرة: يقرأ summary.json الذي كتبته
              // للتوّ، بلا أي طلب شبكة — فتُثبَّت الإشارة لحظة ظهورها
-             : cmd === "market" ? ["fetch-market.mjs", "track-signals.mjs", "fetch-news.mjs", "intelligence.mjs"]
+             : cmd === "market" ? ["fetch-market.mjs", "track-signals.mjs", "track-strategies.mjs", "fetch-news.mjs", "intelligence.mjs"]
              : cmd === "signals" ? ["track-signals.mjs"]
+             : cmd === "strategies" ? ["track-strategies.mjs"]
+             : cmd === "stratbt" ? ["backtest-strategies.mjs"]
              : cmd === "news"   ? ["fetch-news.mjs"]
              // الأرشيف مع الدورة اليومية: يجلب خمس سنوات لكل رمز (~500
              // طلب) فلا مكان له في دورة عشر دقائق، ونتيجته لا تتغيّر
              // بمعدّل أسرع من يوم على أي حال
-             : cmd === "daily"  ? ["fetch-daily.mjs", "fetch-events.mjs", "backtest.mjs", "learn.mjs", "analytics.mjs", "intelligence.mjs"]
+             : cmd === "daily"  ? ["fetch-daily.mjs", "fetch-events.mjs", "backtest.mjs", "backtest-strategies.mjs", "analytics.mjs", "learn.mjs", "intelligence.mjs"]
              : cmd === "events" ? ["fetch-events.mjs"]
              : cmd === "backtest" ? ["backtest.mjs"]
              : cmd === "learn"  ? ["learn.mjs"]
@@ -253,7 +281,8 @@ else {
              // الخيارات دورة نصف ساعة مستقلة: كل رمز يحتاج طلباً لكل
              // استحقاق، وسلسلة العقود لا تتغيّر بمعدّل الشمعة
              : cmd === "options" ? ["fetch-options.mjs"]
-             : ["fetch-daily.mjs", "fetch-events.mjs", "fetch-market.mjs", "track-signals.mjs", "fetch-news.mjs", "fetch-options.mjs", "backtest.mjs", "learn.mjs", "analytics.mjs", "intelligence.mjs"];
+             : cmd === "filings" ? ["fetch-filings.mjs"]
+             : ["fetch-daily.mjs", "fetch-events.mjs", "fetch-market.mjs", "track-signals.mjs", "track-strategies.mjs", "fetch-news.mjs", "fetch-filings.mjs", "fetch-options.mjs", "backtest.mjs", "backtest-strategies.mjs", "analytics.mjs", "learn.mjs", "intelligence.mjs"];
 
   // الانسحاب أمام تشغيل جارٍ ليس فشلاً — نخرج بصفر حتى لا تُعلَّم المهمة
   // المجدولة كفاشلة كل دورة متداخلة

@@ -40,6 +40,8 @@ const DAY = 86400e3;
 const WIDE_PER_RUN = Number(process.env.OPT_WIDE_PER_RUN || 40);
 // صلاحية عقود الطبقة الواسعة: أطول من الأساسية لأنها ليست تحت المراقبة
 const WIDE_MAX_AGE = Number(process.env.OPT_WIDE_AGE_H || 6) * 3600e3;
+// طول تاريخ التقلّب الضمني المحفوظ. سنة تداول هي العرف في رتبة التقلّب،
+// ونقطةٌ واحدة لكل يوم لا لكل تشغيل — ستّ عشرة نقطة يومياً تصف نفس اليوم.
 const IV_KEEP = Number(process.env.OPT_IV_KEEP || 252);
 
 const readJSON = (p, d = null) => { try { return JSON.parse(fs.readFileSync(p, "utf8")); } catch { return d; } };
@@ -86,9 +88,19 @@ export function realizedVol(closes, days = 20) {
   return Math.sqrt(varr) * Math.sqrt(252);
 }
 
+/* =====================================================================
+   رتبة التقلّب المحقَّق — من شمعاتنا، متاحة اليوم لا بعد سنة.
+
+   رتبة التقلّب **الضمني** تحتاج تاريخاً لا نملكه بعد (نبدأ تجميعه من
+   هذا التشغيل)، أما المحقَّق فتاريخه في شمعاتنا اليومية أصلاً. والسؤال
+   الذي يجيب عنه مختلف لكنه مفيد بذاته: هل يتحرّك هذا السهم الآن أكثر
+   من عادته؟ سهمٌ تقلّبه المحقَّق في المئين التسعين يتحرّك كما لم يتحرّك
+   في سنته — وهو سياقٌ لا يعطيه رقم التقلّب وحده.
+   ===================================================================== */
 export function hvSeries(closes, win = 20, look = 252) {
   if (!Array.isArray(closes) || closes.length < win + 12) return null;
   const out = [];
+  // نافذةٌ متدحرجة: كل نقطة تقلّبُ العشرين يوماً المنتهية عندها
   for (let i = win + 1; i <= closes.length; i++) {
     const v = realizedVol(closes.slice(0, i), win);
     if (Number.isFinite(v)) out.push(v);
@@ -144,6 +156,10 @@ export function atmIVfrom(calls, puts, spot) {
 
 /* اختيار الاستحقاقات: الأقرب دائماً، ثم الأقرب إلى ثلاثين يوماً.
    الأسبوعي يكشف رهان الحدث، والشهري هو ما يتداوله أغلب الناس. */
+/* `EXP_END`: ياهو يعطي تاريخ الانتهاء عند منتصف ليل UTC، والعقد يعيش
+   حتى إغلاق نيويورك (~21:00 UTC). المقارنة بمنتصف الليل تُسقط استحقاق
+   **اليوم** من الظهيرة فصاعداً — وهو أكثر الاستحقاقات تداولاً. وهي نفس
+   إزاحة `yearsToExpiry` كي لا تختلف دالتان في تعريف «منتهٍ». */
 const EXP_END = 21 * 3600 * 1000;
 
 export function pickExpiries(list, now, want = EXPIRIES) {
@@ -161,6 +177,13 @@ export function pickExpiries(list, now, want = EXPIRIES) {
   return out.slice(0, want).sort((a, b) => a - b);
 }
 
+/* تاريخ السلسلة يُؤخذ من عقودها لا من التاريخ المطلوب.
+
+   ياهو يردّ بأقرب سلسلة حين لا يطابق المطلوبُ استحقاقاً قائماً، فكانت
+   عقود اليوم تُلصَق بتاريخ الاثنين: العقود صحيحة (كل عقد يحمل انتهاءه)
+   لكن ترويسة الاستحقاق تقول «بعد 3 أيام» وهي صفر. ومعها كل ما يُحسب
+   على مستوى الاستحقاق — الحركة المتوقّعة واحتمال الربح في باني
+   الاستراتيجيات — يُحسب بزمنٍ يفوق الحقيقي ثلاثة أضعاف. */
 function asChain(requested, res) {
   const exps = [...new Set([...(res.calls || []), ...(res.puts || [])]
     .map(c => c.expiration).filter(Number.isFinite))];
@@ -208,12 +231,19 @@ async function buildSymbol(meta, now, r, fund) {
     const calls = side(ch.calls, "call");
     const puts = side(ch.puts, "put");
     allCalls.push(...calls); allPuts.push(...puts);
+    // المقاييس البنيوية تُقاس على السلسلة **الخام** لا على المرشَّحة
+    // سيولةً: أطراف السلسلة حيث تتراكم المراكز الكبيرة، وحذفها يزيح
+    // أقصى الألم والجدران معاً
     const pc = putCall(ch.calls, ch.puts);
     const wl = walls(ch.calls, ch.puts);
     pcAll.cv += pc.cv; pcAll.pv += pc.pv; pcAll.co += pc.co; pcAll.po += pc.po;
+
     out.exp.push({
       e: ch.e,
       days: Math.round(yearsToExpiry(ch.e, now) * 365),
+      // الزمن بالسنوات بدقّةٍ كاملة إلى جانب الأيام المقرَّبة: عقد اليوم
+      // `days` صفر، وقسمةُ أي احتمالٍ على صفرٍ تُسقط الحساب — بينما زمنه
+      // الحقيقي ساعات. ستّ خانات تكفي لساعةٍ واحدة (0.000114)
       t: Math.round(yearsToExpiry(ch.e, now) * 1e6) / 1e6,
       // والسوق مغلق يأتي التقلّب من عقودنا المستخرَجة لا من حقل مصفَّر
       iv: r4(mode === "live" ? atmIV(ch.calls, ch.puts, spot) : atmIVfrom(calls, puts, spot)),
@@ -231,8 +261,12 @@ async function buildSymbol(meta, now, r, fund) {
   const d1 = readJSON(path.join(OUT, "sym", `${sym}.json`))?.tf?.["1d"]?.c;
   const closes = Array.isArray(d1) ? d1.map(x => Array.isArray(x) ? x[4] : x.c) : null;
   out.hv20 = r4(realizedVol(closes, 20));
+  // رتبة المحقَّق: موضع تقلّب اليوم من سنته. العتبة اثنتا عشرة نقطة لا
+  // عشرون — السلسلة هنا مشتقّة من شمعاتنا ونملك 260 منها، فالنقص يعني
+  // رمزاً جديداً لا عيّنة قصيرة
   const hvs = hvSeries(closes);
   out.hvR = (hvs && out.hv20) ? ivRank(hvs, out.hv20, 12) : null;
+  // نسبة البوت إلى الكول على الاستحقاقات كلها
   out.pc = { v: pcAll.cv > 0 ? r2(pcAll.pv / pcAll.cv) : null,
              o: pcAll.co > 0 ? r2(pcAll.po / pcAll.co) : null,
              cv: pcAll.cv, pv: pcAll.pv, co: pcAll.co, po: pcAll.po };
@@ -246,6 +280,12 @@ async function buildSymbol(meta, now, r, fund) {
   // نسبة الضمني إلى المحقَّق: فوق الواحد = العقود أغلى من حركة السهم
   out.ivHv = (out.ivAtm && out.hv20) ? r2(out.ivAtm / out.hv20) : null;
 
+  /* الأرباح مقابل ما يسعّره السوق لها.
+
+     الرقم الذي يسأل عنه متداول العقود قبل الأرباح ليس «متى» بل «كم
+     يتوقّع السوق أن يتحرّك». والجواب في ستراد أول استحقاق **يغطّي**
+     التاريخ: استحقاقٌ ينتهي قبل الإعلان لا يسعّره أصلاً، فحركته
+     المتوقّعة تصف أسبوعاً عادياً وتُقرأ خطأً على أنها حركة الأرباح. */
   const eAt = fund && fund.earnings && fund.earnings.at;
   if (Number.isFinite(eAt) && eAt > now) {
     const dTo = Math.round((eAt - now) / DAY);
@@ -315,20 +355,26 @@ async function main() {
   let bytes = 0;
   for (const o of ok) bytes += writeJSON(`options/${o.s}.json`, o);
 
-  // نبني تاريخ IV بنقطة واحدة لكل يوم كي تصبح الرتبة قابلة للمقارنة
-  // بعد تراكم عينة حقيقية، لا 16 نقطة متطابقة من دورات نصف الساعة.
-  const day = Math.floor(now / DAY);
+  /* تاريخ التقلّب الضمني — نقطةٌ واحدة لكل رمز في اليوم الواحد.
+
+     الدورة نصف ساعة، فالكتابة في كل تشغيل تعطي ستّ عشرة نقطة تصف نفس
+     اليوم: «رتبة سنة» تصير عندها رتبة ستة عشر يوماً بينما يقول العدّاد
+     252. اليوم هو الوحدة، وآخر قراءة فيه تغلب — فهي أقرب إلى الإغلاق. */
+  const day = Math.floor(now / 86400e3);
   const hist = readJSON(path.join(OUT, "ivhist.json"), null) || { keep: IV_KEEP, h: {} };
   if (!hist.h) hist.h = {};
   for (const o of ok) {
     if (!Number.isFinite(o.ivAtm)) continue;
     const arr = hist.h[o.s] || (hist.h[o.s] = []);
     const last = arr[arr.length - 1];
+    // بالألف كعدد صحيح: 0.3363 → 336. الدقة كافية لرتبةٍ مئوية،
+    // والكسور العشرية تضاعف حجم ملفٍ يحمل مئة ألف رقم
     const v = Math.round(o.ivAtm * 1000);
     if (last && last[0] === day) last[1] = v; else arr.push([day, v]);
     if (arr.length > IV_KEEP) arr.splice(0, arr.length - IV_KEEP);
   }
   hist.updated = now; hist.keep = IV_KEEP;
+
   const ivR = (sym, iv) => {
     const arr = hist.h[sym];
     return (arr && Number.isFinite(iv)) ? ivRank(arr.map(x => x[1] / 1000), iv, 20) : null;
@@ -338,7 +384,11 @@ async function main() {
   const fresh = ok.map(o => ({
     s: o.s, ar: o.ar, en: o.en, spot: o.spot, updated: o.updated,
     ivAtm: o.ivAtm, hv20: o.hv20, ivHv: o.ivHv,
+    // رتبتان لا واحدة: الضمنية تحتاج تاريخاً نبنيه من اليوم، والمحقَّقة
+    // متاحة الآن من شمعاتنا. عرضُ الثانية بينما الأولى تُبنى أصدق من
+    // إخفاء القسم شهراً
     ivR: ivR(o.s, o.ivAtm), hvR: o.hvR || null, pc: o.pc || null, er: o.er || null,
+    // أقرب استحقاق له مقاييس بنيوية: تُقرأ في القائمة بلا فتح ملف الرمز
     nx: o.exp?.[0] ? { days: o.exp[0].days, mp: o.exp[0].mp,
                        em: o.exp[0].em, pc: o.exp[0].pc } : null,
     call: o.bestCalls[0] || null, put: o.bestPuts[0] || null, n: o.n,
@@ -354,12 +404,17 @@ async function main() {
   if (rows.length < prev.length)
     throw new Error(`ملخّص العقود تقلّص ${prev.length}→${rows.length} — لن نكتب`);
 
+  /* قراءة السوق من سوق العقود نفسه — لا من الأسهم.
+
+     نسبة البوت إلى الكول تُجمع بالأعداد لا بمتوسط النسب: متوسّطُ نسبٍ
+     يعطي رمزاً حجمه مئة عقد وزنَ رمزٍ حجمه مئة ألف. */
   const agg = rows.reduce((a, x) => {
     if (x.pc) { a.cv += x.pc.cv || 0; a.pv += x.pc.pv || 0; a.co += x.pc.co || 0; a.po += x.pc.po || 0; a.nPc++; }
     if (Number.isFinite(x.ivHv)) { a.iv.push(x.ivHv); if (x.ivHv >= 1.3) a.rich++; else if (x.ivHv <= 0.8) a.cheap++; }
     if (x.flow) { a.flow++; if (x.flow.side === "call") a.flowC++; else a.flowP++; }
     return a;
   }, { cv: 0, pv: 0, co: 0, po: 0, nPc: 0, iv: [], rich: 0, cheap: 0, flow: 0, flowC: 0, flowP: 0 });
+  // الوسيط لا المتوسط: رمزٌ واحد نسبته 6× يزيح المتوسط ولا يزيح الوسيط
   const median = (a) => { if (!a.length) return null; const q = [...a].sort((x, y) => x - y);
     const m = q.length >> 1; return q.length % 2 ? q[m] : (q[m - 1] + q[m]) / 2; };
   const mkt = {
@@ -389,6 +444,8 @@ async function main() {
   console.log(`✔ ${ok.length} / ${chosen.length} رمزاً · ${rows.length} في الملخّص · ${fresh.reduce((a, x) => a + x.n, 0)} عقداً سائلاً · ${(bytes / 1024).toFixed(0)} ك.ب`);
   if (flowN) console.log(`  نشاط غير معتاد على ${flowN} رمزاً`);
   console.log(`  بوت/كول ${mkt.pcv ?? "—"} حجماً و${mkt.pco ?? "—"} مراكزَ · وسيط ضمني/محقَّق ${mkt.ivHvMed ?? "—"}`);
+  const ivDays = Math.max(0, ...Object.values(hist.h).map(a => a.length));
+  console.log(`  تاريخ التقلّب الضمني: ${Object.keys(hist.h).length} رمزاً · أطولها ${ivDays} يوماً من ${IV_KEEP}`);
   console.log(`  طلبات: ${stats.requests} · إخفاقات: ${stats.failures}`);
   return 0;
 }
@@ -555,6 +612,28 @@ function selfCheck() {
     eq(pickExpiries([d(-9)], now, 2), [], "كلها منتهية");
   });
 
+  t("استحقاق اليوم لا يسقط بعد منتصف الليل", () => {
+    // 2026-09-11 ظهراً بتوقيت UTC، واستحقاق اليوم مختومٌ بمنتصف ليله
+    const noon = Date.UTC(2026, 8, 11, 12);
+    const today = Math.floor(Date.UTC(2026, 8, 11) / 1000);
+    const next = Math.floor(Date.UTC(2026, 8, 14) / 1000);
+    eq(pickExpiries([today, next], noon, 1), [today], "0DTE هو الأقرب لا التالي");
+    // وبعد الإغلاق (21:00 UTC) يسقط فعلاً
+    eq(pickExpiries([today, next], Date.UTC(2026, 8, 11, 21, 30), 1), [next], "بعد الإغلاق");
+  });
+
+  t("asChain يأخذ التاريخ من العقود لا من المطلوب", () => {
+    const exp = Math.floor(Date.UTC(2026, 8, 11) / 1000);
+    const asked = Math.floor(Date.UTC(2026, 8, 14) / 1000);
+    // ياهو ردّ بسلسلة اليوم على طلب الاثنين
+    eq(asChain(asked, { calls: [{ expiration: exp }], puts: [{ expiration: exp }] }).e, exp,
+       "التاريخ من العقود");
+    // تاريخان في الردّ الواحد لا يُصدَّقان — نُبقي المطلوب
+    eq(asChain(asked, { calls: [{ expiration: exp }], puts: [{ expiration: asked }] }).e, asked,
+       "ردٌّ مختلط يبقى على المطلوب");
+    eq(asChain(asked, { calls: [], puts: [] }).e, asked, "ردٌّ فارغ");
+  });
+
   t("realizedVol يقيس تقلّباً معروفاً", () => {
     // سلسلة ثابتة النمو = تقلّب صفر
     const flat = Array.from({ length: 40 }, (_, i) => 100 * Math.pow(1.001, i));
@@ -620,39 +699,92 @@ function selfCheck() {
     eq(r.map(x => x.eff), [5, 1], "المستبعدان خارج النطاق");
   });
 
-  t("استحقاق اليوم يبقى حتى إغلاق نيويورك", () => {
-    const today = Math.floor(Date.UTC(2026, 8, 11) / 1000);
-    const next = Math.floor(Date.UTC(2026, 8, 14) / 1000);
-    eq(pickExpiries([today, next], Date.UTC(2026, 8, 11, 12), 1), [today], "0DTE قبل الإغلاق");
-    eq(pickExpiries([today, next], Date.UTC(2026, 8, 11, 21, 30), 1), [next], "بعد الإغلاق");
+  t("الحركة المتوقّعة للأرباح تؤخذ من استحقاقٍ يغطّيها", () => {
+    // استحقاقان: أحدهما قبل الإعلان والآخر بعده. الأول لا يسعّر الحدث.
+    const exp = [{ days: 3, em: { abs: 1, pct: 1 } }, { days: 31, em: { abs: 9, pct: 9 } }];
+    const pick = (dTo) => (exp.find(x => x.days >= dTo) || null);
+    eq(pick(10).days, 31, "أرباحٌ بعد عشرة أيام لا يغطّيها استحقاق الثلاثة");
+    eq(pick(2).days, 3, "وأرباحٌ بعد يومين يغطّيها");
+    eq(pick(60), null, "وأبعدُ من كل استحقاقاتنا لا يغطّيه شيء");
   });
 
-  t("مقاييس تمركز العقود صحيحة", () => {
-    const calls = [{ strike: 90, openInterest: 0, volume: 100 }, { strike: 100, openInterest: 1000, volume: 300 }, { strike: 110, openInterest: 0 }];
-    const puts = [{ strike: 90, openInterest: 0 }, { strike: 100, openInterest: 1000, volume: 200 }, { strike: 110, openInterest: 0 }];
-    eq(maxPain(calls, puts), 100, "أقصى الألم");
-    near(putCall(calls, puts).vol, 0.5, 1e-12, "بوت/كول بالحجم");
-    eq(walls(calls, puts).call.k, 100, "جدار الكول");
+  t("maxPain يجد السترايك الأقل دفعاً", () => {
+    // كل المراكز على كول 100 وبوت 100: الألم الأقصى عندهما معاً
+    const calls = [{ strike: 90, openInterest: 0 }, { strike: 100, openInterest: 1000 }, { strike: 110, openInterest: 0 }];
+    const puts  = [{ strike: 90, openInterest: 0 }, { strike: 100, openInterest: 1000 }, { strike: 110, openInterest: 0 }];
+    eq(maxPain(calls, puts), 100, "التقاء الجانبين");
+    // مراكز الكول كلها عند 90: كل سترايك فوقها يدفع، فالأقل هو الأدنى
+    eq(maxPain([{ strike: 90, openInterest: 500 }, { strike: 100, openInterest: 0 }, { strike: 110, openInterest: 0 }],
+               [{ strike: 90, openInterest: 0 }, { strike: 100, openInterest: 0 }, { strike: 110, openInterest: 0 }]),
+       90, "كولٌ وحده");
+    eq(maxPain([{ strike: 1, openInterest: 5 }], []), null, "سترايك واحد لا يكفي");
   });
 
-  t("الحركة المتوقعة ستراد على سترايك مشترك", () => {
+  t("putCall يجمع الأعداد لا النسب", () => {
+    const c = [{ volume: 100, openInterest: 200 }, { volume: 300, openInterest: 100 }];
+    const p = [{ volume: 200, openInterest: 600 }];
+    const r = putCall(c, p);
+    near(r.vol, 0.5, 1e-12, "200/400");
+    near(r.oi, 2, 1e-12, "600/300");
+    eq(putCall([], []).vol, null, "بلا كول لا نسبة");
+    // حقلٌ غائب يُعدّ صفراً لا يُسقط الصفّ
+    near(putCall([{ volume: 10 }], [{ volume: 5 }]).vol, 0.5, 1e-12, "بلا مراكز قائمة");
+  });
+
+  t("walls يجد أثقل سترايك على كل جانب", () => {
+    const w = walls([{ strike: 100, openInterest: 50 }, { strike: 120, openInterest: 900 }],
+                    [{ strike: 80, openInterest: 700 }, { strike: 90, openInterest: 30 }]);
+    eq([w.call.k, w.put.k], [120, 80], "الجداران");
+    eq(walls([], []), { call: null, put: null }, "سلسلة فارغة");
+  });
+
+  t("expectedMove ستراد لا خنق", () => {
     const em = expectedMove([{ k: 100, mid: 3 }], [{ k: 100, mid: 2 }], 100);
-    eq(em, { k: 100, abs: 5, pct: 5 }, "ستراد المال");
-    eq(expectedMove([{ k: 105, mid: 3 }], [{ k: 95, mid: 2 }], 100), null, "لا نخلط سترايكين");
+    near(em.abs, 5, 1e-12, "مجموع القسطين");
+    near(em.pct, 5, 1e-12, "نسبةً إلى السعر");
+    // سترايكان مختلفان: خنقٌ لا ستراد، ورقمه لا يصف الحركة المتوقّعة
+    eq(expectedMove([{ k: 105, mid: 3 }], [{ k: 95, mid: 2 }], 100), null, "بلا سترايك مشترك");
+    eq(expectedMove([], [], 100), null, "سلسلة فارغة");
+    // أقرب **مشترك** لا أقرب لكل جانب: بوت 101 ساقط سيولةً، فالستراد
+    // عند 100 لا يُردّ لأن أقرب كولٍ 101
+    eq(expectedMove([{ k: 101, mid: 3 }, { k: 100, mid: 3.5 }],
+                    [{ k: 100, mid: 2.5 }, { k: 95, mid: 1 }], 100.6).k, 100, "أقرب سترايك مشترك");
+    // والأقرب فعلاً حين يوجد مشتركان
+    eq(expectedMove([{ k: 100, mid: 3 }, { k: 105, mid: 1 }],
+                    [{ k: 100, mid: 2 }, { k: 105, mid: 6 }], 104).k, 105, "الأقرب من المشتركين");
   });
 
-  t("الجاما تبقى منفصلة ورتبة التقلّب تحتاج عينة", () => {
+  t("gammaByStrike يعدّ ولا يطرح", () => {
     const g = gammaByStrike([{ k: 100, gamma: 0.05, oi: 100 }, { k: 105, gamma: 0.03, oi: 400 }],
                             [{ k: 100, gamma: 0.04, oi: 200 }], 100);
-    eq([g[0].c, g[0].p], [500, 800], "الكول والبوت منفصلان");
-    const short = ivRank([0.2, 0.3], 0.25);
-    eq([short.rank, short.pct, short.n], [null, null, 2], "العينة القصيرة معلنة");
+    eq(g.map(x => x.k), [100, 105], "مرتّب بالسترايك");
+    eq([g[0].c, g[0].p], [500, 800], "الجانبان منفصلان لا محصّلة");
+    eq(g[1].p, 0, "جانبٌ بلا عقود يبقى صفراً لا يُحذف");
+    eq(gammaByStrike([], [], 100), null, "بلا عقود");
+    eq(gammaByStrike([{ k: 100, gamma: 0.05, oi: 100 }], [], 100), null, "سترايك واحد ليس توزيعاً");
   });
 
-  t("سلسلة التقلّب المحقق متدحرجة", () => {
-    const cl = Array.from({ length: 120 }, (_, i) => Math.max(1, 100 * (1 + 0.002 * i * Math.sin(i))));
-    const ser = hvSeries(cl);
-    if (!ser || ser.length < 12 || ser.some(v => !Number.isFinite(v) || v < 0)) throw new Error("سلسلة غير صالحة");
+  t("ivRank موضعٌ في المدى ومئينٌ في التوزيع", () => {
+    const h = Array.from({ length: 30 }, (_, i) => 0.2 + i * 0.01);   // 0.20 … 0.49
+    const r = ivRank(h, 0.35);
+    // القيم مقرَّبة لخانتين — الرتبة مئوية ولا معنى لخانة ثالثة
+    near(r.rank, (0.35 - 0.20) / (0.49 - 0.20) * 100, 0.005, "الموضع في المدى");
+    near(r.pct, 15 / 30 * 100, 0.005, "المئين");
+    eq(r.n, 30, "حجم العيّنة");
+    // عيّنة قصيرة: نعيد العدد ولا نعيد رقماً — «يُبنى» لا «صفر»
+    const short = ivRank([0.2, 0.3], 0.25);
+    eq([short.rank, short.pct, short.n], [null, null, 2], "أقصر من الحد الأدنى");
+    eq(ivRank(null, 0.3), null, "بلا تاريخ");
+  });
+
+  t("hvSeries نافذةٌ متدحرجة لا رقمٌ واحد", () => {
+    // تقلّبٌ يتصاعد: آخر نقطة يجب أن تفوق أولاها
+    const cl = [];
+    for (let i = 0; i < 120; i++) cl.push(100 * (1 + 0.002 * i * Math.sin(i)));
+    const ser = hvSeries(cl.map(x => Math.max(1, x)));
+    if (!ser || ser.length < 12) throw new Error("سلسلة قصيرة: " + (ser && ser.length));
+    if (ser.some(v => !Number.isFinite(v) || v < 0)) throw new Error("قيمة غير صالحة");
+    eq(hvSeries([1, 2, 3]), null, "أقصر من النافذة");
   });
 
   console.log(`\n${fail ? "✗" : "✔"} ${pass} نجح · ${fail} فشل`);

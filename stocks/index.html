@@ -285,6 +285,9 @@ details b{color:var(--tx)}
 .pulse-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
 .pulse-stat{background:rgba(5,14,26,.42);border:1px solid rgba(148,166,189,.13);border-radius:12px;padding:10px 12px}
 .pulse-stat small{display:block;color:var(--mut);font-size:10.5px}.pulse-stat b{font-size:17px}
+.map-controls{display:flex;gap:6px;flex-wrap:wrap}.map-controls button{width:auto;padding:6px 10px;border-radius:9px;border:1px solid var(--line);background:var(--card2);color:var(--mut);font-family:inherit;font-size:11.5px;font-weight:700;line-height:1.4;cursor:pointer}.map-controls button.on{color:#fff;border-color:var(--acc);background:rgba(78,140,255,.22)}
+.market-map{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-auto-flow:dense;gap:6px;margin-top:12px;direction:rtl}.map-tile{min-height:62px;border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:8px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;overflow:hidden;transition:transform .15s,border-color .15s}.map-tile:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.34)}.map-tile.s2{grid-column:span 2}.map-tile.s3{grid-column:span 3}.map-tile b{font-size:13px}.map-tile span{font-size:11px;font-weight:800}.map-tile small{font-size:9.5px;color:rgba(255,255,255,.72);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.map-legend{display:flex;align-items:center;gap:8px;color:var(--dim);font-size:10.5px;margin-top:9px}.map-gradient{height:7px;flex:1;border-radius:99px;background:linear-gradient(90deg,#8f2836,#29384a,#087557)}
+.decision-passport{border-color:rgba(50,214,255,.28);background:linear-gradient(135deg,rgba(12,36,58,.98),rgba(11,25,42,.98))}.decision-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.decision-action{font-size:20px;font-weight:900;margin-top:2px}.decision-score{width:62px;height:62px;border-radius:16px;display:grid;place-items:center;background:rgba(32,214,155,.10);border:1px solid rgba(32,214,155,.24);flex:none}.decision-score b{font-size:22px;line-height:1}.decision-score small{font-size:9px;color:var(--mut)}.decision-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:12px}.decision-cell{background:rgba(5,14,26,.48);border-radius:10px;padding:9px;min-width:0}.decision-cell small{display:block;color:var(--mut);font-size:10px}.decision-cell b{display:block;margin-top:2px;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.decision-invalidate{margin-top:10px;padding:9px 11px;border-radius:10px;background:rgba(255,92,108,.08);border:1px solid rgba(255,92,108,.18);font-size:12px;color:#ffc1c7}
 .section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
 .live-dot{width:8px;height:8px;border-radius:50%;background:var(--up);box-shadow:0 0 0 5px rgba(32,214,155,.10);display:inline-block;margin-left:7px}
 .opp-card{position:relative;padding:13px;border:1px solid var(--line);background:rgba(21,36,55,.7);border-radius:13px;margin-top:8px;cursor:pointer;transition:.18s ease}
@@ -306,14 +309,15 @@ details b{color:var(--tx)}
   section[data-view]{max-width:900px;margin:auto}
   section[data-view="now"].on,section[data-view="screen"].on,section[data-view="analysis"].on{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start;max-width:none}
   section[data-view="now"] .card,section[data-view="screen"] .card,section[data-view="analysis"] .card{margin-bottom:0}
-  .pulse-hero,#cardRadar,section[data-view="now"]>.disclaimer,section[data-view="screen"]>.disclaimer{grid-column:1/-1}
+  .pulse-hero,#cardRadar,#cardHeatmap,section[data-view="now"]>.disclaimer,section[data-view="screen"]>.disclaimer{grid-column:1/-1}
   #dailyRadar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}#dailyRadar .opp-card{margin-top:0}
 }
-@media (max-width:759px){#dailyRadar{display:block}}
-@media (max-width:420px){.plan-strip{grid-template-columns:repeat(2,1fr)}.pulse-hero{padding:18px}.pulse-hero h1{font-size:27px}}
+@media (max-width:759px){#dailyRadar{display:block}.market-map{grid-template-columns:repeat(6,minmax(0,1fr))}.decision-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:420px){.plan-strip{grid-template-columns:repeat(2,1fr)}.pulse-hero{padding:18px}.pulse-hero h1{font-size:27px}.market-map{grid-template-columns:repeat(4,minmax(0,1fr))}.map-tile.s3{grid-column:span 2}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 <link rel="stylesheet" href="pro.css?v=4">
+<link rel="stylesheet" href="scanner-pro.css?v=1">
 </head>
 <body>
 
@@ -422,6 +426,16 @@ details b{color:var(--tx)}
     <div id="sectors"><div class="skl" style="height:100px"></div></div>
   </div>
 
+  <div class="card" id="cardHeatmap">
+    <div class="section-head"><div><h2>🧭 خريطة السوق</h2><p class="hint" style="margin:0">السوق كله في نظرة واحدة — حجم المربع يقرّب حجم الشركة واللون يشرح الحركة</p></div>
+      <div class="map-controls" role="group" aria-label="مقياس ألوان خريطة السوق">
+        <button class="on" data-map-mode="chg">تغيّر اليوم</button><button data-map-mode="score">القوة الفنية</button>
+      </div></div>
+    <div id="marketMap"><div class="skl" style="height:220px"></div></div>
+    <div class="map-legend"><span>أضعف</span><i class="map-gradient"></i><span>أقوى</span></div>
+    <details><summary>كيف أقرأ الخريطة؟</summary><p>ابدأ بالقطاع ثم بالمربعات الكبيرة: اتساق اللون داخل القطاع يعني حركة واسعة، أما مربع واحد قوي وسط قطاع ضعيف فقد يكون خبراً خاصاً بالشركة. بدّل إلى «القوة الفنية» لتفصل حركة اليوم عن اتجاه الفريمات الأربعة.</p></details>
+  </div>
+
   <div class="card">
     <h2>🔝 الأكثر ارتفاعاً وانخفاضاً</h2>
     <div class="grid2" style="gap:14px">
@@ -469,6 +483,10 @@ details b{color:var(--tx)}
 <!-- ================= شاشة السهم ================= -->
 <section data-view="detail">
   <div class="card" id="dHead"><div class="skl" style="height:90px"></div></div>
+
+  <div class="card decision-passport" id="cardDecision">
+    <div id="decisionPassport"><div class="skl" style="height:150px"></div></div>
+  </div>
 
   <div class="card">
     <h2>📈 الشارت والمتوسطات</h2>
@@ -753,6 +771,11 @@ details b{color:var(--tx)}
 
 <!-- ================= الأخبار ================= -->
 <section data-view="news">
+  <div class="card" id="filingsCard">
+    <h2>إيداعات رسمية <small>SEC</small></h2>
+    <p class="hint">المصدر الأولي مباشرةً: أحداث 8-K الجوهرية وتداولات المطلعين Form 4، لا نقلاً عن عنوان صحفي.</p>
+    <div id="filingsList"><div class="skl" style="height:140px"></div></div>
+  </div>
   <div class="card">
     <h2>📰 أخبار السوق</h2>
     <p class="hint">من غرف أخبار اقتصادية عربية وعالمية · ما كان بالإنجليزية يُترجم آلياً ويبقى أصله تحته</p>
@@ -886,6 +909,24 @@ details b{color:var(--tx)}
   </p>
 </section>
 
+<section data-view="scanner" id="strategyScanner">
+  <div class="scx-hero card">
+    <div><span class="scx-kicker">MULTI-STRATEGY SCANNER · ماسح متعدد المحركات</span>
+      <h1>عشر قراءات، وقرار واحد قابل للتفسير</h1>
+      <p>يختبر السهم على استراتيجيات الجلسة والاستمرار والارتداد والتقلّب والحجم، ثم يمنع القرار عند التعارض بدل إخفائه داخل متوسط مضلل.</p></div>
+    <div class="scx-badge"><b>10</b><span>استراتيجيات</span></div>
+  </div>
+  <div class="card scx-search-card">
+    <div class="scx-search"><input id="scxInput" autocomplete="off" placeholder="اكتب الرمز أو اسم الشركة — مثال NVDA"><button id="scxRun" class="btn">حلّل الآن</button></div>
+    <div id="scxSuggest" class="scx-suggest"></div>
+    <p class="hint">الحساب التفصيلي يتم من شمعات الرمز الحالية، أما وقت بداية الإشارة والحافة التاريخية فيأتيان من ملفات التتبع ولا يتم اختلاقهما في المتصفح.</p>
+  </div>
+  <div id="scxConsensus" class="card"><div class="empty">اختر سهماً لبدء التحليل متعدد الاستراتيجيات.</div></div>
+  <div id="scxStrategies" class="card" style="display:none"></div>
+  <div id="scxRanking" class="card"><div class="skl" style="height:180px"></div></div>
+  <p class="disclaimer">الماسح أداة حسابية تعليمية، لا توصية ولا احتمال ربح. الحافة السالبة والتعارض ونقص البيانات تظهر كما هي ولا تُخفى.</p>
+</section>
+
 <section data-view="pro" id="proLab">
   <div class="pro-stage">
     <div><span class="pro-kicker">EXPLAINABLE MARKET INTELLIGENCE · FREE LAB</span><h1>مختبر القرار <b>PRO</b></h1>
@@ -916,6 +957,7 @@ details b{color:var(--tx)}
   <button data-go="now" class="on"><em>⚡</em>الآن</button>
   <button data-go="list"><em>📋</em>الأسهم</button>
   <button data-go="screen"><em>🎯</em>الفرص</button>
+  <button data-go="scanner"><em>◎</em>الماسح</button>
   <button data-go="pro"><em>✦</em>PRO</button>
   <button data-go="analysis"><em>⚖️</em>تحليل</button>
   <button data-go="log"><em>📜</em>السجل</button>
@@ -923,11 +965,17 @@ details b{color:var(--tx)}
 </nav>
 
 <script src="config.js"></script>
+<!-- الحساب الفني مصدره واحد للمتصفح ولمهام الخادم. ترتيب التحميل مهم:
+     النتيجة قبل المؤشرات، ثم شروط الماسح والخطة والاستراتيجيات. -->
+<script src="score.js"></script>
+<script src="indicators.js"></script>
 <script src="scans.js"></script>
 <!-- نواة الخطة وطبقة التقييم: نسخة واحدة يقرأها المتصفح والخادم، فما
      يحفظه السجلّ هو ما رآه المستخدم بالضبط لا حساباً موازياً له -->
 <script src="plan.js"></script>
 <script src="evaluate.js"></script>
+<script src="strategies.js"></script>
+<script src="consensus.js"></script>
 <script>
 "use strict";
 
@@ -944,10 +992,6 @@ const $$ = (s) => Array.from(document.querySelectorAll(s));
    وخلط النظامين في سطر واحد يجعل القراءة متعثّرة */
 const AR = "ar-EG-u-nu-latn";
 
-const TFS       = ["15m", "1h", "4h", "1d"];
-const TF_LABEL  = { "15m": "15 دقيقة", "1h": "ساعة", "4h": "4 ساعات", "1d": "يومي" };
-const TF_WEIGHT = { "15m": 0.5, "1h": 1, "4h": 1.5, "1d": 2 };
-
 const state = {
   summary: null, wide: null, market: null, fund: null, news: null,
   symCache: {}, view: "now", sym: null, activeTF: "1h",
@@ -956,7 +1000,7 @@ const state = {
   optCache: {}, opts: null, arch: null, intel: null, live: null, events: null, signals: null,
   optExp: 0, optSide: "calls",
   diag: [], trend: null, trendBusy: false, hist: null, histBusy: false, learn: null,
-  radarBusy: false, radarKey: "", lazy: {}
+  radarBusy: false, radarKey: "", mapMode: "chg", lazy: {}
 };
 
 /* الأرقام اللاتينية داخل نص عربي تُعيد ترتيب نفسها بشكل خاطئ (bidi).
@@ -1103,102 +1147,8 @@ function setFavOnly(on) {
 }
 
 /* =======================================================================
-   2) حسابات المؤشرات — نفس منطق سكربت الخادم بالضبط
+   2) الحسابات الفنية في score.js وindicators.js — مصدر واحد للخادم والمتصفح
    ======================================================================= */
-function sma(a, p) {
-  const o = new Array(a.length).fill(null); let s = 0;
-  for (let i = 0; i < a.length; i++) { s += a[i]; if (i >= p) s -= a[i - p]; if (i >= p - 1) o[i] = s / p; }
-  return o;
-}
-function ema(a, p) {
-  const o = new Array(a.length).fill(null), k = 2 / (p + 1);
-  if (a.length < p) return o;
-  let s = 0; for (let i = 0; i < p; i++) s += a[i];
-  o[p - 1] = s / p;
-  for (let i = p; i < a.length; i++) o[i] = a[i] * k + o[i - 1] * (1 - k);
-  return o;
-}
-function rsi(a, p = 14) {
-  const o = new Array(a.length).fill(null);
-  if (a.length <= p) return o;
-  let g = 0, l = 0;
-  for (let i = 1; i <= p; i++) { const d = a[i] - a[i - 1]; d >= 0 ? g += d : l -= d; }
-  g /= p; l /= p;
-  o[p] = l === 0 ? 100 : 100 - 100 / (1 + g / l);
-  for (let i = p + 1; i < a.length; i++) {
-    const d = a[i] - a[i - 1];
-    g = (g * (p - 1) + (d > 0 ? d : 0)) / p;
-    l = (l * (p - 1) + (d < 0 ? -d : 0)) / p;
-    o[i] = l === 0 ? 100 : 100 - 100 / (1 + g / l);
-  }
-  return o;
-}
-function macd(a, f = 12, s = 26, sg = 9) {
-  const ef = ema(a, f), es = ema(a, s);
-  const line = a.map((_, i) => (ef[i] !== null && es[i] !== null) ? ef[i] - es[i] : null);
-  const vals = line.filter(v => v !== null);
-  const sigVals = ema(vals, sg);
-  const off = line.length - vals.length;
-  const signal = new Array(a.length).fill(null);
-  sigVals.forEach((v, i) => { if (v !== null) signal[i + off] = v; });
-  const hist = line.map((v, i) => (v !== null && signal[i] !== null) ? v - signal[i] : null);
-  return { line, signal, hist };
-}
-function bb(a, p = 20, m = 2) {
-  const mid = sma(a, p);
-  const up = new Array(a.length).fill(null), lo = new Array(a.length).fill(null);
-  for (let i = p - 1; i < a.length; i++) {
-    let v = 0; for (let j = i - p + 1; j <= i; j++) v += Math.pow(a[j] - mid[i], 2);
-    const sd = Math.sqrt(v / p);
-    up[i] = mid[i] + m * sd; lo[i] = mid[i] - m * sd;
-  }
-  return { mid, up, lo };
-}
-function atrCalc(h, l, c, p = 14) {
-  const tr = [];
-  for (let i = 0; i < c.length; i++)
-    tr.push(i === 0 ? h[i] - l[i] : Math.max(h[i] - l[i], Math.abs(h[i] - c[i - 1]), Math.abs(l[i] - c[i - 1])));
-  const o = new Array(c.length).fill(null);
-  if (tr.length < p) return o;
-  let s = 0; for (let i = 0; i < p; i++) s += tr[i];
-  o[p - 1] = s / p;
-  for (let i = p; i < tr.length; i++) o[i] = (o[i - 1] * (p - 1) + tr[i]) / p;
-  return o;
-}
-const last = (a) => { for (let i = a.length - 1; i >= 0; i--) if (a[i] !== null && isFinite(a[i])) return a[i]; return null; };
-
-function analyze(k) {
-  if (!k || k.length < 30) return null;
-  const c = k.map(x => x.c), h = k.map(x => x.h), l = k.map(x => x.l);
-  const e20 = ema(c, 20), e50 = ema(c, 50), e200 = ema(c, 200);
-  const r = rsi(c, 14), m = macd(c), b = bb(c, 20, 2), at = atrCalc(h, l, c, 14);
-  const px = c[c.length - 1];
-  const E20 = last(e20), E50 = last(e50), E200 = last(e200);
-  const R = last(r), H = last(m.hist), A = last(at);
-  const hi = m.hist.filter(v => v !== null);
-  const rising = hi.length > 1 ? hi[hi.length - 1] > hi[hi.length - 2] : false;
-
-  let sc = 0, max = 0;
-  const add = (cond, w) => { max += w; sc += cond ? w : -w; };
-  if (E200 !== null) add(px > E200, 2.5);
-  if (E50 !== null && E200 !== null) add(E50 > E200, 1.5);
-  if (E20 !== null) add(px > E20, 1.0);
-  if (H !== null) { add(H > 0, 1.5); max += 0.5; sc += rising ? 0.5 : -0.5; }
-  if (R !== null) { max += 1; sc += R > 55 ? 1 : (R < 45 ? -1 : 0); }
-  if (b.mid[b.mid.length - 1] !== null) add(px > last(b.mid), 0.5);
-
-  const norm = max > 0 ? Math.max(-100, Math.min(100, sc / max * 100)) : 0;
-  return { score: norm, px, e20: E20, e50: E50, e200: E200, rsi: R, hist: H, histRising: rising,
-           atr: A, bbUp: last(b.up), bbLo: last(b.lo), bbMid: last(b.mid), series: { e20, e50, e200 } };
-}
-function labelOf(s) {
-  if (!isFinite(s)) return { t: "—", c: "var(--mut)" };
-  if (s >= 45) return { t: "اتجاه صاعد قوي", c: "var(--up)" };
-  if (s >= 15) return { t: "ميل صاعد", c: "var(--up)" };
-  if (s > -15) return { t: "عرضي / غير واضح", c: "var(--neu)" };
-  if (s > -45) return { t: "ميل هابط", c: "var(--dn)" };
-  return { t: "اتجاه هابط قوي", c: "var(--dn)" };
-}
 
 /* =======================================================================
    3) حالة السوق — تُحسب في المتصفح لتبقى صحيحة حتى لو تأخّرت البيانات
@@ -1403,6 +1353,36 @@ function renderNow() {
     || `<div class="empty" style="padding:12px">—</div>`;
   $("#gainers").innerHTML = movers(m.gainers, "var(--up)");
   $("#losers").innerHTML  = movers(m.losers, "var(--dn)");
+  renderMarketMap();
+}
+
+/* خريطة من البيانات الموجودة فعلاً. لا تخلط حركة اليوم بالاتجاه الفني،
+   لذلك يستطيع المستخدم التبديل بينهما بدلاً من صبغهما في مقياس واحد. */
+function renderMarketMap() {
+  const el = $("#marketMap");
+  if (!el || !state.summary) return;
+  const rows = state.summary.rows.filter(r => r.mkt !== "crypto" && Number.isFinite(r.p));
+  if (!rows.length) { el.innerHTML = `<div class="empty">لا بيانات كافية للخريطة</div>`; return; }
+  const caps = rows.map(r => r.mc).filter(Number.isFinite).sort((a, b) => a - b);
+  const q75 = caps[Math.floor(caps.length * .75)] || Infinity;
+  const q92 = caps[Math.floor(caps.length * .92)] || Infinity;
+  const value = r => state.mapMode === "score" ? r.score : r.chg;
+  const observed = rows.map(r => Math.abs(value(r) || 0)).sort((a, b) => a - b);
+  const limit = state.mapMode === "score" ? 100 : Math.max(2, observed[Math.floor(observed.length * .95)] || 2);
+  const color = v => {
+    if (!Number.isFinite(v)) return "rgba(96,117,143,.18)";
+    const a = .18 + Math.min(1, Math.abs(v) / limit) * .64;
+    return v > 0 ? `rgba(8,117,87,${a})` : v < 0 ? `rgba(143,40,54,${a})` : "rgba(96,117,143,.22)";
+  };
+  const sorted = rows.slice().sort((a, b) => (Number(b.mc) || 0) - (Number(a.mc) || 0));
+  el.innerHTML = `<div class="market-map">${sorted.map(r => {
+    const v = value(r), span = r.mc >= q92 ? "s3" : r.mc >= q75 ? "s2" : "";
+    const shown = state.mapMode === "score"
+      ? (Number.isFinite(v) ? `${v > 0 ? "+" : ""}${Math.round(v)}` : "—") : pct(v);
+    return `<article class="map-tile ${span}" data-open="${esc(r.s)}" style="background:${color(v)}" title="${esc(nm(r))}">
+      <b class="tick">${esc(r.s)}</b><small>${esc(r.sec || nm(r))}</small><span class="num">${shown}</span></article>`;
+  }).join("")}</div>`;
+  $$('[data-map-mode]').forEach(b => b.classList.toggle("on", b.dataset.mapMode === state.mapMode));
 }
 
 /* ---------- مركز القيادة ورادار الفرص ---------- */
@@ -2069,6 +2049,8 @@ function renderDetail() {
     $("#cardSize").scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
+  renderDecisionPassport(rec);
+
   /* كل بطاقة تُرسم على حِدة ويُسجَّل خطؤها.
    *
    * بلا هذا الفصل، استثناءٌ في بطاقةٍ واحدة يُوقف الباقي **ويُبقي محتوى
@@ -2097,6 +2079,49 @@ function renderDetail() {
         ${esc(e.message)}. البطاقات الأخرى سليمة.</div>`;
     }
   }
+}
+
+/* «جواز القرار» يجمع ما كان موزعاً بين عدة بطاقات. درجة الجودة ليست
+   احتمال ربح؛ لذلك نعرض اكتمال الدليل وشرط الإبطال صراحةً بجانبها. */
+function renderDecisionPassport(rec) {
+  const el = $("#decisionPassport"); if (!el) return;
+  const row = symRow(rec.s) || rec;
+  const p = tradePlan(rec);
+  const fund = state.fund && state.fund.f && state.fund.f[rec.s];
+  const news = state.news && state.news.sym && state.news.sym[rec.s];
+  const evidence = [Number.isFinite(rec.score), !!fund, Array.isArray(news) && news.length > 0,
+                    !!(p && Number.isFinite(p.rr)), !!(state.signals && sigsOf(rec.s).length)].filter(Boolean).length;
+  let q = { value: Math.max(20, Math.round(Math.abs(rec.score || 0))) };
+  if (p && Number.isFinite(p.rr)) q = qualityFor(row, p);
+  let action = "راقب فقط", tone = "var(--neu)", why = "الخطة غير مكتملة؛ لا يوجد دخول يستحق المخاطرة الآن.";
+  if (row.stale) {
+    action = "انتظر تحديث البيانات"; tone = "var(--dn)";
+    why = "القرار الجيد يبدأ ببيانات حديثة، وهذه اللقطة متأخرة.";
+  } else if (p && (!p.target || !Number.isFinite(p.rr) || p.rr < 1.5)) {
+    action = "انتظر سعراً أفضل"; why = "العائد المتاح لا يعوّض مساحة وقف الخسارة.";
+  } else if (p && q.value >= 75 && Math.abs(rec.score || 0) >= 45) {
+    action = "خطة تستحق المراجعة"; tone = "var(--up)";
+    why = "الاتجاه والخطة وجودة البيانات متوافقة؛ راجع المحفز وحجم الصفقة قبل أي تنفيذ.";
+  } else if (p) {
+    action = "فرصة مشروطة"; tone = "var(--cyan)";
+    why = "هناك خطة قابلة للقياس، لكن بعض عناصر الدليل ما زالت متوسطة أو ناقصة.";
+  }
+  const side = p && p.dir < 0 ? "هبوط" : "صعود";
+  const invalid = p
+    ? `تُلغى فرضية ${side} إذا وصل السعر إلى ${money(p.stop)}؛ لا توسّع الوقف بعد الدخول لتبرير الفكرة.`
+    : "لا يوجد وقف صالح بعد، لذلك لا توجد صفقة قابلة للقياس.";
+  el.innerHTML = `<div class="decision-head"><div><div class="eyebrow">DECISION PASSPORT · جواز القرار</div>
+    <div class="decision-action" style="color:${tone}">${action}</div><div style="font-size:12px;color:var(--mut);margin-top:3px">${esc(why)}</div></div>
+    <div class="decision-score"><b class="num">${q.value}</b><small>جودة / 100</small></div></div>
+    <div class="decision-grid">
+      <div class="decision-cell"><small>اكتمال الدليل</small><b>${evidence}/5 مصادر</b></div>
+      <div class="decision-cell"><small>صلاحية البيانات</small><b style="color:${row.stale ? "var(--dn)" : "var(--up)"}">${row.stale ? "متأخرة" : "سليمة"}</b></div>
+      <div class="decision-cell"><small>العائد/المخاطرة</small><b class="num">${p && Number.isFinite(p.rr) ? fmt(p.rr, 2) + ":1" : "—"}</b></div>
+      <div class="decision-cell"><small>الانحياز الفني</small><b style="color:${(rec.score || 0) >= 0 ? "var(--up)" : "var(--dn)"}">${labelOf(rec.score).t}</b></div>
+    </div><div class="decision-invalidate"><b>شرط الإبطال:</b> ${invalid}</div>
+    ${p ? `<button class="btn gray" id="btnDecisionPlan" style="margin-top:10px;font-size:13px;padding:9px">راجع الخطة بالأرقام ↓</button>` : ""}`;
+  const btn = $("#btnDecisionPlan");
+  if (btn) btn.onclick = () => $("#cardPlan").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function renderTfTable(rec) {
@@ -2355,7 +2380,7 @@ const trendOf = (sym) => (((state.trend || {}).syms) || {})[sym] || [];
    مستبعدة كما في `renderTrackedLevels` — مقاييسها بمواضعة أخرى. */
 function sigsOf(sym) {
   return ((state.signals && state.signals.records) || [])
-    .filter(s => s.sym === sym && s.open && s.conv !== "long")
+    .filter(s => s.sym === sym && s.open && !s.conv)
     .sort((a, b) => b.at - a.at);
 }
 
@@ -2511,7 +2536,7 @@ async function loadHistory() {
 function allTrades() {
   const open = ((state.signals && state.signals.records) || []);
   const closed = ((state.hist && state.hist.records) || []);
-  return open.concat(closed).filter(s => s.conv !== "long");
+  return open.concat(closed).filter(s => !s.conv);
 }
 
 const LOG_ST = { win: "رابحة", loss: "خاسرة", flat: "انتهى أفقها", cancel: "ملغاة",
@@ -3018,7 +3043,7 @@ function renderTrackedLevels(rec, p) {
   // سجلات ما قبل تصحيح الاتجاه (`conv`) تُستبعد: مقاييسها بمواضعة الشراء
   // فقراءتها كإشارة هبوط تقلب معناها. تُستبدل بأخرى صحيحة في أول دورة.
   const sig = (state.signals && state.signals.records || [])
-    .filter(s => s.sym === rec.s && s.conv !== "long")
+    .filter(s => s.sym === rec.s && !s.conv)
     .sort((a, b) => b.at - a.at)[0];
 
   const marks = [1, 2, 5];
@@ -3506,7 +3531,7 @@ function renderScreen() {
   const now = Date.now();
   const openSig = {};
   for (const s of ((state.signals && state.signals.records) || [])) {
-    if (!s.open || s.scan !== scan.id || s.conv === "long") continue;
+    if (!s.open || s.scan !== scan.id || s.conv) continue;
     if (!openSig[s.sym] || s.at < openSig[s.sym].at) openSig[s.sym] = s;
   }
 
@@ -3715,7 +3740,7 @@ function lazyFile(key, file, onLoad, onFail) {
 
 function loadViewData(view) {
   if (view === "news" || view === "detail")
-    lazyFile("news", "news.json", () => { renderNews(); if (state.sym) renderSymNews(); }, () => {
+    lazyFile("news", "news.json", () => { renderNews(); if (state.sym) { renderSymNews(); const r = state.symCache[state.sym]; if (r) renderDecisionPassport(r); } }, () => {
       if (state.view === "news") $("#newsList").innerHTML = `<div class="note">تعذّر جلب الأخبار الآن.</div>`;
     });
   if (view === "list" || view === "analysis" || view === "screen")
@@ -3844,7 +3869,7 @@ async function refresh(force = false) {
   // الملفات الثانوية — لا توقف العرض إن فشلت
   getJSON("fundamentals.json").then(f => {
     state.fund = f; fundCache = null;                 // الرتب تُبنى من هذا الملف
-    if (state.sym) { renderFund(); const r = state.symCache[state.sym]; if (r) renderLevels(r); }
+    if (state.sym) { renderFund(); const r = state.symCache[state.sym]; if (r) { renderLevels(r); renderDecisionPassport(r); } }
     if (state.view === "screen") { renderScreen(); renderEarnings(); }
     if (state.view === "analysis") { renderAnalysis(); renderSectorMedians(); renderCompare(); }
     renderPulse(); loadDailyRadar(true);
@@ -3858,6 +3883,7 @@ async function refresh(force = false) {
     if (state.sym && state.symCache[state.sym]) {
       renderPlan(state.symCache[state.sym]);
       renderTrend(state.symCache[state.sym]);
+      renderDecisionPassport(state.symCache[state.sym]);
     }
     // أعمار الفرص في قائمة الماسح تأتي من هذا الملف نفسه
     if (state.view === "screen") renderScreen();
@@ -3928,6 +3954,8 @@ function boot() {
 
   // فتح سهم — بالتفويض حتى يعمل على القوائم المُعاد رسمها
   document.addEventListener("click", (e) => {
+    const map = e.target.closest("[data-map-mode]");
+    if (map) { state.mapMode = map.dataset.mapMode; renderMarketMap(); return; }
     const share = e.target.closest("[data-share-text]");
     if (share) { e.preventDefault(); e.stopPropagation(); shareOpportunity(share.dataset.shareText); return; }
     const nav = e.target.closest("[data-nav]");
@@ -3977,5 +4005,7 @@ boot();
 
 </script>
 <script src="pro.js?v=4"></script>
+<script src="scanner-pro.js?v=1"></script>
+<script src="filings-pro.js?v=2"></script>
 </body>
 </html>
